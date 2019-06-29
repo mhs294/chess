@@ -1,7 +1,5 @@
 package com.maximilian.chess.enums;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import org.apache.commons.lang3.tuple.Pair;
@@ -33,7 +31,6 @@ import static com.maximilian.chess.enums.Square.Type.LIGHT;
  *
  * @author Maximilian Schroeder
  */
-@AllArgsConstructor(access = AccessLevel.PACKAGE)
 @Accessors(fluent = true)
 public enum Square {
     A1(A, ONE, DARK),
@@ -111,36 +108,39 @@ public enum Square {
         }
         BITMASK_TO_SQUARE_MAP = new HashMap<>(Square.values().length);
         for (Square square : Square.values()) {
-            BITMASK_TO_SQUARE_MAP.put((square.file.bitmask() & square.rank.bitmask()), square);
+            BITMASK_TO_SQUARE_MAP.put(square.bitmask(), square);
         }
     }
 
     /**
-     * Gets the {@link File} of this {@link Square}.
-     *
-     * @return The {@link File} of this {@link Square}.
+     * The {@link File} of this {@link Square}.
      */
     @Getter private final File file;
     /**
-     * Gets the {@link Rank} of this {@link Square}.
-     *
-     * @return The {@link Rank} of this {@link Square}.
+     * The {@link Rank} of this {@link Square}.
      */
     @Getter private final Rank rank;
     /**
-     * Gets the {@link Type} of this {@link Square}.
-     *
-     * @return The {@link Type} of this {@link Square}.
+     * The {@link Type} of this {@link Square}.
      */
     @Getter private final Type type;
+    /**
+     * The bitmask of this {@link Square}.
+     */
+    @Getter private final long bitmask;
 
     /**
-     * Gets the 64-bit bitmask value for this {@link Square}.
+     * (Primary constructor)
      *
-     * @return The 64-bit bitmask value for this {@link Square}.
+     * @param file The {@link File} of this {@link Square}.
+     * @param rank The {@link Rank} of this {@link Square}.
+     * @param type The {@link Type} of this {@link Square}.
      */
-    public long bitmask () {
-        return file.bitmask() & rank.bitmask();
+    Square (File file, Rank rank, Type type) {
+        this.file = file;
+        this.rank = rank;
+        this.type = type;
+        this.bitmask = rank.bitmask() & file.bitmask();
     }
 
     /**

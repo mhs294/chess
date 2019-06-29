@@ -1,6 +1,7 @@
 package com.maximilian.chess.util;
 
 import com.maximilian.chess.enums.Square;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -48,6 +49,46 @@ public class BitboardUtils {
         }
 
         return targetSquares;
+    }
+
+    /**
+     * Creates a human-readable string representation of the specified bitboard using rank and file markers. High bits
+     * are denoted with an {@code x} while low bits are denoted with a {@code .}.
+     *
+     * @param bitboard The bitboard to convert to a human-readable {@link String}.
+     * @return A human-readable string representation of the specified bitboard. Will never be null, empty, or blank.
+     */
+    public static String bitboardToBoardString (long bitboard) {
+        String fileMarkers = "  A B C D E F G H ";
+        String horizontalDelimiter = "_________________";
+        StringBuilder bitboardStringBuilder = new StringBuilder(fileMarkers);
+        bitboardStringBuilder.append("\n")
+                .append(horizontalDelimiter);
+        for (int i = 7; i >= 0; i--) {
+            bitboardStringBuilder.append(i + 1)
+                    .append("|");
+            long bitboardRow = bitboard >>> 64 - (8 * i);
+            StringBuilder rowStringBuilder = new StringBuilder();
+            for (int k = 0; k < 8; k++) {
+                long currentBit = (bitboardRow >>> k) & 1L;
+                if (currentBit == 1L) {
+                    rowStringBuilder.append("x");
+                } else {
+                    rowStringBuilder.append(".");
+                }
+                if ((k + 1) < 8) {
+                    rowStringBuilder.append(" ");
+                }
+            }
+            bitboardStringBuilder.append(StringUtils.reverse(rowStringBuilder.toString()))
+                    .append("|")
+                    .append(i + 1)
+                    .append("\n");
+        }
+        return bitboardStringBuilder.append(horizontalDelimiter)
+                .append("\n")
+                .append(fileMarkers)
+                .toString();
     }
 
     // This class should never be instantiated.
