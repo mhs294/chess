@@ -261,7 +261,7 @@ public class MovementBitmasks {
             long occupancyBitmask = blockerBitmask;
             for (int k = 0; i >>> k != 0; k++) {
                 if (((i >>> k) & 1) == 1) {
-                    occupancyBitmask -= bitValues.get(k);
+                    occupancyBitmask -= bitValues.getLong(k);
                 }
             }
             blockerOccupancyBitmasks.add(occupancyBitmask);
