@@ -7,6 +7,8 @@ import com.maximilian.chess.enums.Square;
 import com.maximilian.chess.util.BitboardUtils;
 import it.unimi.dsi.fastutil.longs.Long2LongMap;
 import it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongArrayList;
+import it.unimi.dsi.fastutil.longs.LongList;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
@@ -15,8 +17,6 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 import static com.maximilian.chess.enums.File.A;
@@ -39,6 +39,7 @@ import static com.maximilian.chess.objects.Board.LIGHT_SQUARES_BITMASK;
  * @author Maximilian Schroeder
  */
 public class MovementBitmasks {
+    // TODO - javadoc this class
     /*
      * There is no data structure for queen moves, since those moves are calculated as a bitwise-or union of bishop
      * moves and rook moves.
@@ -199,44 +200,44 @@ public class MovementBitmasks {
 
     private static long getBishopBlockerBitmaskForSquare (@Nonnull Square square) {
         long squareBitmask = square.bitmask();
-        long bishopBitmask = EMPTY_BITMASK;
+        long bishopBlockerBitmask = EMPTY_BITMASK;
         for (int i = 1; i <= 6; i++) {
-            bishopBitmask |= (squareBitmask << (7 * i) | squareBitmask >>> (7 * i));
-            bishopBitmask |= (squareBitmask << (9 * i) | squareBitmask >>> (9 * i));
+            bishopBlockerBitmask |= (squareBitmask << (7 * i) | squareBitmask >>> (7 * i));
+            bishopBlockerBitmask |= (squareBitmask << (9 * i) | squareBitmask >>> (9 * i));
         }
 
         // Exclude any invalid squares included as a result of bit-shifting that wrapped around the board.
         if (square.type() == LIGHT) {
-            bishopBitmask &= LIGHT_SQUARES_BITMASK;
+            bishopBlockerBitmask &= LIGHT_SQUARES_BITMASK;
         } else if (square.type() == DARK) {
-            bishopBitmask &= DARK_SQUARES_BITMASK;
+            bishopBlockerBitmask &= DARK_SQUARES_BITMASK;
         }
 
         // Exclude the final squares in the sliding rays, since Magic Bitboard move generation will handle this.
-        bishopBitmask &= ~A.bitmask();
-        bishopBitmask &= ~H.bitmask();
-        bishopBitmask &= ~ONE.bitmask();
-        bishopBitmask &= ~EIGHT.bitmask();
+        bishopBlockerBitmask &= ~A.bitmask();
+        bishopBlockerBitmask &= ~H.bitmask();
+        bishopBlockerBitmask &= ~ONE.bitmask();
+        bishopBlockerBitmask &= ~EIGHT.bitmask();
 
-        return bishopBitmask;
+        return bishopBlockerBitmask;
     }
 
     private static long getRookBlockerBitmaskForSquare (@Nonnull Square square) {
-        long rookBitmask = (square.rank()
+        long rookBlockerBitmask = (square.rank()
                 .bitmask() | square.file()
                 .bitmask()) ^ square.bitmask();
 
         // Exclude the final squares in the sliding rays, since Magic Bitboard move generation will handle this.
-        rookBitmask &= (~A.bitmask() | square.file()
+        rookBlockerBitmask &= (~A.bitmask() | square.file()
                 .bitmask());
-        rookBitmask &= (~H.bitmask() | square.file()
+        rookBlockerBitmask &= (~H.bitmask() | square.file()
                 .bitmask());
-        rookBitmask &= (~ONE.bitmask() | square.rank()
+        rookBlockerBitmask &= (~ONE.bitmask() | square.rank()
                 .bitmask());
-        rookBitmask &= (~EIGHT.bitmask() | square.rank()
+        rookBlockerBitmask &= (~EIGHT.bitmask() | square.rank()
                 .bitmask());
 
-        return rookBitmask;
+        return rookBlockerBitmask;
     }
 
     @Nonnull
@@ -246,11 +247,11 @@ public class MovementBitmasks {
         int totalBlockerOccupancyBitmasks = 1 << highBitsInBlockerBitmask;
 
         // Determine individual values of high bits in blocker bitmask.
-        List<Long> bitValues = new ArrayList<>(highBitsInBlockerBitmask);
+        LongList bitValues = new LongArrayList(highBitsInBlockerBitmask);
         for (int i = 0; blockerBitmask >>> i != 0L; i++) {
             long currentBitValue = blockerBitmask >>> i;
             if ((currentBitValue & 1L) == 1L) {
-                bitValues.add(currentBitValue);
+                bitValues.add(blockerBitmask & (1L << i));
             }
         }
 

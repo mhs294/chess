@@ -77,6 +77,7 @@ import static com.maximilian.chess.movegen.constants.MovementBitmasks.BLACK_PAWN
 import static com.maximilian.chess.movegen.constants.MovementBitmasks.KING_MOVES;
 import static com.maximilian.chess.movegen.constants.MovementBitmasks.KNIGHT_MOVES;
 import static com.maximilian.chess.movegen.constants.MovementBitmasks.ROOK_BLOCKER_MASKS;
+import static com.maximilian.chess.movegen.constants.MovementBitmasks.ROOK_MOVES;
 import static com.maximilian.chess.movegen.constants.MovementBitmasks.WHITE_PAWN_ADVANCES;
 import static com.maximilian.chess.movegen.constants.MovementBitmasks.WHITE_PAWN_CAPTURES;
 import static com.maximilian.chess.objects.Board.EMPTY_BITMASK;
@@ -204,7 +205,20 @@ public class MovementBitmasksTest {
 
     @Test
     public void test () {
-        long bishopE4Moves = BISHOP_MOVES.get(E4).get(EMPTY_BITMASK);
+        long bishopE4Moves = BISHOP_MOVES.get(E4)
+                .get(EMPTY_BITMASK);
         System.out.println("Bishop moves on E4, empty board:\n" + BitboardUtils.bitboardToBoardString(bishopE4Moves));
+        long bishopE4MovesPieceOnC6 = BISHOP_MOVES.get(E4)
+                .get(C6.bitmask());
+        System.out.println(
+                "Bishop moves on E4, blocker on C6:\n" + BitboardUtils.bitboardToBoardString(bishopE4MovesPieceOnC6));
+
+        long rookF5Moves = ROOK_MOVES.get(F5)
+                .get(EMPTY_BITMASK);
+        System.out.println("Rook moves on F5, empty board:\n" + BitboardUtils.bitboardToBoardString(rookF5Moves));
+        long rookF5MovesBlockersOnD5AndF6 = ROOK_MOVES.get(F5)
+                .get(D5.bitmask() | F6.bitmask());
+        System.out.println("Rook moves on F5, blockers on D5 and F6:\n" +
+                BitboardUtils.bitboardToBoardString(rookF5MovesBlockersOnD5AndF6));
     }
 }
