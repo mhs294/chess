@@ -11,6 +11,7 @@ import java.util.EnumSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.maximilian.chess.enums.Square.E5;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -40,5 +41,15 @@ public class BitboardUtilsTest {
                 .filter(square -> square.type() == Square.Type.DARK)
                 .collect(Collectors.toSet());
         assertEquals(darkSquares, BitboardUtils.getSquaresFromBitmask(Board.DARK_SQUARES_BITMASK));
+    }
+
+    @Test
+    public void testBitboardToBoardString () {
+        System.out.println("Empty:\n" + BitboardUtils.bitboardToBoardString(Board.EMPTY_BITMASK) + "\n");
+        System.out.println("Dark Squares:\n" + BitboardUtils.bitboardToBoardString(Board.DARK_SQUARES_BITMASK) + "\n");
+        System.out.println(
+                "Light Squares:\n" + BitboardUtils.bitboardToBoardString(Board.LIGHT_SQUARES_BITMASK) + "\n");
+        System.out.println("Full:\n" + BitboardUtils.bitboardToBoardString(Board.FULL_BITMASK));
+        System.out.println("E5:\n" + BitboardUtils.bitboardToBoardString(E5.bitmask()));
     }
 }

@@ -72,7 +72,7 @@ public class MovementBitmasks {
             LongSet bishopBlockerPermutations = getBlockerBitmaskPermutationsByBlockerBitmask(bishopBlockerBitmask);
             Long2LongMap bishopMovesByBlockerBitmask = new Long2LongOpenHashMap(bishopBlockerPermutations.size(), 1.0F);
             for (long blockerBitmask : bishopBlockerPermutations) {
-                long movementBitmask = getBishopMovementForBlockerBitmask(blockerBitmask);
+                long movementBitmask = getBishopMovementForSquareAndBlockerBitmask(square, blockerBitmask);
                 bishopMovesByBlockerBitmask.put(blockerBitmask, movementBitmask);
             }
             BISHOP_MOVES.put(square, bishopMovesByBlockerBitmask);
@@ -85,7 +85,7 @@ public class MovementBitmasks {
             LongSet rookBlockerPermutations = getBlockerBitmaskPermutationsByBlockerBitmask(rookBlockerBitmask);
             Long2LongMap rookMovesByBlockerBitmask = new Long2LongOpenHashMap(rookBlockerPermutations.size(), 1.0F);
             for (long blockerBitmask : rookBlockerPermutations) {
-                long movementBitmask = getRookMovementForBlockerBitmask(blockerBitmask);
+                long movementBitmask = getRookMovementForSquareAndBlockerBitmask(square, blockerBitmask);
                 rookMovesByBlockerBitmask.put(blockerBitmask, movementBitmask);
             }
             ROOK_MOVES.put(square, rookMovesByBlockerBitmask);
@@ -267,13 +267,14 @@ public class MovementBitmasks {
         return blockerOccupancyBitmasks;
     }
 
-    private static long getBishopMovementForBlockerBitmask (long blockerBitmask) {
+    private static long getBishopMovementForSquareAndBlockerBitmask (Square square, long blockerBitmask) {
         // TODO - calculate bishop moves by blocker bitmask
         return 0L;
     }
 
-    private static long getRookMovementForBlockerBitmask (long blockerBitmask) {
-        // TODO - calculate bishop moves by blocker bitmask
+    private static long getRookMovementForSquareAndBlockerBitmask (Square square, long blockerBitmask) {
+        long rookMoveBitmask = square.rank().bitmask() ^ square.file().bitmask();
+
         return 0L;
     }
 

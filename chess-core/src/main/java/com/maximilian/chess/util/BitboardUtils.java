@@ -1,7 +1,6 @@
 package com.maximilian.chess.util;
 
 import com.maximilian.chess.enums.Square;
-import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nonnull;
 import java.util.HashSet;
@@ -63,13 +62,10 @@ public class BitboardUtils {
     @Nonnull
     public static String bitboardToBoardString (long bitboard) {
         String fileMarkers = "  A B C D E F G H ";
-        String horizontalDelimiter = "_________________";
-        StringBuilder bitboardStringBuilder = new StringBuilder(fileMarkers);
-        bitboardStringBuilder.append("\n")
-                .append(horizontalDelimiter);
+        StringBuilder bitboardStringBuilder = new StringBuilder(fileMarkers + "\n");
         for (int i = 7; i >= 0; i--) {
             bitboardStringBuilder.append(i + 1)
-                    .append("|");
+                    .append(" ");
             long bitboardRow = bitboard >>> 64 - (8 * i);
             StringBuilder rowStringBuilder = new StringBuilder();
             for (int k = 0; k < 8; k++) {
@@ -83,14 +79,12 @@ public class BitboardUtils {
                     rowStringBuilder.append(" ");
                 }
             }
-            bitboardStringBuilder.append(StringUtils.reverse(rowStringBuilder.toString()))
-                    .append("|")
+            bitboardStringBuilder.append(rowStringBuilder.toString())
+                    .append(" ")
                     .append(i + 1)
                     .append("\n");
         }
-        return bitboardStringBuilder.append(horizontalDelimiter)
-                .append("\n")
-                .append(fileMarkers)
+        return bitboardStringBuilder.append(fileMarkers)
                 .toString();
     }
 
