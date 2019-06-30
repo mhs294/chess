@@ -61,7 +61,7 @@ public class BitboardUtils {
      */
     @Nonnull
     public static String bitboardToBoardString (long bitboard) {
-        String fileMarkers = "  A B C D E F G H ";
+        String fileMarkers = "  a b c d e f g h ";
         StringBuilder bitboardStringBuilder = new StringBuilder(fileMarkers + "\n");
         for (int i = 7; i >= 0; i--) {
             bitboardStringBuilder.append(i + 1)
