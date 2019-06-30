@@ -5,6 +5,9 @@ import com.maximilian.chess.enums.Piece;
 import com.maximilian.chess.enums.Square;
 import lombok.EqualsAndHashCode;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import static com.google.common.base.Verify.verifyNotNull;
 import static com.maximilian.chess.enums.Color.BLACK;
 import static com.maximilian.chess.enums.Color.WHITE;
@@ -103,17 +106,18 @@ public class Move {
     /**
      * Constructs a new {@link Move} (declared private to prevent direct instantiation).
      *
-     * @param color                  The {@link Color} of the player making the move.
-     * @param piece                  The {@link Piece} that is being moved.
-     * @param capturedPiece          The {@link Piece} being captured as a result of the move (optional).
-     * @param start                  The starting {@link Square} of the move.
-     * @param end                    The ending {@link Square} of the move.
-     * @param promoteTo              The {@link Piece} being promoted to as a result of the move (optional).
+     * @param color                  The {@link Color} of the player making the move. Cannot be null.
+     * @param piece                  The {@link Piece} that is being moved. Cannot be null.
+     * @param capturedPiece          The {@link Piece} being captured as a result of the move (optional). May be null.
+     * @param start                  The starting {@link Square} of the move. Cannot be null.
+     * @param end                    The ending {@link Square} of the move. Cannot be null.
+     * @param promoteTo              The {@link Piece} being promoted to as a result of the move (optional). May be
+     *                               null.
      * @param enPassantCaptureSquare The {@link Square} from which an opposing pawn was captured via en passant
-     *                               (optional).
+     *                               (optional). May be null.
      */
-    private Move (Color color, Piece piece, Piece capturedPiece, Square start, Square end, Piece promoteTo,
-            Square enPassantCaptureSquare) {
+    private Move (@Nonnull Color color, @Nonnull Piece piece, @Nullable Piece capturedPiece, @Nonnull Square start,
+            @Nonnull Square end, @Nullable Piece promoteTo, @Nullable Square enPassantCaptureSquare) {
         int bitmask = 0x00000000;
 
         bitmask += (color == BLACK) ? 1 : 0;
@@ -152,7 +156,8 @@ public class Move {
      * @param end   The ending {@link Square} of the move. Cannot be null.
      * @return A new {@link Move} containing the specified information. Will never be null.
      */
-    public static Move create (Color color, Piece piece, Square start, Square end) {
+    @Nonnull
+    public static Move create (@Nonnull Color color, @Nonnull Piece piece, @Nonnull Square start, @Nonnull Square end) {
         verifyNotNull(color, "color cannot be null.");
         verifyNotNull(piece, "piece cannot be null.");
         verifyNotNull(start, "start cannot be null.");
@@ -171,7 +176,9 @@ public class Move {
      *                               Cannot be null.
      * @return A new {@link Move} containing the specified information. Will never be null.
      */
-    public static Move createEnPassant (Color color, Square start, Square end, Square enPassantCaptureSquare) {
+    @Nonnull
+    public static Move createEnPassant (@Nonnull Color color, @Nonnull Square start, @Nonnull Square end,
+            @Nonnull Square enPassantCaptureSquare) {
         verifyNotNull(color, "color cannot be null.");
         verifyNotNull(start, "start cannot be null.");
         verifyNotNull(end, "end cannot be null.");
@@ -190,7 +197,9 @@ public class Move {
      * @param end           The ending {@link Square} of the move. Cannot be null.
      * @return A new {@link Move} containing the specified information. Will never be null.
      */
-    public static Move createCapture (Color color, Piece piece, Piece capturedPiece, Square start, Square end) {
+    @Nonnull
+    public static Move createCapture (@Nonnull Color color, @Nonnull Piece piece, @Nonnull Piece capturedPiece,
+            @Nonnull Square start, @Nonnull Square end) {
         verifyNotNull(color, "color cannot be null.");
         verifyNotNull(piece, "piece cannot be null.");
         verifyNotNull(capturedPiece, "capturedPiece cannot be null.");
@@ -209,7 +218,9 @@ public class Move {
      * @param promoteTo The {@link Piece} being promoted to as a result of the move. Cannot be null.
      * @return A new {@link Move} containing the specified information. Will never be null.
      */
-    public static Move createPromotion (Color color, Square start, Square end, Piece promoteTo) {
+    @Nonnull
+    public static Move createPromotion (@Nonnull Color color, @Nonnull Square start, @Nonnull Square end,
+            @Nonnull Piece promoteTo) {
         verifyNotNull(color, "color cannot be null.");
         verifyNotNull(start, "start cannot be null.");
         verifyNotNull(end, "end cannot be null.");
@@ -228,8 +239,9 @@ public class Move {
      * @param promoteTo     The {@link Piece} being promoted to as a result of the move. Cannot be null.
      * @return A new {@link Move} containing the specified information. Will never be null.
      */
-    public static Move createCapturePromotion (Color color, Piece capturedPiece, Square start, Square end,
-            Piece promoteTo) {
+    @Nonnull
+    public static Move createCapturePromotion (@Nonnull Color color, @Nonnull Piece capturedPiece,
+            @Nonnull Square start, @Nonnull Square end, @Nonnull Piece promoteTo) {
         verifyNotNull(color, "color cannot be null.");
         verifyNotNull(capturedPiece, "capturedPiece cannot be null.");
         verifyNotNull(start, "start cannot be null.");
@@ -244,8 +256,9 @@ public class Move {
      *
      * @return The {@link Color} of the player making the move. Will never be null.
      */
+    @Nonnull
     public Color color () {
-        return Color.fromOrdinal((bitmask >>> COLOR_START) & COLOR_MASK);
+        return Color.fromIndex((bitmask >>> COLOR_START) & COLOR_MASK);
     }
 
     /**
@@ -253,8 +266,9 @@ public class Move {
      *
      * @return The starting {@link Square} of the move. Will never be null.
      */
+    @Nonnull
     public Square start () {
-        return Square.fromOrdinal((bitmask >>> START_START) & SQUARE_MASK);
+        return Square.fromIndex((bitmask >>> START_START) & SQUARE_MASK);
     }
 
     /**
@@ -262,8 +276,9 @@ public class Move {
      *
      * @return The ending {@link Square} of the move. Will never be null.
      */
+    @Nonnull
     public Square end () {
-        return Square.fromOrdinal((bitmask >>> END_START) & SQUARE_MASK);
+        return Square.fromIndex((bitmask >>> END_START) & SQUARE_MASK);
     }
 
     /**
@@ -271,6 +286,7 @@ public class Move {
      *
      * @return The {@link Piece} being moved. Will never be null.
      */
+    @Nonnull
     public Piece piece () {
         return Piece.fromId((bitmask >>> PIECE_START) & PIECE_MASK);
     }
@@ -280,6 +296,7 @@ public class Move {
      *
      * @return The {@link Piece} being captured. May be null (if no piece is being captured).
      */
+    @Nullable
     public Piece capturedPiece () {
         return Piece.fromId((bitmask >>> CAPTURED_PIECE_START) & PIECE_MASK);
     }
@@ -289,6 +306,7 @@ public class Move {
      *
      * @return The {@link Piece} being promoted to. May be null (if no promotion is occurring).
      */
+    @Nullable
     public Piece promoteTo () {
         return Piece.fromId((bitmask >>> PROMOTE_TO_START) & PIECE_MASK);
     }
@@ -300,9 +318,10 @@ public class Move {
      * @return The {@link Square} from which the opposing pawn was captured via en passant. May be null (if no en
      * passant is occurring).
      */
+    @Nullable
     public Square enPassantCaptureSquare () {
         boolean isEnPassant = ((bitmask >>> IS_EN_PASSANT_START) & IS_EN_PASSANT_MASK) != 0;
-        return (isEnPassant) ? Square.fromOrdinal(bitmask & SQUARE_MASK) : null;
+        return (isEnPassant) ? Square.fromIndex(bitmask & SQUARE_MASK) : null;
     }
 
     /**
@@ -319,15 +338,18 @@ public class Move {
     public String toString () {
         String moveString =
                 color().toString() + " " + piece().toString() + " " + start().toString() + "-" + end().toString();
-        if (capturedPiece() != null) {
+        Piece capturedPiece = capturedPiece();
+        if (capturedPiece != null) {
             moveString += "\nCapture: " + color().opposite()
-                    .toString() + " " + capturedPiece().toString();
-            if (enPassantCaptureSquare() != null) {
-                moveString += " (en-passant on " + enPassantCaptureSquare().toString() + ")";
+                    .toString() + " " + capturedPiece.toString();
+            Square enPassantCaptureSquare = enPassantCaptureSquare();
+            if (enPassantCaptureSquare != null) {
+                moveString += " (en-passant on " + enPassantCaptureSquare.toString() + ")";
             }
         }
-        if (promoteTo() != null) {
-            moveString += "\nPromotion to " + promoteTo().toString();
+        Piece promoteTo = promoteTo();
+        if (promoteTo != null) {
+            moveString += "\nPromotion to " + promoteTo.toString();
         }
 
         return moveString;

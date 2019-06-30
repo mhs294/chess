@@ -10,6 +10,8 @@ import lombok.Getter;
 import lombok.experimental.Accessors;
 import org.apache.commons.lang3.tuple.Pair;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -157,9 +159,9 @@ public class Board {
     /**
      * Primary constructor (declared private to prevent direct instantiation).
      *
-     * @param builder The {@link Builder} whose state will be used to construct the {@link Board}.
+     * @param builder The {@link Builder} whose state will be used to construct the {@link Board}. Cannot be null.
      */
-    private Board (Builder builder) {
+    private Board (@Nonnull Builder builder) {
         this.whitePawnsBitmask = builder.whitePawns;
         this.whiteKnightsBitmask = builder.whiteKnights;
         this.whiteBishopsBitmask = builder.whiteBishops;
@@ -178,9 +180,9 @@ public class Board {
      * Constructs a new {@link Board} as a deep copy of an existing board (declared private to prevent direct
      * instantiation).
      *
-     * @param board The {@link Board} to deep copy.
+     * @param board The {@link Board} to deep copy. Cannot be null.
      */
-    private Board (Board board) {
+    private Board (@Nonnull Board board) {
         this.whitePawnsBitmask = board.whitePawnsBitmask;
         this.whiteKnightsBitmask = board.whiteKnightsBitmask;
         this.whiteBishopsBitmask = board.whiteBishopsBitmask;
@@ -200,6 +202,7 @@ public class Board {
      *
      * @return A new {@link Builder} that can be used to construct a {@link Board}. Will never be null.
      */
+    @Nonnull
     public static Builder builder () {
         return new Builder();
     }
@@ -209,6 +212,7 @@ public class Board {
      *
      * @return A new {@link Board} configured for the starting position of a chess game. Will never be null.
      */
+    @Nonnull
     public static Board createStartingBoard () {
         return Board.builder()
                 .addWhitePawns(A2, B2, C2, D2, E2, F2, G2, H2)
@@ -231,6 +235,7 @@ public class Board {
      *
      * @return A new {@link Board} that is a deep copy of this {@link Board}. Will never be null.
      */
+    @Nonnull
     public Board deepCopy () {
         return new Board(this);
     }
@@ -243,6 +248,7 @@ public class Board {
      * in the map's key set, thus, if {@code null} is returned from {@link Map#get(Object)}, it is implied that the
      * specified {@link Square} is vacant.
      */
+    @Nonnull
     public Map<Square, Pair<Color, Piece>> toMap () {
         Map<Square, Pair<Color, Piece>> squareToPieceMap = new HashMap<>(32);
         for (Square square : Square.values()) {
@@ -440,7 +446,7 @@ public class Board {
      * @throws IllegalMoveException If the specified {@link Move} cannot be performed on the current state of the
      *                              {@link Board}.
      */
-    public void doMove (Move move) {
+    public void doMove (@Nonnull Move move) {
         // TODO - move validation to separate utility class?
         validateMove(move);
 
@@ -495,7 +501,8 @@ public class Board {
      * @throws IllegalMoveException If the specified {@link Move} cannot be undone on the current state of the
      *                              {@link Board}.
      */
-    public void undoMove (Move move) {
+    public void undoMove (@Nonnull Move move) {
+        // TODO - move validation to separate utility class?
         validateMove(move);
 
         // Remove the moved piece from its ending position.
@@ -549,7 +556,7 @@ public class Board {
      * @param move The {@link Move} to validate.
      * @throws IllegalMoveException If the specified {@link Move} is null or cannot be executed on the {@link Board}.
      */
-    private void validateMove (Move move) {
+    private void validateMove (@Nullable Move move) {
         if (move == null) {
             throw new IllegalArgumentException("move cannot be null.");
         } else if (move.start() == move.end()) {
@@ -564,12 +571,12 @@ public class Board {
     /**
      * Adds the specified {@link Piece} of the specified {@link Color} to the specified {@link Square}.
      *
-     * @param color  The {@link Color} of the piece to add.
-     * @param piece  The {@link Piece} to add.
-     * @param square The {@link Square} where the piece will be added to.
+     * @param color  The {@link Color} of the piece to add. Cannot be null.
+     * @param piece  The {@link Piece} to add. Cannot be null.
+     * @param square The {@link Square} where the piece will be added to. Cannot be null.
      * @return True if the {@link Piece} was successfully added to the {@link Square}, false otherwise.
      */
-    private boolean addPieceToSquare (Color color, Piece piece, Square square) {
+    private boolean addPieceToSquare (@Nonnull Color color, @Nonnull Piece piece, @Nonnull Square square) {
         if ((square.bitmask() & vacantBitmask()) == 0L) {
             // The square we are trying to add the piece to is occupied.
             return false;
@@ -629,12 +636,12 @@ public class Board {
     /**
      * Removes the specified {@link Piece} of the specified {@link Color} from the specified {@link Square}.
      *
-     * @param color  The {@link Color} of the piece to remove.
-     * @param piece  The {@link Piece} to remove.
-     * @param square The {@link Square} where the piece will be removed from.
+     * @param color  The {@link Color} of the piece to remove. Cannot be null.
+     * @param piece  The {@link Piece} to remove. Cannot be null.
+     * @param square The {@link Square} where the piece will be removed from. Cannot be null.
      * @return True if the {@link Piece} was successfully removed from the {@link Square}, false otherwise.
      */
-    private boolean removePieceFromSquare (Color color, Piece piece, Square square) {
+    private boolean removePieceFromSquare (@Nonnull Color color, @Nonnull Piece piece, @Nonnull Square square) {
         long removeBitmask = ~square.bitmask();
         switch (color) {
             case WHITE:
@@ -754,10 +761,11 @@ public class Board {
         /**
          * Adds white pawns to the board at the specified {@link Square}s.
          *
-         * @param squares The {@link Square}s to add white pawns to.
-         * @return The updated {@link Builder}.
+         * @param squares The {@link Square}s to add white pawns to. Cannot be null.
+         * @return The updated {@link Builder}. Will never be null.
          */
-        public Builder addWhitePawns (Square... squares) {
+        @Nonnull
+        public Builder addWhitePawns (@Nonnull Square... squares) {
             for (Square square : squares) {
                 this.whitePawns |= square.bitmask();
             }
@@ -767,10 +775,11 @@ public class Board {
         /**
          * Adds white knights to the board at the specified {@link Square}s.
          *
-         * @param squares The {@link Square}s to add white knights to.
-         * @return The updated {@link Builder}.
+         * @param squares The {@link Square}s to add white knights to. Cannot be null.
+         * @return The updated {@link Builder}. Will never be null.
          */
-        public Builder addWhiteKnights (Square... squares) {
+        @Nonnull
+        public Builder addWhiteKnights (@Nonnull Square... squares) {
             for (Square square : squares) {
                 this.whiteKnights |= square.bitmask();
             }
@@ -780,10 +789,11 @@ public class Board {
         /**
          * Adds white bishops to the board at the specified {@link Square}s.
          *
-         * @param squares The {@link Square}s to add white bishops to.
-         * @return The updated {@link Builder}.
+         * @param squares The {@link Square}s to add white bishops to. Cannot be null.
+         * @return The updated {@link Builder}. Will never be null.
          */
-        public Builder addWhiteBishops (Square... squares) {
+        @Nonnull
+        public Builder addWhiteBishops (@Nonnull Square... squares) {
             for (Square square : squares) {
                 this.whiteBishops |= square.bitmask();
             }
@@ -793,10 +803,11 @@ public class Board {
         /**
          * Adds white rooks to the board at the specified {@link Square}s.
          *
-         * @param squares The {@link Square}s to add white rooks to.
-         * @return The updated {@link Builder}.
+         * @param squares The {@link Square}s to add white rooks to. Cannot be null.
+         * @return The updated {@link Builder}. Will never be null.
          */
-        public Builder addWhiteRooks (Square... squares) {
+        @Nonnull
+        public Builder addWhiteRooks (@Nonnull Square... squares) {
             for (Square square : squares) {
                 this.whiteRooks |= square.bitmask();
             }
@@ -806,10 +817,11 @@ public class Board {
         /**
          * Adds white queens to the board at the specified {@link Square}s.
          *
-         * @param squares The {@link Square}s to add white queens to.
-         * @return The updated {@link Builder}.
+         * @param squares The {@link Square}s to add white queens to. Cannot be null.
+         * @return The updated {@link Builder}. Will never be null.
          */
-        public Builder addWhiteQueens (Square... squares) {
+        @Nonnull
+        public Builder addWhiteQueens (@Nonnull Square... squares) {
             for (Square square : squares) {
                 this.whiteQueens |= square.bitmask();
             }
@@ -819,10 +831,11 @@ public class Board {
         /**
          * Sets the white king at the specified {@link Square}.
          *
-         * @param square The {@link Square} to set the white king to.
-         * @return The updated {@link Builder}.
+         * @param square The {@link Square} to set the white king to. Cannot be null.
+         * @return The updated {@link Builder}. Will never be null.
          */
-        public Builder setWhiteKing (Square square) {
+        @Nonnull
+        public Builder setWhiteKing (@Nonnull Square square) {
             this.whiteKing = square.bitmask();
             return this;
         }
@@ -830,10 +843,11 @@ public class Board {
         /**
          * Adds black pawns to the board at the specified {@link Square}s.
          *
-         * @param squares The {@link Square}s to add black pawns to.
-         * @return The updated {@link Builder}.
+         * @param squares The {@link Square}s to add black pawns to. Cannot be null.
+         * @return The updated {@link Builder}. Will never be null.
          */
-        public Builder addBlackPawns (Square... squares) {
+        @Nonnull
+        public Builder addBlackPawns (@Nonnull Square... squares) {
             for (Square square : squares) {
                 this.blackPawns |= square.bitmask();
             }
@@ -843,10 +857,11 @@ public class Board {
         /**
          * Adds black knights to the board at the specified {@link Square}s.
          *
-         * @param squares The {@link Square}s to add black knights to.
-         * @return The updated {@link Builder}.
+         * @param squares The {@link Square}s to add black knights to. Cannot be null.
+         * @return The updated {@link Builder}. Will never be null.
          */
-        public Builder addBlackKnights (Square... squares) {
+        @Nonnull
+        public Builder addBlackKnights (@Nonnull Square... squares) {
             for (Square square : squares) {
                 this.blackKnights |= square.bitmask();
             }
@@ -856,10 +871,11 @@ public class Board {
         /**
          * Adds black bishops to the board at the specified {@link Square}s.
          *
-         * @param squares The {@link Square}s to add black bishops to.
-         * @return The updated {@link Builder}.
+         * @param squares The {@link Square}s to add black bishops to. Cannot be null.
+         * @return The updated {@link Builder}. Will never be null.
          */
-        public Builder addBlackBishops (Square... squares) {
+        @Nonnull
+        public Builder addBlackBishops (@Nonnull Square... squares) {
             for (Square square : squares) {
                 this.blackBishops |= square.bitmask();
             }
@@ -869,10 +885,11 @@ public class Board {
         /**
          * Adds black rooks to the board at the specified {@link Square}s.
          *
-         * @param squares The {@link Square}s to add black rooks to.
-         * @return The updated {@link Builder}.
+         * @param squares The {@link Square}s to add black rooks to. Cannot be null.
+         * @return The updated {@link Builder}. Will never be null.
          */
-        public Builder addBlackRooks (Square... squares) {
+        @Nonnull
+        public Builder addBlackRooks (@Nonnull Square... squares) {
             for (Square square : squares) {
                 this.blackRooks |= square.bitmask();
             }
@@ -882,10 +899,11 @@ public class Board {
         /**
          * Adds black queens to the board at the specified {@link Square}s.
          *
-         * @param squares The {@link Square}s to add black queens to.
-         * @return The updated {@link Builder}.
+         * @param squares The {@link Square}s to add black queens to. Cannot be null.
+         * @return The updated {@link Builder}. Will never be null.
          */
-        public Builder addBlackQueens (Square... squares) {
+        @Nonnull
+        public Builder addBlackQueens (@Nonnull Square... squares) {
             for (Square square : squares) {
                 this.blackQueens |= square.bitmask();
             }
@@ -895,10 +913,11 @@ public class Board {
         /**
          * Sets the black king at the specified {@link Square}.
          *
-         * @param square The {@link Square} to set the black king to.
-         * @return The updated {@link Builder}.
+         * @param square The {@link Square} to set the black king to. Cannot be null.
+         * @return The updated {@link Builder}. Will never be null.
          */
-        public Builder setBlackKing (Square square) {
+        @Nonnull
+        public Builder setBlackKing (@Nonnull Square square) {
             this.blackKing = square.bitmask();
             return this;
         }
@@ -906,8 +925,9 @@ public class Board {
         /**
          * Creates a new {@link Board} constructed from the state of this {@link Builder}.
          *
-         * @return A new {@link Board} constructed from the state of this {@link Builder}.
+         * @return A new {@link Board} constructed from the state of this {@link Builder}. Will never be null.
          */
+        @Nonnull
         public Board build () {
             return new Board(this);
         }

@@ -13,6 +13,7 @@ import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -91,7 +92,7 @@ public class MovementBitmasks {
         }
     }
 
-    private static long getWhitePawnMovementBitmaskForSquare (Square square) {
+    private static long getWhitePawnMovementBitmaskForSquare (@Nonnull Square square) {
         if (square.rank() == ONE || square.rank() == EIGHT) {
             return EMPTY_BITMASK;
         }
@@ -105,7 +106,7 @@ public class MovementBitmasks {
         return pawnMoveBitmask;
     }
 
-    private static long getWhitePawnCaptureBitmaskForSquare (Square square) {
+    private static long getWhitePawnCaptureBitmaskForSquare (@Nonnull Square square) {
         if (square.rank() == ONE || square.rank() == EIGHT) {
             return EMPTY_BITMASK;
         }
@@ -116,7 +117,7 @@ public class MovementBitmasks {
         return ((squareBitmask << 7) | (squareBitmask << 9)) & nextRankBitmask;
     }
 
-    private static long getBlackPawnMovementBitmaskForSquare (Square square) {
+    private static long getBlackPawnMovementBitmaskForSquare (@Nonnull Square square) {
         if (square.rank() == ONE || square.rank() == EIGHT) {
             return EMPTY_BITMASK;
         }
@@ -130,7 +131,7 @@ public class MovementBitmasks {
         return pawnMoveBitmask;
     }
 
-    private static long getBlackPawnCaptureBitmaskForSquare (Square square) {
+    private static long getBlackPawnCaptureBitmaskForSquare (@Nonnull Square square) {
         if (square.rank() == ONE || square.rank() == EIGHT) {
             return EMPTY_BITMASK;
         }
@@ -142,7 +143,7 @@ public class MovementBitmasks {
         return ((squareBitmask >>> 7) | (squareBitmask >>> 9)) & nextRankBitmask;
     }
 
-    private static long getKnightMovementBitmaskForSquare (Square square) {
+    private static long getKnightMovementBitmaskForSquare (@Nonnull Square square) {
         long squareBitmask = square.bitmask();
         long knightBitmask =
                 (squareBitmask << 6) | (squareBitmask << 10) | (squareBitmask << 15) | (squareBitmask << 17) |
@@ -175,7 +176,7 @@ public class MovementBitmasks {
         return knightBitmask;
     }
 
-    private static long getKingMovementBitmaskForSquare (Square square) {
+    private static long getKingMovementBitmaskForSquare (@Nonnull Square square) {
         long rankBitmask = square.rank()
                 .bitmask();
         long fileBitmask = square.file()
@@ -194,7 +195,7 @@ public class MovementBitmasks {
         return kingBitmask;
     }
 
-    private static long getBishopBlockerBitmaskForSquare (Square square) {
+    private static long getBishopBlockerBitmaskForSquare (@Nonnull Square square) {
         long squareBitmask = square.bitmask();
         long bishopBitmask = EMPTY_BITMASK;
         for (int i = 1; i <= 6; i++) {
@@ -218,7 +219,7 @@ public class MovementBitmasks {
         return bishopBitmask;
     }
 
-    private static long getRookBlockerBitmaskForSquare (Square square) {
+    private static long getRookBlockerBitmaskForSquare (@Nonnull Square square) {
         long rookBitmask = (square.rank()
                 .bitmask() | square.file()
                 .bitmask()) ^ square.bitmask();
@@ -236,6 +237,7 @@ public class MovementBitmasks {
         return rookBitmask;
     }
 
+    @Nonnull
     private static LongSet getBlockerBitmaskPermutationsByBlockerBitmask (long blockerBitmask) {
         // Total number of possible blocker bitmasks to generate = 2^(number of high bits) in blocker bitmask.
         int highBitsInBlockerBitmask = BitboardUtils.countHighBitsInBitmask(blockerBitmask);

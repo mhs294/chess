@@ -3,6 +3,7 @@ package com.maximilian.chess.util;
 import com.maximilian.chess.enums.Square;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.annotation.Nonnull;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -38,6 +39,7 @@ public class BitboardUtils {
      * @return The {@link Set} of {@link Square}s represented by the high bits in the specified bitmask. Will never
      * be null, may be empty.
      */
+    @Nonnull
     public static Set<Square> getSquaresFromBitmask (long movementBitmask) {
         Set<Square> targetSquares = new HashSet<>(countHighBitsInBitmask(movementBitmask));
         for (Square square : Square.values()) {
@@ -58,6 +60,7 @@ public class BitboardUtils {
      * @param bitboard The bitboard to convert to a human-readable {@link String}.
      * @return A human-readable string representation of the specified bitboard. Will never be null, empty, or blank.
      */
+    @Nonnull
     public static String bitboardToBoardString (long bitboard) {
         String fileMarkers = "  A B C D E F G H ";
         String horizontalDelimiter = "_________________";

@@ -5,6 +5,7 @@ import com.google.common.collect.SetMultimap;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 
+import javax.annotation.Nonnull;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
@@ -137,7 +138,7 @@ public enum Diagonal {
      *
      * @param squares The {@link Set} of {@link Square}s comprising the {@link Diagonal}.
      */
-    Diagonal (Set<Square> squares) {
+    Diagonal (@Nonnull Set<Square> squares) {
         long bitmask = EMPTY_BITMASK;
         for (Square square : squares) {
             bitmask |= square.bitmask();
@@ -148,11 +149,12 @@ public enum Diagonal {
     /**
      * Gets the {@link Set} of {@link Diagonal}s corresponding to the specified {@link Square}.
      *
-     * @param square The {@link Square} to get the {@link Set} of {@link Diagonal}s for.
-     * @return The {@link Set} of {@link Diagonal}s corresponding to the specified {@link Square}. May be null (if
-     * the specified {@link Square} is null). If non-null, will always have a size of 2.
+     * @param square The {@link Square} to get the {@link Set} of {@link Diagonal}s for. Cannot be null.
+     * @return The {@link Set} of {@link Diagonal}s corresponding to the specified {@link Square}. Will always have a
+     * size of 2.
      */
-    public static Set<Diagonal> fromSquare (Square square) {
+    @Nonnull
+    public static Set<Diagonal> fromSquare (@Nonnull Square square) {
         return SQUARE_TO_DIAGONALS_MAP.get(square);
     }
 }

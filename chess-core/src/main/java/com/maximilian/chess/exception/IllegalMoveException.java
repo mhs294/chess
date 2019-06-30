@@ -2,6 +2,8 @@ package com.maximilian.chess.exception;
 
 import com.maximilian.chess.objects.Move;
 
+import javax.annotation.Nonnull;
+
 /**
  * Represents a {@link RuntimeException} resulting from an illegal move being made.
  *
@@ -11,14 +13,14 @@ public class IllegalMoveException extends RuntimeException {
     /**
      * {@see {@link RuntimeException#RuntimeException(String)}}
      */
-    public IllegalMoveException (String message) {
+    public IllegalMoveException (@Nonnull String message) {
         super(message);
     }
 
     /**
      * {@see {@link RuntimeException#RuntimeException(String)}}
      */
-    public IllegalMoveException (Move move, String message) {
+    public IllegalMoveException (@Nonnull Move move, @Nonnull String message) {
         super(message + "\nMove:\n" + move.toString());
     }
 }

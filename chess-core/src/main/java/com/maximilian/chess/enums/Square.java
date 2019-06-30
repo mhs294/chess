@@ -1,28 +1,15 @@
 package com.maximilian.chess.enums;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.Getter;
 import lombok.experimental.Accessors;
-import org.apache.commons.lang3.tuple.Pair;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.maximilian.chess.enums.File.A;
-import static com.maximilian.chess.enums.File.B;
-import static com.maximilian.chess.enums.File.C;
-import static com.maximilian.chess.enums.File.D;
-import static com.maximilian.chess.enums.File.E;
-import static com.maximilian.chess.enums.File.F;
-import static com.maximilian.chess.enums.File.G;
-import static com.maximilian.chess.enums.File.H;
-import static com.maximilian.chess.enums.Rank.EIGHT;
-import static com.maximilian.chess.enums.Rank.FIVE;
-import static com.maximilian.chess.enums.Rank.FOUR;
-import static com.maximilian.chess.enums.Rank.ONE;
-import static com.maximilian.chess.enums.Rank.SEVEN;
-import static com.maximilian.chess.enums.Rank.SIX;
-import static com.maximilian.chess.enums.Rank.THREE;
-import static com.maximilian.chess.enums.Rank.TWO;
 import static com.maximilian.chess.enums.Square.Type.DARK;
 import static com.maximilian.chess.enums.Square.Type.LIGHT;
 
@@ -33,93 +20,91 @@ import static com.maximilian.chess.enums.Square.Type.LIGHT;
  */
 @Accessors(fluent = true)
 public enum Square {
-    A1(A, ONE, DARK),
-    A2(A, TWO, LIGHT),
-    A3(A, THREE, DARK),
-    A4(A, FOUR, LIGHT),
-    A5(A, FIVE, DARK),
-    A6(A, SIX, LIGHT),
-    A7(A, SEVEN, DARK),
-    A8(A, EIGHT, LIGHT),
-    B1(B, ONE, LIGHT),
-    B2(B, TWO, DARK),
-    B3(B, THREE, LIGHT),
-    B4(B, FOUR, DARK),
-    B5(B, FIVE, LIGHT),
-    B6(B, SIX, DARK),
-    B7(B, SEVEN, LIGHT),
-    B8(B, EIGHT, DARK),
-    C1(C, ONE, DARK),
-    C2(C, TWO, LIGHT),
-    C3(C, THREE, DARK),
-    C4(C, FOUR, LIGHT),
-    C5(C, FIVE, DARK),
-    C6(C, SIX, LIGHT),
-    C7(C, SEVEN, DARK),
-    C8(C, EIGHT, LIGHT),
-    D1(D, ONE, LIGHT),
-    D2(D, TWO, DARK),
-    D3(D, THREE, LIGHT),
-    D4(D, FOUR, DARK),
-    D5(D, FIVE, LIGHT),
-    D6(D, SIX, DARK),
-    D7(D, SEVEN, LIGHT),
-    D8(D, EIGHT, DARK),
-    E1(E, ONE, DARK),
-    E2(E, TWO, LIGHT),
-    E3(E, THREE, DARK),
-    E4(E, FOUR, LIGHT),
-    E5(E, FIVE, DARK),
-    E6(E, SIX, LIGHT),
-    E7(E, SEVEN, DARK),
-    E8(E, EIGHT, LIGHT),
-    F1(F, ONE, LIGHT),
-    F2(F, TWO, DARK),
-    F3(F, THREE, LIGHT),
-    F4(F, FOUR, DARK),
-    F5(F, FIVE, LIGHT),
-    F6(F, SIX, DARK),
-    F7(F, SEVEN, LIGHT),
-    F8(F, EIGHT, DARK),
-    G1(G, ONE, DARK),
-    G2(G, TWO, LIGHT),
-    G3(G, THREE, DARK),
-    G4(G, FOUR, LIGHT),
-    G5(G, FIVE, DARK),
-    G6(G, SIX, LIGHT),
-    G7(G, SEVEN, DARK),
-    G8(G, EIGHT, LIGHT),
-    H1(H, ONE, LIGHT),
-    H2(H, TWO, DARK),
-    H3(H, THREE, LIGHT),
-    H4(H, FOUR, DARK),
-    H5(H, FIVE, LIGHT),
-    H6(H, SIX, DARK),
-    H7(H, SEVEN, LIGHT),
-    H8(H, EIGHT, DARK);
+    A1(0, DARK),
+    A2(1, LIGHT),
+    A3(2, DARK),
+    A4(3, LIGHT),
+    A5(4, DARK),
+    A6(5, LIGHT),
+    A7(6, DARK),
+    A8(7, LIGHT),
+    B1(8, LIGHT),
+    B2(9, DARK),
+    B3(10, LIGHT),
+    B4(11, DARK),
+    B5(12, LIGHT),
+    B6(13, DARK),
+    B7(14, LIGHT),
+    B8(15, DARK),
+    C1(16, DARK),
+    C2(17, LIGHT),
+    C3(18, DARK),
+    C4(19, LIGHT),
+    C5(20, DARK),
+    C6(21, LIGHT),
+    C7(22, DARK),
+    C8(23, LIGHT),
+    D1(24, LIGHT),
+    D2(25, DARK),
+    D3(26, LIGHT),
+    D4(27, DARK),
+    D5(28, LIGHT),
+    D6(29, DARK),
+    D7(30, LIGHT),
+    D8(31, DARK),
+    E1(32, DARK),
+    E2(33, LIGHT),
+    E3(34, DARK),
+    E4(35, LIGHT),
+    E5(36, DARK),
+    E6(37, LIGHT),
+    E7(38, DARK),
+    E8(39, LIGHT),
+    F1(40, LIGHT),
+    F2(41, DARK),
+    F3(42, LIGHT),
+    F4(43, DARK),
+    F5(44, LIGHT),
+    F6(45, DARK),
+    F7(46, LIGHT),
+    F8(47, DARK),
+    G1(48, DARK),
+    G2(49, LIGHT),
+    G3(50, DARK),
+    G4(51, LIGHT),
+    G5(52, DARK),
+    G6(53, LIGHT),
+    G7(54, DARK),
+    G8(55, LIGHT),
+    H1(56, LIGHT),
+    H2(57, DARK),
+    H3(58, LIGHT),
+    H4(59, DARK),
+    H5(60, LIGHT),
+    H6(61, DARK),
+    H7(62, LIGHT),
+    H8(63, DARK);
 
-    private static final Map<Pair<File, Rank>, Square> FILE_AND_RANK_TO_SQUARE_MAP;
+    private static final Int2ObjectMap<Square> INDEX_TO_SQUARE_MAP;
     private static final Map<Long, Square> BITMASK_TO_SQUARE_MAP;
 
     static {
-        FILE_AND_RANK_TO_SQUARE_MAP = new HashMap<>(Square.values().length);
-        for (Square square : Square.values()) {
-            FILE_AND_RANK_TO_SQUARE_MAP.put(Pair.of(square.file, square.rank), square);
+        Square[] squares = Square.values();
+        INDEX_TO_SQUARE_MAP = new Int2ObjectOpenHashMap<>(squares.length, 1.0F);
+        for (Square square : squares) {
+            INDEX_TO_SQUARE_MAP.put(square.index, square);
         }
-        BITMASK_TO_SQUARE_MAP = new HashMap<>(Square.values().length);
-        for (Square square : Square.values()) {
-            BITMASK_TO_SQUARE_MAP.put(square.bitmask(), square);
+
+        BITMASK_TO_SQUARE_MAP = new HashMap<>(squares.length, 1.0F);
+        for (Square square : squares) {
+            BITMASK_TO_SQUARE_MAP.put(square.bitmask, square);
         }
     }
 
     /**
-     * The {@link File} of this {@link Square}.
+     * The index of this {@link Square} in a 64-bitmask.
      */
-    @Getter private final File file;
-    /**
-     * The {@link Rank} of this {@link Square}.
-     */
-    @Getter private final Rank rank;
+    @Getter private final int index;
     /**
      * The {@link Type} of this {@link Square}.
      */
@@ -132,26 +117,45 @@ public enum Square {
     /**
      * (Primary constructor)
      *
-     * @param file The {@link File} of this {@link Square}.
-     * @param rank The {@link Rank} of this {@link Square}.
-     * @param type The {@link Type} of this {@link Square}.
+     * @param index The index of this {@link Square} in a 64-bit bitmask.
+     * @param type  The {@link Type} of this {@link Square}.
      */
-    Square (File file, Rank rank, Type type) {
-        this.file = file;
-        this.rank = rank;
+    Square (int index, @Nonnull Type type) {
+        this.index = index;
         this.type = type;
-        this.bitmask = rank.bitmask() & file.bitmask();
+        this.bitmask = 1L << index;
+    }
+
+    /**
+     * Gets the {@link File} for this {@link Square}.
+     *
+     * @return The {@link File} for this {@link Square}. Will never be null.
+     */
+    @Nonnull
+    public File file () {
+        return File.getFromSquare(this);
+    }
+
+    /**
+     * Gets the {@link Rank} for this {@link Square}.
+     *
+     * @return The {@link Rank} for this {@link Square}. Will never be null.
+     */
+    @Nonnull
+    public Rank rank () {
+        return Rank.getFromSquare(this);
     }
 
     /**
      * Gets the {@link Square} corresponding to the specified {@link File} and {@link Rank}.
      *
-     * @param file The {@link File} of the {@link Square}.
-     * @param rank The {@link File} of the {@link Square}.
-     * @return The {@link Square} corresponding to the specified {@link File} and {@link Rank}. Will never be null.
+     * @param file The {@link File} of the {@link Square}. Cannot be null.
+     * @param rank The {@link File} of the {@link Square}. Cannot be null.
+     * @return The {@link Square} corresponding to the specified {@link File} and {@link Rank}.
      */
-    public static Square fromFileAndRank (File file, Rank rank) {
-        return FILE_AND_RANK_TO_SQUARE_MAP.get(Pair.of(file, rank));
+    @Nonnull
+    public static Square fromFileAndRank (@Nonnull File file, @Nonnull Rank rank) {
+        return BITMASK_TO_SQUARE_MAP.get(file.bitmask() & rank.bitmask());
     }
 
     /**
@@ -161,18 +165,21 @@ public enum Square {
      * @return The {@link Square} corresponding to the specified bitmask value (or {@code null} if no corresponding
      * {@link Square} exists).
      */
+    @Nullable
     public static Square fromBitmask (long bitmask) {
         return BITMASK_TO_SQUARE_MAP.get(bitmask);
     }
 
     /**
-     * Gets the {@link Square} corresponding to the specified ordinal value.
+     * Gets the {@link Square} corresponding to the specified index value.
      *
-     * @param ordinal The ordinal corresponding to the desired {@link Square}. Must be in range [0, 63].
-     * @return The {@link Square} corresponding to the specified ordinal value.
+     * @param index The index corresponding to the desired {@link Square}. Must be in range [0, 63].
+     * @return The {@link Square} corresponding to the specified index value. May be null (if the index value is
+     * invalid).
      */
-    public static Square fromOrdinal (int ordinal) {
-        return Square.values()[ordinal];
+    @Nullable
+    public static Square fromIndex (int index) {
+        return INDEX_TO_SQUARE_MAP.get(index);
     }
 
     /**

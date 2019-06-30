@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -72,9 +74,9 @@ public class GameState {
     /**
      * Primary constructor (declared private to prevent direct instantiation).
      *
-     * @param builder The {@link Builder} whose state will be used to construct the {@link GameState}.
+     * @param builder The {@link Builder} whose state will be used to construct the {@link GameState}. Cannot be null.
      */
-    private GameState (Builder builder) {
+    private GameState (@Nonnull Builder builder) {
         this.boardHash = builder.boardHash;
         this.colorToMove = builder.colorToMove;
         this.castlingRights = builder.castlingRights;
@@ -88,9 +90,9 @@ public class GameState {
      * Constructs a new {@link GameState} as a deep copy of an existing game state (declared private to prevent
      * direct instantiation).
      *
-     * @param gameState The {@link GameState} to deep copy.
+     * @param gameState The {@link GameState} to deep copy. Cannot be null.
      */
-    private GameState (GameState gameState) {
+    private GameState (@Nonnull GameState gameState) {
         this.boardHash = gameState.boardHash;
         this.colorToMove = gameState.colorToMove;
         this.castlingRights = EnumSet.copyOf(gameState.castlingRights);
@@ -109,6 +111,7 @@ public class GameState {
      *
      * @return A new {@link Builder} that can be used to construct a {@link GameState}. Will never be null.
      */
+    @Nonnull
     public static Builder builder () {
         return new Builder();
     }
@@ -118,6 +121,7 @@ public class GameState {
      *
      * @return A new {@link GameState} configured for the starting state of a chess game. Will never be null.
      */
+    @Nonnull
     public static GameState createStartingGameState () {
         return GameState.builder()
                 .withBoard(Board.createStartingBoard())
@@ -133,6 +137,7 @@ public class GameState {
      *
      * @return A new {@link Board} that is a deep copy of this {@link GameState}. Will never be null.
      */
+    @Nonnull
     public GameState deepCopy () {
         return new GameState(this);
     }
@@ -200,6 +205,7 @@ public class GameState {
      * @return A {@link List} of all of the {@link GameState}s prior to the current {@link GameState}. Will never be
      * null, may be empty.
      */
+    @Nonnull
     private List<GameState> allPreviousGameStates () {
         List<GameState> previousGameStates = new LinkedList<>();
         GameState previousGameState = this.previousGameState;
@@ -219,7 +225,8 @@ public class GameState {
      * @return The new {@link GameState} resulting from performing the specified {@link Move}. Will never be null.
      * @throws IllegalMoveException If the specified {@link Move} cannot be performed on this {@link GameState}.
      */
-    public GameState doMove (Board board, Move move) {
+    @Nonnull
+    public GameState doMove (@Nonnull Board board, @Nonnull Move move) {
         // Validate the board.
         if (board == null) {
             throw new IllegalArgumentException("board cannot be null.");
@@ -339,7 +346,8 @@ public class GameState {
      * @return The new {@link GameState} resulting from undoing the specified {@link Move}. Will never be null.
      * @throws IllegalMoveException If the specified {@link Move} cannot be undone on this {@link GameState}.
      */
-    public GameState undoMove (Board board, Move move) {
+    @Nonnull
+    public GameState undoMove (@Nonnull Board board, @Nonnull Move move) {
         // Validate the board.
         if (board == null) {
             throw new IllegalArgumentException("board cannot be null.");
@@ -375,9 +383,10 @@ public class GameState {
          *
          * @param board The {@link Board} whose hash value will be used for the game state. Cannot be null (if {@code
          *              null} is used, the state of the {@link Builder} will remain unchanged).
-         * @return The updated {@link Builder}.
+         * @return The updated {@link Builder}. Will never be null.
          */
-        public Builder withBoard (Board board) {
+        @Nonnull
+        public Builder withBoard (@Nullable Board board) {
             if (board != null) {
                 this.boardHash = board.hashCode();
             }
@@ -389,9 +398,10 @@ public class GameState {
          *
          * @param colorToMove The {@link Color} to move for the game state. Cannot be null (if {@code null} is used, the
          *                    state of the {@link Builder} will remain unchanged).
-         * @return The updated {@link Builder}.
+         * @return The updated {@link Builder}. Will never be null.
          */
-        public Builder withColorToMove (Color colorToMove) {
+        @Nonnull
+        public Builder withColorToMove (@Nullable Color colorToMove) {
             if (colorToMove != null) {
                 this.colorToMove = colorToMove;
             }
@@ -404,9 +414,10 @@ public class GameState {
          *
          * @param castlingRights The {@link EnumSet} of {@link CastlingRight}s to use for the game state. Cannot be
          *                       null (if {@code null} is used, the state of the {@link Builder} will remain unchanged).
-         * @return The updated {@link Builder}.
+         * @return The updated {@link Builder}. Will never be null.
          */
-        public Builder withCastlingRights (EnumSet<CastlingRight> castlingRights) {
+        @Nonnull
+        public Builder withCastlingRights (@Nullable EnumSet<CastlingRight> castlingRights) {
             if (castlingRights != null) {
                 this.castlingRights = castlingRights;
             }
@@ -420,9 +431,10 @@ public class GameState {
          * @param enPassantSquare The {@link Square} that indicates where a legal en passant capture may be performed
          *                        for the current game state. May be null (to indicate that no legal en passant capture
          *                        is available).
-         * @return The updated {@link Builder}.
+         * @return The updated {@link Builder}. Will never be null.
          */
-        public Builder withEnPassantSquare (Square enPassantSquare) {
+        @Nonnull
+        public Builder withEnPassantSquare (@Nullable Square enPassantSquare) {
             this.enPassantSquare = enPassantSquare;
             return this;
         }
@@ -433,8 +445,9 @@ public class GameState {
          *
          * @param halfMoveClock The half-move clock value for the game state. Must be greater than or equal to 0 (if
          *                      a negative number is used, the state of the {@link Builder} will remain unchanged).
-         * @return The updated {@link Builder}.
+         * @return The updated {@link Builder}. Will never be null.
          */
+        @Nonnull
         public Builder withHalfMoveClock (int halfMoveClock) {
             if (halfMoveClock >= 0) {
                 this.halfMoveClock = halfMoveClock;
@@ -448,8 +461,9 @@ public class GameState {
          *
          * @param fullMoveNumber The full-move number for the game state.. Must be greater than 0 (if a non-positive
          *                       number is used, the state of the {@link Builder} will remain unchanged).
-         * @return The updated {@link Builder}.
+         * @return The updated {@link Builder}. Will never be null.
          */
+        @Nonnull
         public Builder withFullMoveNumber (int fullMoveNumber) {
             if (fullMoveNumber > 0) {
                 this.fullMoveNumber = fullMoveNumber;
@@ -463,9 +477,10 @@ public class GameState {
          * @param previousGameState The {@link GameState} representing the state of the game immediately prior to
          *                          this current game state. Cannot be null (if {@code null}
          *                          is used, the state of the {@link Builder} will remain unchanged).
-         * @return The updated {@link Builder}.
+         * @return The updated {@link Builder}. Will never be null.
          */
-        public Builder withPreviousGameState (GameState previousGameState) {
+        @Nonnull
+        public Builder withPreviousGameState (@Nullable GameState previousGameState) {
             if (previousGameState != null) {
                 this.previousGameState = previousGameState;
             }
@@ -475,8 +490,9 @@ public class GameState {
         /**
          * Creates a new {@link GameState} constructed from the state of this {@link Builder}.
          *
-         * @return A new {@link GameState} constructed from the state of this {@link Builder}.
+         * @return A new {@link GameState} constructed from the state of this {@link Builder}. Will never be null.
          */
+        @Nonnull
         public GameState build () {
             return new GameState(this);
         }

@@ -9,6 +9,7 @@ public final class EvaluationConstants {
     public static final int CHECKMATE = 1000000;
 
     // TODO - add evaluation bonus/penalty constants
+    // TODO - relocate this to the search/engine module?
 
     // This class should never be instantiated.
     private EvaluationConstants () {
