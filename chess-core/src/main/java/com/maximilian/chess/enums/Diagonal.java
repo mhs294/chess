@@ -117,10 +117,10 @@ public enum Diagonal {
         for (Square square : Square.values()) {
             Set<Diagonal> diagonals = new HashSet<>(2);
             for (Diagonal diagonal : Diagonal.values()) {
-                if ((diagonal.bitmask() & square.bitmask()) != EMPTY_BITMASK) {
+                if ((diagonal.bitmask & square.bitmask()) != EMPTY_BITMASK) {
                     diagonals.add(diagonal);
                     if (diagonals.size() == 2) {
-                        SQUARE_TO_DIAGONALS_MAP.put(square, diagonal);
+                        SQUARE_TO_DIAGONALS_MAP.putAll(square, diagonals);
                         break;
                     }
                 }

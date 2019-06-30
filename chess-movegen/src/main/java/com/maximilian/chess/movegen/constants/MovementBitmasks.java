@@ -1,5 +1,6 @@
 package com.maximilian.chess.movegen.constants;
 
+import com.maximilian.chess.enums.Diagonal;
 import com.maximilian.chess.enums.File;
 import com.maximilian.chess.enums.Rank;
 import com.maximilian.chess.enums.Square;
@@ -16,6 +17,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static com.maximilian.chess.enums.File.A;
 import static com.maximilian.chess.enums.File.B;
@@ -267,15 +269,121 @@ public class MovementBitmasks {
         return blockerOccupancyBitmasks;
     }
 
-    private static long getBishopMovementForSquareAndBlockerBitmask (Square square, long blockerBitmask) {
-        // TODO - calculate bishop moves by blocker bitmask
-        return 0L;
+    private static long getBishopMovementForSquareAndBlockerBitmask (@Nonnull Square square, long blockerBitmask) {
+        Set<Diagonal> diagonals = Diagonal.fromSquare(square);
+        long diagonalsBitmask = EMPTY_BITMASK;
+        for (Diagonal diagonal : diagonals) {
+            diagonalsBitmask |= diagonal.bitmask();
+        }
+        long bishopMovesBitmask = diagonalsBitmask ^= square.bitmask();
+
+        // Modify northwest bishop movements to account for blockers.
+        boolean blockerFound = false;
+        for (long bitmask = square.bitmask() << 7; (bitmask & diagonalsBitmask) != EMPTY_BITMASK; bitmask <<= 7) {
+            if (!blockerFound) {
+                if ((blockerBitmask & bitmask) != EMPTY_BITMASK) {
+                    blockerFound = true;
+                }
+            } else {
+                bishopMovesBitmask ^= bitmask;
+            }
+        }
+
+        // Modify northeast bishop movements to account for blockers.
+        blockerFound = false;
+        for (long bitmask = square.bitmask() << 9; (bitmask & diagonalsBitmask) != EMPTY_BITMASK; bitmask <<= 9) {
+            if (!blockerFound) {
+                if ((blockerBitmask & bitmask) != EMPTY_BITMASK) {
+                    blockerFound = true;
+                }
+            } else {
+                bishopMovesBitmask ^= bitmask;
+            }
+        }
+
+        // Modify southwest bishop movements to account for blockers.
+        blockerFound = false;
+        for (long bitmask = square.bitmask() >>> 7; (bitmask & diagonalsBitmask) != EMPTY_BITMASK; bitmask >>>= 7) {
+            if (!blockerFound) {
+                if ((blockerBitmask & bitmask) != EMPTY_BITMASK) {
+                    blockerFound = true;
+                }
+            } else {
+                bishopMovesBitmask ^= bitmask;
+            }
+        }
+
+        // Modify southeast bishop movements to account for blockers.
+        blockerFound = false;
+        for (long bitmask = square.bitmask() >>> 9; (bitmask & diagonalsBitmask) != EMPTY_BITMASK; bitmask >>>= 9) {
+            if (!blockerFound) {
+                if ((blockerBitmask & bitmask) != EMPTY_BITMASK) {
+                    blockerFound = true;
+                }
+            } else {
+                bishopMovesBitmask ^= bitmask;
+            }
+        }
+
+        return bishopMovesBitmask;
     }
 
-    private static long getRookMovementForSquareAndBlockerBitmask (Square square, long blockerBitmask) {
-        long rookMoveBitmask = square.rank().bitmask() ^ square.file().bitmask();
+    private static long getRookMovementForSquareAndBlockerBitmask (@Nonnull Square square, long blockerBitmask) {
+        long rankBitmask = square.rank()
+                .bitmask();
+        long fileBitmask = square.file()
+                .bitmask();
+        long rookMovesBitmask = rankBitmask ^ fileBitmask;
 
-        return 0L;
+        // Modify west rook movements to account for blockers.
+        boolean blockerFound = false;
+        for (long bitmask = square.bitmask() << 1; (bitmask & rankBitmask) != EMPTY_BITMASK; bitmask <<= 1) {
+            if (!blockerFound) {
+                if ((blockerBitmask & bitmask) != EMPTY_BITMASK) {
+                    blockerFound = true;
+                }
+            } else {
+                rookMovesBitmask ^= bitmask;
+            }
+        }
+
+        // Modify east rook movements to account for blockers.
+        blockerFound = false;
+        for (long currentBit = square.bitmask() >> 1; (currentBit & rankBitmask) != EMPTY_BITMASK; currentBit >>>= 1) {
+            if (!blockerFound) {
+                if ((blockerBitmask & currentBit) != EMPTY_BITMASK) {
+                    blockerFound = true;
+                }
+            } else {
+                rookMovesBitmask ^= currentBit;
+            }
+        }
+
+        // Modify north rook movements to account for blockers.
+        blockerFound = false;
+        for (long currentBit = square.bitmask() << 8; (currentBit & fileBitmask) != EMPTY_BITMASK; currentBit <<= 8) {
+            if (!blockerFound) {
+                if ((blockerBitmask & currentBit) != EMPTY_BITMASK) {
+                    blockerFound = true;
+                }
+            } else {
+                rookMovesBitmask ^= currentBit;
+            }
+        }
+
+        // Modify south rook movements to account for blockers.
+        blockerFound = false;
+        for (long currentBit = square.bitmask() >>> 8; (currentBit & fileBitmask) != EMPTY_BITMASK; currentBit >>>= 8) {
+            if (!blockerFound) {
+                if ((blockerBitmask & currentBit) != EMPTY_BITMASK) {
+                    blockerFound = true;
+                }
+            } else {
+                rookMovesBitmask ^= currentBit;
+            }
+        }
+
+        return rookMovesBitmask;
     }
 
     // This class should never be instantiated.

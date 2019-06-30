@@ -1,6 +1,7 @@
 package com.maximilian.chess.movegen.constants;
 
 import com.google.common.collect.Sets;
+import com.maximilian.chess.util.BitboardUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -70,6 +71,7 @@ import static com.maximilian.chess.enums.Square.H6;
 import static com.maximilian.chess.enums.Square.H7;
 import static com.maximilian.chess.enums.Square.H8;
 import static com.maximilian.chess.movegen.constants.MovementBitmasks.BISHOP_BLOCKER_MASKS;
+import static com.maximilian.chess.movegen.constants.MovementBitmasks.BISHOP_MOVES;
 import static com.maximilian.chess.movegen.constants.MovementBitmasks.BLACK_PAWN_ADVANCES;
 import static com.maximilian.chess.movegen.constants.MovementBitmasks.BLACK_PAWN_CAPTURES;
 import static com.maximilian.chess.movegen.constants.MovementBitmasks.KING_MOVES;
@@ -77,6 +79,7 @@ import static com.maximilian.chess.movegen.constants.MovementBitmasks.KNIGHT_MOV
 import static com.maximilian.chess.movegen.constants.MovementBitmasks.ROOK_BLOCKER_MASKS;
 import static com.maximilian.chess.movegen.constants.MovementBitmasks.WHITE_PAWN_ADVANCES;
 import static com.maximilian.chess.movegen.constants.MovementBitmasks.WHITE_PAWN_CAPTURES;
+import static com.maximilian.chess.objects.Board.EMPTY_BITMASK;
 import static com.maximilian.chess.util.BitboardUtils.getSquaresFromBitmask;
 import static org.junit.Assert.assertEquals;
 
@@ -197,5 +200,11 @@ public class MovementBitmasksTest {
                 getSquaresFromBitmask(ROOK_BLOCKER_MASKS.getLong(D4)));
         assertEquals(Sets.newHashSet(B5, C5, D5, E2, E3, E4, E6, E7, F5, G5),
                 getSquaresFromBitmask(ROOK_BLOCKER_MASKS.getLong(E5)));
+    }
+
+    @Test
+    public void test () {
+        long bishopE4Moves = BISHOP_MOVES.get(E4).get(EMPTY_BITMASK);
+        System.out.println("Bishop moves on E4, empty board:\n" + BitboardUtils.bitboardToBoardString(bishopE4Moves));
     }
 }

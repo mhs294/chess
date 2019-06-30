@@ -63,10 +63,11 @@ public class BitboardUtils {
     public static String bitboardToBoardString (long bitboard) {
         String fileMarkers = "  a b c d e f g h ";
         StringBuilder bitboardStringBuilder = new StringBuilder(fileMarkers + "\n");
-        for (int i = 7; i >= 0; i--) {
-            bitboardStringBuilder.append(i + 1)
+        for (int i = 1; i <= 8; i++) {
+            int rowLabel = (8 - i) + 1;
+            bitboardStringBuilder.append(rowLabel)
                     .append(" ");
-            long bitboardRow = bitboard >>> 64 - (8 * i);
+            long bitboardRow = bitboard >>> (64 - (8 * i));
             StringBuilder rowStringBuilder = new StringBuilder();
             for (int k = 0; k < 8; k++) {
                 long currentBit = (bitboardRow >>> k) & 1L;
@@ -81,7 +82,7 @@ public class BitboardUtils {
             }
             bitboardStringBuilder.append(rowStringBuilder.toString())
                     .append(" ")
-                    .append(i + 1)
+                    .append(rowLabel)
                     .append("\n");
         }
         return bitboardStringBuilder.append(fileMarkers)
