@@ -39,7 +39,6 @@ import static com.maximilian.chess.objects.Board.LIGHT_SQUARES_BITMASK;
  * @author Maximilian Schroeder
  */
 public class MovementBitmasks {
-    // TODO - javadoc this class
     /*
      * There is no data structure for queen moves, since those moves are calculated as a bitwise-or union of bishop
      * moves and rook moves.
@@ -95,6 +94,12 @@ public class MovementBitmasks {
         }
     }
 
+    /**
+     * Gets the bitmask representing the advancing moves a white pawn can make from the specified {@link Square}.
+     *
+     * @param square The {@link Square} where the white pawn is located. Cannot be null.
+     * @return The bitmask representing the advancing moves a white pawn can make from the specified {@link Square}.
+     */
     private static long getWhitePawnMovementBitmaskForSquare (@Nonnull Square square) {
         if (square.rank() == ONE || square.rank() == EIGHT) {
             return EMPTY_BITMASK;
@@ -109,6 +114,12 @@ public class MovementBitmasks {
         return pawnMoveBitmask;
     }
 
+    /**
+     * Gets the bitmask representing the capturing moves a white pawn can make from the specified {@link Square}.
+     *
+     * @param square The {@link Square} where the white pawn is located. Cannot be null.
+     * @return The bitmask representing the capturing moves a white pawn can make from the specified {@link Square}.
+     */
     private static long getWhitePawnCaptureBitmaskForSquare (@Nonnull Square square) {
         if (square.rank() == ONE || square.rank() == EIGHT) {
             return EMPTY_BITMASK;
@@ -120,6 +131,12 @@ public class MovementBitmasks {
         return ((squareBitmask << 7) | (squareBitmask << 9)) & nextRankBitmask;
     }
 
+    /**
+     * Gets the bitmask representing the advancing moves a black pawn can make from the specified {@link Square}.
+     *
+     * @param square The {@link Square} where the black pawn is located. Cannot be null.
+     * @return The bitmask representing the advancing moves a black pawn can make from the specified {@link Square}.
+     */
     private static long getBlackPawnMovementBitmaskForSquare (@Nonnull Square square) {
         if (square.rank() == ONE || square.rank() == EIGHT) {
             return EMPTY_BITMASK;
@@ -134,6 +151,12 @@ public class MovementBitmasks {
         return pawnMoveBitmask;
     }
 
+    /**
+     * Gets the bitmask representing the capturing moves a black pawn can make from the specified {@link Square}.
+     *
+     * @param square The {@link Square} where the black pawn is located. Cannot be null.
+     * @return The bitmask representing the capturing moves a black pawn can make from the specified {@link Square}.
+     */
     private static long getBlackPawnCaptureBitmaskForSquare (@Nonnull Square square) {
         if (square.rank() == ONE || square.rank() == EIGHT) {
             return EMPTY_BITMASK;
@@ -146,6 +169,12 @@ public class MovementBitmasks {
         return ((squareBitmask >>> 7) | (squareBitmask >>> 9)) & nextRankBitmask;
     }
 
+    /**
+     * Gets the bitmask representing the moves a knight can make from the specified {@link Square}.
+     *
+     * @param square The {@link Square} where the knight is located. Cannot be null.
+     * @return The bitmask representing the moves a knight can make from the specified {@link Square}.
+     */
     private static long getKnightMovementBitmaskForSquare (@Nonnull Square square) {
         long squareBitmask = square.bitmask();
         long knightBitmask =
@@ -179,6 +208,12 @@ public class MovementBitmasks {
         return knightBitmask;
     }
 
+    /**
+     * Gets the bitmask representing the moves a king can make from the specified {@link Square}.
+     *
+     * @param square The {@link Square} where the king is located. Cannot be null.
+     * @return The bitmask representing the moves a king can make from the specified {@link Square}.
+     */
     private static long getKingMovementBitmaskForSquare (@Nonnull Square square) {
         long rankBitmask = square.rank()
                 .bitmask();
@@ -198,6 +233,14 @@ public class MovementBitmasks {
         return kingBitmask;
     }
 
+    /**
+     * Gets the blocker bitmask representing the {@link Square}s where a blocking piece can impact the movement of a
+     * bishop located on the specified {@link Square}.
+     *
+     * @param square The {@link Square} where the bishop is located. Cannot be null.
+     * @return The blocker bitmask representing the {@link Square}s where a blocking piece can impact the movement of
+     * a bishop located on the specified {@link Square}.
+     */
     private static long getBishopBlockerBitmaskForSquare (@Nonnull Square square) {
         long squareBitmask = square.bitmask();
         long bishopBlockerBitmask = EMPTY_BITMASK;
@@ -222,6 +265,14 @@ public class MovementBitmasks {
         return bishopBlockerBitmask;
     }
 
+    /**
+     * Gets the blocker bitmask representing the {@link Square}s where a blocking piece can impact the movement of a
+     * rook located on the specified {@link Square}.
+     *
+     * @param square The {@link Square} where the rook is located. Cannot be null.
+     * @return The blocker bitmask representing the {@link Square}s where a blocking piece can impact the movement of
+     * a rook located on the specified {@link Square}.
+     */
     private static long getRookBlockerBitmaskForSquare (@Nonnull Square square) {
         long rookBlockerBitmask = (square.rank()
                 .bitmask() | square.file()
@@ -240,6 +291,13 @@ public class MovementBitmasks {
         return rookBlockerBitmask;
     }
 
+    /**
+     * Gets the set of all blocker bitmask permutations for the specified blocker bitmask.
+     *
+     * @param blockerBitmask The blocker bitmask to get all blocker permutations for.
+     * @return A {@link LongSet} representing the set of all blocker bitmask permutations for the specified blocker
+     * bitmask. Will never be null.
+     */
     @Nonnull
     private static LongSet getBlockerBitmaskPermutationsByBlockerBitmask (long blockerBitmask) {
         // Total number of possible blocker bitmasks to generate = 2^(number of high bits) in blocker bitmask.
@@ -270,6 +328,16 @@ public class MovementBitmasks {
         return blockerOccupancyBitmasks;
     }
 
+    /**
+     * Gets the bitmask representing the moves a bishop on the specified {@link Square} can make, given a specified
+     * blocker bitmask representing the presence of blocking pieces that could impact the bishop's movement.
+     *
+     * @param square         The {@link Square} where the bishop is located. Cannot be null.
+     * @param blockerBitmask The blocker bitmask representing squares on the board where piece's that could hinder
+     *                       the bishop's movement exist.
+     * @return The bitmask representing the moves a bishop on the specified {@link Square} can make, taking into
+     * consideration potential blocking pieces.
+     */
     private static long getBishopMovementForSquareAndBlockerBitmask (@Nonnull Square square, long blockerBitmask) {
         Set<Diagonal> diagonals = Diagonal.fromSquare(square);
         long diagonalsBitmask = EMPTY_BITMASK;
@@ -329,6 +397,16 @@ public class MovementBitmasks {
         return bishopMovesBitmask;
     }
 
+    /**
+     * Gets the bitmask representing the moves a rook on the specified {@link Square} can make, given a specified
+     * blocker bitmask representing the presence of blocking pieces that could impact the rook's movement.
+     *
+     * @param square         The {@link Square} where the rook is located. Cannot be null.
+     * @param blockerBitmask The blocker bitmask representing squares on the board where piece's that could hinder
+     *                       the rook's movement exist.
+     * @return The bitmask representing the moves a rook on the specified {@link Square} can make, taking into
+     * consideration potential blocking pieces.
+     */
     private static long getRookMovementForSquareAndBlockerBitmask (@Nonnull Square square, long blockerBitmask) {
         long rankBitmask = square.rank()
                 .bitmask();
