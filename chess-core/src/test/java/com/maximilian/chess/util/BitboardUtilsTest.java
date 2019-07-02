@@ -21,7 +21,7 @@ import static org.junit.Assert.assertEquals;
 @RunWith(JUnit4.class)
 public class BitboardUtilsTest {
     @Test
-    public void testCountHighBitsInBitmask () {
+    public void countHighBitsInBitmask () {
         assertEquals(0, BitboardUtils.countHighBitsInBitmask(Board.EMPTY_BITMASK));
         assertEquals(32, BitboardUtils.countHighBitsInBitmask(Board.LIGHT_SQUARES_BITMASK));
         assertEquals(32, BitboardUtils.countHighBitsInBitmask(Board.DARK_SQUARES_BITMASK));
@@ -29,7 +29,7 @@ public class BitboardUtilsTest {
     }
 
     @Test
-    public void testGetSquaresFromBitmask () {
+    public void getSquaresFromBitmask () {
         assertEquals(EnumSet.noneOf(Square.class), BitboardUtils.getSquaresFromBitmask(Board.EMPTY_BITMASK));
         assertEquals(EnumSet.allOf(Square.class), BitboardUtils.getSquaresFromBitmask(Board.FULL_BITMASK));
         Set<Square> lightSquares = Arrays.stream(Square.values())
@@ -43,7 +43,21 @@ public class BitboardUtilsTest {
     }
 
     @Test
-    public void testBitboardToBoardString () {
+    public void getBitmaskFromSquares () {
+        assertEquals(Board.EMPTY_BITMASK, BitboardUtils.getBitmaskFromSquares(EnumSet.noneOf(Square.class)));
+        assertEquals(Board.FULL_BITMASK, BitboardUtils.getBitmaskFromSquares(EnumSet.allOf(Square.class)));
+        Set<Square> lightSquares = Arrays.stream(Square.values())
+                .filter(square -> square.type() == Square.Type.LIGHT)
+                .collect(Collectors.toSet());
+        assertEquals(Board.LIGHT_SQUARES_BITMASK, BitboardUtils.getBitmaskFromSquares(lightSquares));
+        Set<Square> darkSquares = Arrays.stream(Square.values())
+                .filter(square -> square.type() == Square.Type.DARK)
+                .collect(Collectors.toSet());
+        assertEquals(Board.DARK_SQUARES_BITMASK, BitboardUtils.getBitmaskFromSquares(darkSquares));
+    }
+
+    @Test
+    public void bitboardToBoardString () {
         System.out.println("Empty:\n" + BitboardUtils.bitboardToBoardString(Board.EMPTY_BITMASK) + "\n");
         System.out.println("Dark Squares:\n" + BitboardUtils.bitboardToBoardString(Board.DARK_SQUARES_BITMASK) + "\n");
         System.out.println(

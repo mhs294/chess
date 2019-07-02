@@ -1,6 +1,5 @@
 package com.maximilian.chess.objects;
 
-import com.google.common.collect.Sets;
 import com.maximilian.chess.enums.Color;
 import com.maximilian.chess.enums.Piece;
 import com.maximilian.chess.enums.Square;
@@ -12,6 +11,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -89,7 +89,7 @@ import static com.maximilian.chess.enums.Square.H7;
 import static com.maximilian.chess.enums.Square.H8;
 import static com.maximilian.chess.objects.Board.EMPTY_BITMASK;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 
 /**
@@ -107,7 +107,7 @@ public class BoardTest {
     public void testDeepCopy () {
         Board startingBoardDeepCopy = STARTING_BOARD.deepCopy();
 
-        assertFalse(STARTING_BOARD == startingBoardDeepCopy);
+        assertNotSame(STARTING_BOARD, startingBoardDeepCopy);
         assertEquals(STARTING_BOARD, startingBoardDeepCopy);
     }
 
@@ -116,31 +116,31 @@ public class BoardTest {
         final Map<Square, Pair<Color, Piece>> startingBoardMap = STARTING_BOARD.toMap();
 
         // Assert white pieces
-        Sets.newHashSet(A2, B2, C2, D2, E2, F2, G2, H2)
+        EnumSet.of(A2, B2, C2, D2, E2, F2, G2, H2)
                 .forEach(sq -> assertEquals(Pair.of(WHITE, PAWN), startingBoardMap.get(sq)));
-        Sets.newHashSet(B1, G1)
+        EnumSet.of(B1, G1)
                 .forEach(sq -> assertEquals(Pair.of(WHITE, KNIGHT), startingBoardMap.get(sq)));
-        Sets.newHashSet(C1, F1)
+        EnumSet.of(C1, F1)
                 .forEach(sq -> assertEquals(Pair.of(WHITE, BISHOP), startingBoardMap.get(sq)));
-        Sets.newHashSet(A1, H1)
+        EnumSet.of(A1, H1)
                 .forEach(sq -> assertEquals(Pair.of(WHITE, ROOK), startingBoardMap.get(sq)));
         assertEquals(Pair.of(WHITE, QUEEN), startingBoardMap.get(D1));
         assertEquals(Pair.of(WHITE, KING), startingBoardMap.get(E1));
 
         // Assert black pieces
-        Sets.newHashSet(A7, B7, C7, D7, E7, F7, G7, H7)
+        EnumSet.of(A7, B7, C7, D7, E7, F7, G7, H7)
                 .forEach(sq -> assertEquals(Pair.of(BLACK, PAWN), startingBoardMap.get(sq)));
-        Sets.newHashSet(B8, G8)
+        EnumSet.of(B8, G8)
                 .forEach(sq -> assertEquals(Pair.of(BLACK, KNIGHT), startingBoardMap.get(sq)));
-        Sets.newHashSet(C8, F8)
+        EnumSet.of(C8, F8)
                 .forEach(sq -> assertEquals(Pair.of(BLACK, BISHOP), startingBoardMap.get(sq)));
-        Sets.newHashSet(A8, H8)
+        EnumSet.of(A8, H8)
                 .forEach(sq -> assertEquals(Pair.of(BLACK, ROOK), startingBoardMap.get(sq)));
         assertEquals(Pair.of(BLACK, QUEEN), startingBoardMap.get(D8));
         assertEquals(Pair.of(BLACK, KING), startingBoardMap.get(E8));
 
         // Assert vacant squares
-        Sets.newHashSet(A3, A4, A5, A6, B3, B4, B5, B6, C3, C4, C5, C6, D3, D4, D5, D6, E3, E4, E5, E6, F3, F4, F5, F6,
+        EnumSet.of(A3, A4, A5, A6, B3, B4, B5, B6, C3, C4, C5, C6, D3, D4, D5, D6, E3, E4, E5, E6, F3, F4, F5, F6,
                 G3, G4, G5, G6, H3, H4, H5, H6)
                 .forEach(sq -> assertNull(startingBoardMap.get(sq)));
     }
@@ -148,7 +148,7 @@ public class BoardTest {
     @Test
     public void testVacantSquares () {
         long expectedVacantBitmask = EMPTY_BITMASK;
-        Set<Square> expectedVacantSquares = Sets.newHashSet(A3, A4, A5, A6, B3, B4, B5, B6, C3, C4, C5, C6, D3, D4, D5,
+        Set<Square> expectedVacantSquares = EnumSet.of(A3, A4, A5, A6, B3, B4, B5, B6, C3, C4, C5, C6, D3, D4, D5,
                 D6, E3, E4, E5, E6, F3, F4, F5, F6, G3, G4, G5, G6, H3, H4, H5, H6);
         for (Square square : expectedVacantSquares) {
             expectedVacantBitmask |= square.bitmask();
@@ -160,7 +160,7 @@ public class BoardTest {
     @Test
     public void testWhiteOccupiedSquares () {
         long expectedWhiteOccupiedBitmask = EMPTY_BITMASK;
-        Set<Square> expectedWhiteOccupiedSquares = Sets.newHashSet(A1, B1, C1, D1, E1, F1, G1, H1, A2, B2, C2, D2, E2,
+        Set<Square> expectedWhiteOccupiedSquares = EnumSet.of(A1, B1, C1, D1, E1, F1, G1, H1, A2, B2, C2, D2, E2,
                 F2, G2, H2);
         for (Square square : expectedWhiteOccupiedSquares) {
             expectedWhiteOccupiedBitmask |= square.bitmask();
@@ -172,7 +172,7 @@ public class BoardTest {
     @Test
     public void testBlackOccupiedSquares () {
         long expectedBlackOccupiedBitmask = EMPTY_BITMASK;
-        Set<Square> expectedBlackOccupiedSquares = Sets.newHashSet(A7, B7, C7, D7, E7, F7, G7, H7, A8, B8, C8, D8, E8,
+        Set<Square> expectedBlackOccupiedSquares = EnumSet.of(A7, B7, C7, D7, E7, F7, G7, H7, A8, B8, C8, D8, E8,
                 F8, G8, H8);
         for (Square square : expectedBlackOccupiedSquares) {
             expectedBlackOccupiedBitmask |= square.bitmask();
@@ -184,7 +184,7 @@ public class BoardTest {
     @Test
     public void testAllOccupiedSquares () {
         long expectedOccupiedBitmask = EMPTY_BITMASK;
-        Set<Square> expectedOccupiedSquares = Sets.newHashSet(A1, B1, C1, D1, E1, F1, G1, H1, A2, B2, C2, D2, E2, F2,
+        Set<Square> expectedOccupiedSquares = EnumSet.of(A1, B1, C1, D1, E1, F1, G1, H1, A2, B2, C2, D2, E2, F2,
                 G2, H2, A7, B7, C7, D7, E7, F7, G7, H7, A8, B8, C8, D8, E8, F8, G8, H8);
         for (Square square : expectedOccupiedSquares) {
             expectedOccupiedBitmask |= square.bitmask();

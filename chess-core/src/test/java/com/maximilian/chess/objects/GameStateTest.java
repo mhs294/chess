@@ -48,6 +48,7 @@ import static com.maximilian.chess.enums.Square.H1;
 import static com.maximilian.chess.enums.Square.H8;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -90,7 +91,7 @@ public class GameStateTest {
                 .build();
         GameState gameStateCopy = newGameState.deepCopy();
 
-        assertFalse(newGameState == gameStateCopy);
+        assertNotSame(newGameState, gameStateCopy);
         assertEquals(newGameState.boardHash(), gameStateCopy.boardHash());
         assertEquals(newGameState.castlingRights(), gameStateCopy.castlingRights());
         assertEquals(newGameState.enPassantSquare(), gameStateCopy.enPassantSquare());

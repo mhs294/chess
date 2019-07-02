@@ -53,6 +53,22 @@ public class BitboardUtils {
     }
 
     /**
+     * Gets a bitmask with high bits corresponding to the specified {@link Set} of {@link Square}s.
+     *
+     * @param squares The {@link Square}s that will be represented by high bits in the bitmask. Cannot be null, may
+     *                be empty.
+     * @return A bitmask with high bits corresponding to the specified {@link Set} of {@link Square}s.
+     */
+    public static long getBitmaskFromSquares (@Nonnull Set<Square> squares) {
+        long bitmask = EMPTY_BITMASK;
+        for (Square square : squares) {
+            bitmask |= square.bitmask();
+        }
+
+        return bitmask;
+    }
+
+    /**
      * Creates a human-readable string representation of the specified bitboard using rank and file markers. High bits
      * are denoted with an {@code x} while low bits are denoted with a {@code .}.
      *

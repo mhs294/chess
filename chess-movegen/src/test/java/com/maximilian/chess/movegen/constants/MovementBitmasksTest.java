@@ -1,10 +1,14 @@
 package com.maximilian.chess.movegen.constants;
 
-import com.google.common.collect.Sets;
+import com.maximilian.chess.enums.Square;
 import com.maximilian.chess.util.BitboardUtils;
+import it.unimi.dsi.fastutil.longs.LongSet;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+
+import java.util.EnumSet;
+import java.util.Set;
 
 import static com.maximilian.chess.enums.Square.A1;
 import static com.maximilian.chess.enums.Square.A2;
@@ -83,6 +87,7 @@ import static com.maximilian.chess.movegen.constants.MovementBitmasks.WHITE_PAWN
 import static com.maximilian.chess.objects.Board.EMPTY_BITMASK;
 import static com.maximilian.chess.util.BitboardUtils.getSquaresFromBitmask;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Unit test class for {@link MovementBitmasks}.
@@ -93,132 +98,190 @@ import static org.junit.Assert.assertEquals;
 public class MovementBitmasksTest {
     @Test
     public void movesForWhitePawnOnRankTwo () {
-        assertEquals(Sets.newHashSet(E3, E4), getSquaresFromBitmask(WHITE_PAWN_ADVANCES.getLong(E2)));
+        assertEquals(EnumSet.of(E3, E4), getSquaresFromBitmask(WHITE_PAWN_ADVANCES.getLong(E2)));
     }
 
     @Test
     public void movesForWhitePawnPastRankTwo () {
-        assertEquals(Sets.newHashSet(A4), getSquaresFromBitmask(WHITE_PAWN_ADVANCES.getLong(A3)));
-        assertEquals(Sets.newHashSet(B5), getSquaresFromBitmask(WHITE_PAWN_ADVANCES.getLong(B4)));
-        assertEquals(Sets.newHashSet(C6), getSquaresFromBitmask(WHITE_PAWN_ADVANCES.getLong(C5)));
-        assertEquals(Sets.newHashSet(D7), getSquaresFromBitmask(WHITE_PAWN_ADVANCES.getLong(D6)));
-        assertEquals(Sets.newHashSet(F8), getSquaresFromBitmask(WHITE_PAWN_ADVANCES.getLong(F7)));
+        assertEquals(EnumSet.of(A4), getSquaresFromBitmask(WHITE_PAWN_ADVANCES.getLong(A3)));
+        assertEquals(EnumSet.of(B5), getSquaresFromBitmask(WHITE_PAWN_ADVANCES.getLong(B4)));
+        assertEquals(EnumSet.of(C6), getSquaresFromBitmask(WHITE_PAWN_ADVANCES.getLong(C5)));
+        assertEquals(EnumSet.of(D7), getSquaresFromBitmask(WHITE_PAWN_ADVANCES.getLong(D6)));
+        assertEquals(EnumSet.of(F8), getSquaresFromBitmask(WHITE_PAWN_ADVANCES.getLong(F7)));
     }
 
     @Test
     public void capturesForWhitePawn () {
-        assertEquals(Sets.newHashSet(B3), getSquaresFromBitmask(WHITE_PAWN_CAPTURES.getLong(A2)));
-        assertEquals(Sets.newHashSet(A4, C4), getSquaresFromBitmask(WHITE_PAWN_CAPTURES.getLong(B3)));
-        assertEquals(Sets.newHashSet(B5, D5), getSquaresFromBitmask(WHITE_PAWN_CAPTURES.getLong(C4)));
-        assertEquals(Sets.newHashSet(C6, E6), getSquaresFromBitmask(WHITE_PAWN_CAPTURES.getLong(D5)));
-        assertEquals(Sets.newHashSet(D7, F7), getSquaresFromBitmask(WHITE_PAWN_CAPTURES.getLong(E6)));
-        assertEquals(Sets.newHashSet(G8), getSquaresFromBitmask(WHITE_PAWN_CAPTURES.getLong(H7)));
+        assertEquals(EnumSet.of(B3), getSquaresFromBitmask(WHITE_PAWN_CAPTURES.getLong(A2)));
+        assertEquals(EnumSet.of(A4, C4), getSquaresFromBitmask(WHITE_PAWN_CAPTURES.getLong(B3)));
+        assertEquals(EnumSet.of(B5, D5), getSquaresFromBitmask(WHITE_PAWN_CAPTURES.getLong(C4)));
+        assertEquals(EnumSet.of(C6, E6), getSquaresFromBitmask(WHITE_PAWN_CAPTURES.getLong(D5)));
+        assertEquals(EnumSet.of(D7, F7), getSquaresFromBitmask(WHITE_PAWN_CAPTURES.getLong(E6)));
+        assertEquals(EnumSet.of(G8), getSquaresFromBitmask(WHITE_PAWN_CAPTURES.getLong(H7)));
     }
 
     @Test
     public void movesForBlackPawnOnRankSeven () {
-        assertEquals(Sets.newHashSet(E6, E5), getSquaresFromBitmask(BLACK_PAWN_ADVANCES.getLong(E7)));
+        assertEquals(EnumSet.of(E6, E5), getSquaresFromBitmask(BLACK_PAWN_ADVANCES.getLong(E7)));
     }
 
     @Test
     public void movesForBlackPawnPastRankSeven () {
-        assertEquals(Sets.newHashSet(A5), getSquaresFromBitmask(BLACK_PAWN_ADVANCES.getLong(A6)));
-        assertEquals(Sets.newHashSet(B4), getSquaresFromBitmask(BLACK_PAWN_ADVANCES.getLong(B5)));
-        assertEquals(Sets.newHashSet(C3), getSquaresFromBitmask(BLACK_PAWN_ADVANCES.getLong(C4)));
-        assertEquals(Sets.newHashSet(D2), getSquaresFromBitmask(BLACK_PAWN_ADVANCES.getLong(D3)));
-        assertEquals(Sets.newHashSet(F1), getSquaresFromBitmask(BLACK_PAWN_ADVANCES.getLong(F2)));
+        assertEquals(EnumSet.of(A5), getSquaresFromBitmask(BLACK_PAWN_ADVANCES.getLong(A6)));
+        assertEquals(EnumSet.of(B4), getSquaresFromBitmask(BLACK_PAWN_ADVANCES.getLong(B5)));
+        assertEquals(EnumSet.of(C3), getSquaresFromBitmask(BLACK_PAWN_ADVANCES.getLong(C4)));
+        assertEquals(EnumSet.of(D2), getSquaresFromBitmask(BLACK_PAWN_ADVANCES.getLong(D3)));
+        assertEquals(EnumSet.of(F1), getSquaresFromBitmask(BLACK_PAWN_ADVANCES.getLong(F2)));
     }
 
     @Test
     public void capturesForBlackPawn () {
-        assertEquals(Sets.newHashSet(B6), getSquaresFromBitmask(BLACK_PAWN_CAPTURES.getLong(A7)));
-        assertEquals(Sets.newHashSet(A5, C5), getSquaresFromBitmask(BLACK_PAWN_CAPTURES.getLong(B6)));
-        assertEquals(Sets.newHashSet(B4, D4), getSquaresFromBitmask(BLACK_PAWN_CAPTURES.getLong(C5)));
-        assertEquals(Sets.newHashSet(C3, E3), getSquaresFromBitmask(BLACK_PAWN_CAPTURES.getLong(D4)));
-        assertEquals(Sets.newHashSet(D2, F2), getSquaresFromBitmask(BLACK_PAWN_CAPTURES.getLong(E3)));
-        assertEquals(Sets.newHashSet(G1), getSquaresFromBitmask(BLACK_PAWN_CAPTURES.getLong(H2)));
+        assertEquals(EnumSet.of(B6), getSquaresFromBitmask(BLACK_PAWN_CAPTURES.getLong(A7)));
+        assertEquals(EnumSet.of(A5, C5), getSquaresFromBitmask(BLACK_PAWN_CAPTURES.getLong(B6)));
+        assertEquals(EnumSet.of(B4, D4), getSquaresFromBitmask(BLACK_PAWN_CAPTURES.getLong(C5)));
+        assertEquals(EnumSet.of(C3, E3), getSquaresFromBitmask(BLACK_PAWN_CAPTURES.getLong(D4)));
+        assertEquals(EnumSet.of(D2, F2), getSquaresFromBitmask(BLACK_PAWN_CAPTURES.getLong(E3)));
+        assertEquals(EnumSet.of(G1), getSquaresFromBitmask(BLACK_PAWN_CAPTURES.getLong(H2)));
     }
 
     @Test
     public void movesForKnight () {
-        assertEquals(Sets.newHashSet(B3, C2), getSquaresFromBitmask(KNIGHT_MOVES.getLong(A1)));
-        assertEquals(Sets.newHashSet(G6, F7), getSquaresFromBitmask(KNIGHT_MOVES.getLong(H8)));
-        assertEquals(Sets.newHashSet(A3, C3, D2), getSquaresFromBitmask(KNIGHT_MOVES.getLong(B1)));
-        assertEquals(Sets.newHashSet(E7, F6, H6), getSquaresFromBitmask(KNIGHT_MOVES.getLong(G8)));
-        assertEquals(Sets.newHashSet(B2, B6, C3, C5), getSquaresFromBitmask(KNIGHT_MOVES.getLong(A4)));
-        assertEquals(Sets.newHashSet(G3, G7, F4, F6), getSquaresFromBitmask(KNIGHT_MOVES.getLong(H5)));
-        assertEquals(Sets.newHashSet(B2, C3, E3, F2), getSquaresFromBitmask(KNIGHT_MOVES.getLong(D1)));
-        assertEquals(Sets.newHashSet(C7, D6, F6, G7), getSquaresFromBitmask(KNIGHT_MOVES.getLong(E8)));
-        assertEquals(Sets.newHashSet(A1, A3, B4, D4, E1, E3), getSquaresFromBitmask(KNIGHT_MOVES.getLong(C2)));
-        assertEquals(Sets.newHashSet(D6, D8, E5, G5, H6, H8), getSquaresFromBitmask(KNIGHT_MOVES.getLong(F7)));
-        assertEquals(Sets.newHashSet(B3, B5, C2, C6, E2, E6, F3, F5), getSquaresFromBitmask(KNIGHT_MOVES.getLong(D4)));
-        assertEquals(Sets.newHashSet(C4, C6, D3, D7, F3, F7, G4, G6), getSquaresFromBitmask(KNIGHT_MOVES.getLong(E5)));
+        assertEquals(EnumSet.of(B3, C2), getSquaresFromBitmask(KNIGHT_MOVES.getLong(A1)));
+        assertEquals(EnumSet.of(G6, F7), getSquaresFromBitmask(KNIGHT_MOVES.getLong(H8)));
+        assertEquals(EnumSet.of(A3, C3, D2), getSquaresFromBitmask(KNIGHT_MOVES.getLong(B1)));
+        assertEquals(EnumSet.of(E7, F6, H6), getSquaresFromBitmask(KNIGHT_MOVES.getLong(G8)));
+        assertEquals(EnumSet.of(B2, B6, C3, C5), getSquaresFromBitmask(KNIGHT_MOVES.getLong(A4)));
+        assertEquals(EnumSet.of(G3, G7, F4, F6), getSquaresFromBitmask(KNIGHT_MOVES.getLong(H5)));
+        assertEquals(EnumSet.of(B2, C3, E3, F2), getSquaresFromBitmask(KNIGHT_MOVES.getLong(D1)));
+        assertEquals(EnumSet.of(C7, D6, F6, G7), getSquaresFromBitmask(KNIGHT_MOVES.getLong(E8)));
+        assertEquals(EnumSet.of(A1, A3, B4, D4, E1, E3), getSquaresFromBitmask(KNIGHT_MOVES.getLong(C2)));
+        assertEquals(EnumSet.of(D6, D8, E5, G5, H6, H8), getSquaresFromBitmask(KNIGHT_MOVES.getLong(F7)));
+        assertEquals(EnumSet.of(B3, B5, C2, C6, E2, E6, F3, F5), getSquaresFromBitmask(KNIGHT_MOVES.getLong(D4)));
+        assertEquals(EnumSet.of(C4, C6, D3, D7, F3, F7, G4, G6), getSquaresFromBitmask(KNIGHT_MOVES.getLong(E5)));
     }
 
     @Test
     public void movesForKing () {
-        assertEquals(Sets.newHashSet(A2, B1, B2), getSquaresFromBitmask(KING_MOVES.getLong(A1)));
-        assertEquals(Sets.newHashSet(A7, B7, B8), getSquaresFromBitmask(KING_MOVES.getLong(A8)));
-        assertEquals(Sets.newHashSet(G1, G2, H2), getSquaresFromBitmask(KING_MOVES.getLong(H1)));
-        assertEquals(Sets.newHashSet(G7, G8, H7), getSquaresFromBitmask(KING_MOVES.getLong(H8)));
-        assertEquals(Sets.newHashSet(C1, C2, D2, E1, E2), getSquaresFromBitmask(KING_MOVES.getLong(D1)));
-        assertEquals(Sets.newHashSet(D7, D8, E7, F7, F8), getSquaresFromBitmask(KING_MOVES.getLong(E8)));
-        assertEquals(Sets.newHashSet(A3, A5, B3, B4, B5), getSquaresFromBitmask(KING_MOVES.getLong(A4)));
-        assertEquals(Sets.newHashSet(G4, G5, G6, H4, H6), getSquaresFromBitmask(KING_MOVES.getLong(H5)));
-        assertEquals(Sets.newHashSet(C3, C4, C5, D3, D5, E3, E4, E5), getSquaresFromBitmask(KING_MOVES.getLong(D4)));
-        assertEquals(Sets.newHashSet(D4, D5, D6, E4, E6, F4, F5, F6), getSquaresFromBitmask(KING_MOVES.getLong(E5)));
+        assertEquals(EnumSet.of(A2, B1, B2), getSquaresFromBitmask(KING_MOVES.getLong(A1)));
+        assertEquals(EnumSet.of(A7, B7, B8), getSquaresFromBitmask(KING_MOVES.getLong(A8)));
+        assertEquals(EnumSet.of(G1, G2, H2), getSquaresFromBitmask(KING_MOVES.getLong(H1)));
+        assertEquals(EnumSet.of(G7, G8, H7), getSquaresFromBitmask(KING_MOVES.getLong(H8)));
+        assertEquals(EnumSet.of(C1, C2, D2, E1, E2), getSquaresFromBitmask(KING_MOVES.getLong(D1)));
+        assertEquals(EnumSet.of(D7, D8, E7, F7, F8), getSquaresFromBitmask(KING_MOVES.getLong(E8)));
+        assertEquals(EnumSet.of(A3, A5, B3, B4, B5), getSquaresFromBitmask(KING_MOVES.getLong(A4)));
+        assertEquals(EnumSet.of(G4, G5, G6, H4, H6), getSquaresFromBitmask(KING_MOVES.getLong(H5)));
+        assertEquals(EnumSet.of(C3, C4, C5, D3, D5, E3, E4, E5), getSquaresFromBitmask(KING_MOVES.getLong(D4)));
+        assertEquals(EnumSet.of(D4, D5, D6, E4, E6, F4, F5, F6), getSquaresFromBitmask(KING_MOVES.getLong(E5)));
     }
 
     @Test
-    public void blockerMaskForBishop () {
-        assertEquals(Sets.newHashSet(B2, C3, D4, E5, F6, G7), getSquaresFromBitmask(BISHOP_BLOCKER_MASKS.getLong(A1)));
-        assertEquals(Sets.newHashSet(B7, C6, D5, E4, F3, G2), getSquaresFromBitmask(BISHOP_BLOCKER_MASKS.getLong(H1)));
-        assertEquals(Sets.newHashSet(B3, B5, C2, C6, D7), getSquaresFromBitmask(BISHOP_BLOCKER_MASKS.getLong(A4)));
-        assertEquals(Sets.newHashSet(E7, F2, F6, G3, G5), getSquaresFromBitmask(BISHOP_BLOCKER_MASKS.getLong(H4)));
-        assertEquals(Sets.newHashSet(B2, D2, E3, F4, G5), getSquaresFromBitmask(BISHOP_BLOCKER_MASKS.getLong(C1)));
-        assertEquals(Sets.newHashSet(B7, D7, E6, F5, G4), getSquaresFromBitmask(BISHOP_BLOCKER_MASKS.getLong(C8)));
-        assertEquals(Sets.newHashSet(B3, B7, C4, C6, E4, E6, F3, F7, G2),
+    public void blockersForBishop () {
+        assertEquals(EnumSet.of(B2, C3, D4, E5, F6, G7), getSquaresFromBitmask(BISHOP_BLOCKER_MASKS.getLong(A1)));
+        assertEquals(EnumSet.of(B7, C6, D5, E4, F3, G2), getSquaresFromBitmask(BISHOP_BLOCKER_MASKS.getLong(H1)));
+        assertEquals(EnumSet.of(B3, B5, C2, C6, D7), getSquaresFromBitmask(BISHOP_BLOCKER_MASKS.getLong(A4)));
+        assertEquals(EnumSet.of(E7, F2, F6, G3, G5), getSquaresFromBitmask(BISHOP_BLOCKER_MASKS.getLong(H4)));
+        assertEquals(EnumSet.of(B2, D2, E3, F4, G5), getSquaresFromBitmask(BISHOP_BLOCKER_MASKS.getLong(C1)));
+        assertEquals(EnumSet.of(B7, D7, E6, F5, G4), getSquaresFromBitmask(BISHOP_BLOCKER_MASKS.getLong(C8)));
+        assertEquals(EnumSet.of(B3, B7, C4, C6, E4, E6, F3, F7, G2),
                 getSquaresFromBitmask(BISHOP_BLOCKER_MASKS.getLong(D5)));
-        assertEquals(Sets.newHashSet(B2, C3, C7, D4, D6, F4, F6, G3, G7),
+        assertEquals(EnumSet.of(B2, C3, C7, D4, D6, F4, F6, G3, G7),
                 getSquaresFromBitmask(BISHOP_BLOCKER_MASKS.getLong(E5)));
     }
 
     @Test
-    public void blockerMaskForRook () {
-        assertEquals(Sets.newHashSet(A2, A3, A4, A5, A6, A7, B1, C1, D1, E1, F1, G1),
+    public void blockersForRook () {
+        assertEquals(EnumSet.of(A2, A3, A4, A5, A6, A7, B1, C1, D1, E1, F1, G1),
                 getSquaresFromBitmask(ROOK_BLOCKER_MASKS.getLong(A1)));
-        assertEquals(Sets.newHashSet(B8, C8, D8, E8, F8, G8, H2, H3, H4, H5, H6, H7),
+        assertEquals(EnumSet.of(B8, C8, D8, E8, F8, G8, H2, H3, H4, H5, H6, H7),
                 getSquaresFromBitmask(ROOK_BLOCKER_MASKS.getLong(H8)));
-        assertEquals(Sets.newHashSet(B1, C1, D2, D3, D4, D5, D6, D7, E1, F1, G1),
+        assertEquals(EnumSet.of(B1, C1, D2, D3, D4, D5, D6, D7, E1, F1, G1),
                 getSquaresFromBitmask(ROOK_BLOCKER_MASKS.getLong(D1)));
-        assertEquals(Sets.newHashSet(B8, C8, D8, E2, E3, E4, E5, E6, E7, F8, G8),
+        assertEquals(EnumSet.of(B8, C8, D8, E2, E3, E4, E5, E6, E7, F8, G8),
                 getSquaresFromBitmask(ROOK_BLOCKER_MASKS.getLong(E8)));
-        assertEquals(Sets.newHashSet(A2, A3, A5, A6, A7, B4, C4, D4, E4, F4, G4),
+        assertEquals(EnumSet.of(A2, A3, A5, A6, A7, B4, C4, D4, E4, F4, G4),
                 getSquaresFromBitmask(ROOK_BLOCKER_MASKS.getLong(A4)));
-        assertEquals(Sets.newHashSet(B5, C5, D5, E5, F5, G5, H2, H3, H4, H6, H7),
+        assertEquals(EnumSet.of(B5, C5, D5, E5, F5, G5, H2, H3, H4, H6, H7),
                 getSquaresFromBitmask(ROOK_BLOCKER_MASKS.getLong(H5)));
-        assertEquals(Sets.newHashSet(B4, C4, D2, D3, D5, D6, D7, E4, F4, G4),
+        assertEquals(EnumSet.of(B4, C4, D2, D3, D5, D6, D7, E4, F4, G4),
                 getSquaresFromBitmask(ROOK_BLOCKER_MASKS.getLong(D4)));
-        assertEquals(Sets.newHashSet(B5, C5, D5, E2, E3, E4, E6, E7, F5, G5),
+        assertEquals(EnumSet.of(B5, C5, D5, E2, E3, E4, E6, E7, F5, G5),
                 getSquaresFromBitmask(ROOK_BLOCKER_MASKS.getLong(E5)));
     }
 
     @Test
-    public void test () {
-        long bishopE4Moves = BISHOP_MOVES.get(E4)
-                .get(EMPTY_BITMASK);
-        System.out.println("Bishop moves on E4, empty board:\n" + BitboardUtils.bitboardToBoardString(bishopE4Moves));
-        long bishopE4MovesPieceOnC6 = BISHOP_MOVES.get(E4)
-                .get(C6.bitmask());
-        System.out.println(
-                "Bishop moves on E4, blocker on C6:\n" + BitboardUtils.bitboardToBoardString(bishopE4MovesPieceOnC6));
+    public void blockerPermutations () {
+        LongSet bishopBlockerBitmaskPermutations = BISHOP_MOVES.get(A1)
+                .keySet();
+        assertEquals(64, bishopBlockerBitmaskPermutations.size());
+        Set<Square> expectedBishopSquares = EnumSet.of(B2, C3, D4, E5, F6, G7);
+        for (long blockerBitmask : bishopBlockerBitmaskPermutations) {
+            Set<Square> blockerSquares = BitboardUtils.getSquaresFromBitmask(blockerBitmask);
+            assertTrue(expectedBishopSquares.containsAll(blockerSquares));
+        }
 
-        long rookF5Moves = ROOK_MOVES.get(F5)
-                .get(EMPTY_BITMASK);
-        System.out.println("Rook moves on F5, empty board:\n" + BitboardUtils.bitboardToBoardString(rookF5Moves));
-        long rookF5MovesBlockersOnD5AndF6 = ROOK_MOVES.get(F5)
-                .get(D5.bitmask() | F6.bitmask());
-        System.out.println("Rook moves on F5, blockers on D5 and F6:\n" +
-                BitboardUtils.bitboardToBoardString(rookF5MovesBlockersOnD5AndF6));
+        LongSet rookBlockerBitmaskPermutations = ROOK_MOVES.get(A1)
+                .keySet();
+        assertEquals(4096, rookBlockerBitmaskPermutations.size());
+        Set<Square> expectedSquares = EnumSet.of(A2, A3, A4, A5, A6, A7, B1, C1, D1, E1, F1, G1);
+        for (long blockerBitmask : rookBlockerBitmaskPermutations) {
+            Set<Square> blockerSquares = BitboardUtils.getSquaresFromBitmask(blockerBitmask);
+            assertTrue(expectedSquares.containsAll(blockerSquares));
+        }
     }
+
+    @Test
+    public void movesForBishopNoBlockers () {
+        assertEquals(EnumSet.of(B2, C3, D4, E5, F6, G7, H8), BitboardUtils.getSquaresFromBitmask(BISHOP_MOVES.get(A1)
+                .get(EMPTY_BITMASK)));
+        assertEquals(EnumSet.of(B7, C6, D5, E4, F3, G2, H1), BitboardUtils.getSquaresFromBitmask(BISHOP_MOVES.get(A8)
+                .get(EMPTY_BITMASK)));
+        assertEquals(EnumSet.of(A1, B2, C3, D4, E5, F6, G7), BitboardUtils.getSquaresFromBitmask(BISHOP_MOVES.get(H8)
+                .get(EMPTY_BITMASK)));
+        assertEquals(EnumSet.of(A8, B7, C6, D5, E4, F3, G2), BitboardUtils.getSquaresFromBitmask(BISHOP_MOVES.get(H1)
+                .get(EMPTY_BITMASK)));
+        assertEquals(EnumSet.of(B5, C6, D7, E8, B3, C2, D1), BitboardUtils.getSquaresFromBitmask(BISHOP_MOVES.get(A4)
+                .get(EMPTY_BITMASK)));
+        assertEquals(EnumSet.of(C2, B3, A4, E2, F3, G4, H5), BitboardUtils.getSquaresFromBitmask(BISHOP_MOVES.get(D1)
+                .get(EMPTY_BITMASK)));
+        assertEquals(EnumSet.of(D7, C6, B5, A4, F7, G6, H5), BitboardUtils.getSquaresFromBitmask(BISHOP_MOVES.get(E8)
+                .get(EMPTY_BITMASK)));
+        assertEquals(EnumSet.of(G6, F7, E8, G4, F3, E2, D1), BitboardUtils.getSquaresFromBitmask(BISHOP_MOVES.get(H5)
+                .get(EMPTY_BITMASK)));
+        assertEquals(EnumSet.of(D5, C6, B7, A8, F5, G6, H7, D3, C2, B1, F3, G2, H1),
+                BitboardUtils.getSquaresFromBitmask(BISHOP_MOVES.get(E4)
+                        .get(EMPTY_BITMASK)));
+        assertEquals(EnumSet.of(C5, B6, A7, E5, F6, G7, H8, C3, B2, A1, E3, F2, G1),
+                BitboardUtils.getSquaresFromBitmask(BISHOP_MOVES.get(D4)
+                        .get(EMPTY_BITMASK)));
+    }
+
+    @Test
+    public void movesForBishopWithBlockers () {
+        long blockerBitmask = BitboardUtils.getBitmaskFromSquares(
+                EnumSet.of(C6, D6, E6, F6, F5, F4, F3, E3, D3, C3, C4, C5));
+        assertEquals(EnumSet.of(B2, C3), BitboardUtils.getSquaresFromBitmask(BISHOP_MOVES.get(A1)
+                .get(blockerBitmask & BISHOP_BLOCKER_MASKS.getLong(A1))));
+        assertEquals(EnumSet.of(B7, C6), BitboardUtils.getSquaresFromBitmask(BISHOP_MOVES.get(A8)
+                .get(blockerBitmask & BISHOP_BLOCKER_MASKS.getLong(A8))));
+        assertEquals(EnumSet.of(F6, G7), BitboardUtils.getSquaresFromBitmask(BISHOP_MOVES.get(H8)
+                .get(blockerBitmask & BISHOP_BLOCKER_MASKS.getLong(H8))));
+        assertEquals(EnumSet.of(F3, G2), BitboardUtils.getSquaresFromBitmask(BISHOP_MOVES.get(H1)
+                .get(blockerBitmask & BISHOP_BLOCKER_MASKS.getLong(H1))));
+        assertEquals(EnumSet.of(B5, C6, B3, C2, D1), BitboardUtils.getSquaresFromBitmask(BISHOP_MOVES.get(A4)
+                .get(blockerBitmask & BISHOP_BLOCKER_MASKS.getLong(A4))));
+        assertEquals(EnumSet.of(C2, B3, A4, E2, F3), BitboardUtils.getSquaresFromBitmask(BISHOP_MOVES.get(D1)
+                .get(blockerBitmask & BISHOP_BLOCKER_MASKS.getLong(D1))));
+        assertEquals(EnumSet.of(D7, C6, F7, G6, H5), BitboardUtils.getSquaresFromBitmask(BISHOP_MOVES.get(E8)
+                .get(blockerBitmask & BISHOP_BLOCKER_MASKS.getLong(E8))));
+        assertEquals(EnumSet.of(G6, F7, E8, G4, F3), BitboardUtils.getSquaresFromBitmask(BISHOP_MOVES.get(H5)
+                .get(blockerBitmask & BISHOP_BLOCKER_MASKS.getLong(H5))));
+        assertEquals(EnumSet.of(D5, C6, F5, D3, F3),
+                BitboardUtils.getSquaresFromBitmask(BISHOP_MOVES.get(E4)
+                        .get(blockerBitmask & BISHOP_BLOCKER_MASKS.getLong(E4))));
+        assertEquals(EnumSet.of(C5, E5, F6, C3, E3),
+                BitboardUtils.getSquaresFromBitmask(BISHOP_MOVES.get(D4)
+                        .get(blockerBitmask & BISHOP_BLOCKER_MASKS.getLong(D4))));
+    }
+
+    // TODO - unit tests for rook moves with and without blockers.
 }

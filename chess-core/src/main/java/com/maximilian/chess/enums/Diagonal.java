@@ -120,11 +120,11 @@ public enum Diagonal {
                 if ((diagonal.bitmask & square.bitmask()) != EMPTY_BITMASK) {
                     diagonals.add(diagonal);
                     if (diagonals.size() == 2) {
-                        SQUARE_TO_DIAGONALS_MAP.putAll(square, diagonals);
                         break;
                     }
                 }
             }
+            SQUARE_TO_DIAGONALS_MAP.putAll(square, diagonals);
         }
     }
 
@@ -151,7 +151,7 @@ public enum Diagonal {
      *
      * @param square The {@link Square} to get the {@link Set} of {@link Diagonal}s for. Cannot be null.
      * @return The {@link Set} of {@link Diagonal}s corresponding to the specified {@link Square}. Will always have a
-     * size of 2.
+     * size of 1 or 2.
      */
     @Nonnull
     public static Set<Diagonal> fromSquare (@Nonnull Square square) {
