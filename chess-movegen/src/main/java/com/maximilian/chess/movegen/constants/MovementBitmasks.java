@@ -428,37 +428,37 @@ public class MovementBitmasks {
 
         // Modify east rook movements to account for blockers.
         blockerFound = false;
-        for (long currentBit = square.bitmask() >> 1; (currentBit & rankBitmask) != EMPTY_BITMASK; currentBit >>>= 1) {
+        for (long bitmask = square.bitmask() >>> 1; (bitmask & rankBitmask) != EMPTY_BITMASK; bitmask >>>= 1) {
             if (!blockerFound) {
-                if ((blockerBitmask & currentBit) != EMPTY_BITMASK) {
+                if ((blockerBitmask & bitmask) != EMPTY_BITMASK) {
                     blockerFound = true;
                 }
             } else {
-                rookMovesBitmask ^= currentBit;
+                rookMovesBitmask ^= bitmask;
             }
         }
 
         // Modify north rook movements to account for blockers.
         blockerFound = false;
-        for (long currentBit = square.bitmask() << 8; (currentBit & fileBitmask) != EMPTY_BITMASK; currentBit <<= 8) {
+        for (long bitmask = square.bitmask() << 8; (bitmask & fileBitmask) != EMPTY_BITMASK; bitmask <<= 8) {
             if (!blockerFound) {
-                if ((blockerBitmask & currentBit) != EMPTY_BITMASK) {
+                if ((blockerBitmask & bitmask) != EMPTY_BITMASK) {
                     blockerFound = true;
                 }
             } else {
-                rookMovesBitmask ^= currentBit;
+                rookMovesBitmask ^= bitmask;
             }
         }
 
         // Modify south rook movements to account for blockers.
         blockerFound = false;
-        for (long currentBit = square.bitmask() >>> 8; (currentBit & fileBitmask) != EMPTY_BITMASK; currentBit >>>= 8) {
+        for (long bitmask = square.bitmask() >>> 8; (bitmask & fileBitmask) != EMPTY_BITMASK; bitmask >>>= 8) {
             if (!blockerFound) {
-                if ((blockerBitmask & currentBit) != EMPTY_BITMASK) {
+                if ((blockerBitmask & bitmask) != EMPTY_BITMASK) {
                     blockerFound = true;
                 }
             } else {
-                rookMovesBitmask ^= currentBit;
+                rookMovesBitmask ^= bitmask;
             }
         }
 

@@ -1,12 +1,12 @@
 package com.maximilian.chess.enums;
 
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 
 import javax.annotation.Nonnull;
 import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 import static com.maximilian.chess.enums.Square.A1;
@@ -91,11 +91,11 @@ public enum Rank {
     SEVEN(EnumSet.of(A7, B7, C7, D7, E7, F7, G7, H7)),
     EIGHT(EnumSet.of(A8, B8, C8, D8, E8, F8, G8, H8));
 
-    private static final Map<Square, Rank> SQUARE_TO_RANK_MAP;
+    private static final Object2ObjectMap<Square, Rank> SQUARE_TO_RANK_MAP;
 
     static {
         Square[] squares = Square.values();
-        SQUARE_TO_RANK_MAP = new HashMap<>(squares.length, 1.0F);
+        SQUARE_TO_RANK_MAP = new Object2ObjectOpenHashMap<>(squares.length, 1.0F);
         for (Square square : squares) {
             for (Rank rank : Rank.values()) {
                 if ((rank.bitmask & square.bitmask()) != EMPTY_BITMASK) {

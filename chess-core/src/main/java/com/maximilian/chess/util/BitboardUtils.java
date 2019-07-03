@@ -23,7 +23,7 @@ public class BitboardUtils {
     public static int countHighBitsInBitmask (long bitmask) {
         int count = 0;
         for (long mask = bitmask; mask != 0L; mask >>>= 1) {
-            if ((mask & 0x00000000000000001L) == 0x00000000000000001L) {
+            if ((mask & 1L) == 1L) {
                 count++;
             }
         }

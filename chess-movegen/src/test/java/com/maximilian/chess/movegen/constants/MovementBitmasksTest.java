@@ -275,13 +275,74 @@ public class MovementBitmasksTest {
                 .get(blockerBitmask & BISHOP_BLOCKER_MASKS.getLong(E8))));
         assertEquals(EnumSet.of(G6, F7, E8, G4, F3), BitboardUtils.getSquaresFromBitmask(BISHOP_MOVES.get(H5)
                 .get(blockerBitmask & BISHOP_BLOCKER_MASKS.getLong(H5))));
-        assertEquals(EnumSet.of(D5, C6, F5, D3, F3),
-                BitboardUtils.getSquaresFromBitmask(BISHOP_MOVES.get(E4)
-                        .get(blockerBitmask & BISHOP_BLOCKER_MASKS.getLong(E4))));
-        assertEquals(EnumSet.of(C5, E5, F6, C3, E3),
-                BitboardUtils.getSquaresFromBitmask(BISHOP_MOVES.get(D4)
-                        .get(blockerBitmask & BISHOP_BLOCKER_MASKS.getLong(D4))));
+        assertEquals(EnumSet.of(D5, C6, F5, D3, F3), BitboardUtils.getSquaresFromBitmask(BISHOP_MOVES.get(E4)
+                .get(blockerBitmask & BISHOP_BLOCKER_MASKS.getLong(E4))));
+        assertEquals(EnumSet.of(C5, E5, F6, C3, E3), BitboardUtils.getSquaresFromBitmask(BISHOP_MOVES.get(D4)
+                .get(blockerBitmask & BISHOP_BLOCKER_MASKS.getLong(D4))));
     }
 
-    // TODO - unit tests for rook moves with and without blockers.
+    @Test
+    public void movesForRookNoBlockers () {
+        assertEquals(EnumSet.of(A2, A3, A4, A5, A6, A7, A8, B1, C1, D1, E1, F1, G1, H1),
+                BitboardUtils.getSquaresFromBitmask(ROOK_MOVES.get(A1)
+                        .get(EMPTY_BITMASK)));
+        assertEquals(EnumSet.of(A7, A6, A5, A4, A3, A2, A1, B8, C8, D8, E8, F8, G8, H8),
+                BitboardUtils.getSquaresFromBitmask(ROOK_MOVES.get(A8)
+                        .get(EMPTY_BITMASK)));
+        assertEquals(EnumSet.of(H7, H6, H5, H4, H3, H2, H1, G8, F8, E8, D8, C8, B8, A8),
+                BitboardUtils.getSquaresFromBitmask(ROOK_MOVES.get(H8)
+                        .get(EMPTY_BITMASK)));
+        assertEquals(EnumSet.of(H2, H3, H4, H5, H6, H7, H8, G1, F1, E1, D1, C1, B1, A1),
+                BitboardUtils.getSquaresFromBitmask(ROOK_MOVES.get(H1)
+                        .get(EMPTY_BITMASK)));
+        assertEquals(EnumSet.of(A3, A2, A1, A5, A6, A7, A8, B4, C4, D4, E4, F4, G4, H4),
+                BitboardUtils.getSquaresFromBitmask(ROOK_MOVES.get(A4)
+                        .get(EMPTY_BITMASK)));
+        assertEquals(EnumSet.of(C1, B1, A1, E1, F1, G1, H1, D2, D3, D4, D5, D6, D7, D8),
+                BitboardUtils.getSquaresFromBitmask(ROOK_MOVES.get(D1)
+                        .get(EMPTY_BITMASK)));
+        assertEquals(EnumSet.of(D8, C8, B8, A8, F8, G8, H8, E7, E6, E5, E4, E3, E2, E1),
+                BitboardUtils.getSquaresFromBitmask(ROOK_MOVES.get(E8)
+                        .get(EMPTY_BITMASK)));
+        assertEquals(EnumSet.of(H4, H3, H2, H1, H6, H7, H8, G5, F5, E5, D5, C5, B5, A5),
+                BitboardUtils.getSquaresFromBitmask(ROOK_MOVES.get(H5)
+                        .get(EMPTY_BITMASK)));
+        assertEquals(EnumSet.of(D4, C4, B4, A4, F4, G4, H4, E3, E2, E1, E5, E6, E7, E8),
+                BitboardUtils.getSquaresFromBitmask(ROOK_MOVES.get(E4)
+                        .get(EMPTY_BITMASK)));
+        assertEquals(EnumSet.of(D3, D2, D1, D5, D6, D7, D8, C4, B4, A4, E4, F4, G4, H4),
+                BitboardUtils.getSquaresFromBitmask(ROOK_MOVES.get(D4)
+                        .get(EMPTY_BITMASK)));
+    }
+
+    @Test
+    public void movesForRookWithBlockers () {
+        long blockerBitmask = BitboardUtils.getBitmaskFromSquares(
+                EnumSet.of(A5, B5, C5, D5, E5, F5, G5, H5, F1, F2, F3, F4, F6, F7, F8));
+        assertEquals(EnumSet.of(A2, A3, A4, A5, B1, C1, D1, E1, F1), BitboardUtils.getSquaresFromBitmask(
+                ROOK_MOVES.get(A1)
+                        .get(blockerBitmask & ROOK_BLOCKER_MASKS.getLong(A1))));
+        assertEquals(EnumSet.of(A7, A6, A5, B8, C8, D8, E8, F8), BitboardUtils.getSquaresFromBitmask(ROOK_MOVES.get(A8)
+                .get(blockerBitmask & ROOK_BLOCKER_MASKS.getLong(A8))));
+        assertEquals(EnumSet.of(H7, H6, H5, G8, F8), BitboardUtils.getSquaresFromBitmask(ROOK_MOVES.get(H8)
+                .get(blockerBitmask & ROOK_BLOCKER_MASKS.getLong(H8))));
+        assertEquals(EnumSet.of(H2, H3, H4, H5, G1, F1), BitboardUtils.getSquaresFromBitmask(ROOK_MOVES.get(H1)
+                .get(blockerBitmask & ROOK_BLOCKER_MASKS.getLong(H1))));
+        assertEquals(EnumSet.of(A5, A3, A2, A1, B4, C4, D4, E4, F4), BitboardUtils.getSquaresFromBitmask(
+                ROOK_MOVES.get(A4)
+                        .get(blockerBitmask & ROOK_BLOCKER_MASKS.getLong(A4))));
+        assertEquals(EnumSet.of(D2, D3, D4, D5, E1, F1, C1, B1, A1), BitboardUtils.getSquaresFromBitmask(
+                ROOK_MOVES.get(D1)
+                        .get(blockerBitmask & ROOK_BLOCKER_MASKS.getLong(D1))));
+        assertEquals(EnumSet.of(E7, E6, E5, D8, C8, B8, A8, F8), BitboardUtils.getSquaresFromBitmask(ROOK_MOVES.get(E8)
+                .get(blockerBitmask & ROOK_BLOCKER_MASKS.getLong(E8))));
+        assertEquals(EnumSet.of(H5, H3, H2, H1, G4, F4), BitboardUtils.getSquaresFromBitmask(ROOK_MOVES.get(H4)
+                .get(blockerBitmask & ROOK_BLOCKER_MASKS.getLong(H4))));
+        assertEquals(EnumSet.of(E3, E2, E1, E5, D4, C4, B4, A4, F4), BitboardUtils.getSquaresFromBitmask(
+                ROOK_MOVES.get(E4)
+                        .get(blockerBitmask & ROOK_BLOCKER_MASKS.getLong(E4))));
+        assertEquals(EnumSet.of(D3, D2, D1, D5, C4, B4, A4, E4, F4), BitboardUtils.getSquaresFromBitmask(
+                ROOK_MOVES.get(D4)
+                        .get(blockerBitmask & ROOK_BLOCKER_MASKS.getLong(D4))));
+    }
 }

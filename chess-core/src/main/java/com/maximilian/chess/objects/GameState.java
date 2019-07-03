@@ -14,6 +14,7 @@ import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import static com.maximilian.chess.enums.Color.BLACK;
 import static com.maximilian.chess.enums.Color.WHITE;
@@ -50,7 +51,7 @@ public class GameState {
      * The {@link CastlingRight}s to the set of available castling rights for the game state. Will
      * never be null, may be empty.
      */
-    @Getter private EnumSet<CastlingRight> castlingRights;
+    @Getter private Set<CastlingRight> castlingRights;
     /**
      * The {@link Square} that indicates where a legal en passant capture may be performed for the current
      * game state. May be null (if no eligible en passant square exists).
@@ -283,7 +284,7 @@ public class GameState {
         }
 
         // Update castling rights.
-        EnumSet<CastlingRight> newCastlingRights = EnumSet.copyOf(castlingRights);
+        Set<CastlingRight> newCastlingRights = EnumSet.copyOf(castlingRights);
         if (!newCastlingRights.isEmpty()) {
             if (move.isCastling() || move.piece() == KING) {
                 if (move.color() == WHITE) {
@@ -372,7 +373,7 @@ public class GameState {
     public static final class Builder {
         private int boardHash = 0;
         private Color colorToMove = WHITE;
-        private EnumSet<CastlingRight> castlingRights = EnumSet.noneOf(CastlingRight.class);
+        private Set<CastlingRight> castlingRights = EnumSet.noneOf(CastlingRight.class);
         private Square enPassantSquare = null;
         private int halfMoveClock = 0;
         private int fullMoveNumber = 1;
@@ -417,7 +418,7 @@ public class GameState {
          * @return The updated {@link Builder}. Will never be null.
          */
         @Nonnull
-        public Builder withCastlingRights (@Nullable EnumSet<CastlingRight> castlingRights) {
+        public Builder withCastlingRights (@Nullable Set<CastlingRight> castlingRights) {
             if (castlingRights != null) {
                 this.castlingRights = castlingRights;
             }

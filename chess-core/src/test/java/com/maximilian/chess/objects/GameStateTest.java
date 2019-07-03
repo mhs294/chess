@@ -11,6 +11,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import java.util.EnumSet;
+import java.util.Set;
 
 import static com.maximilian.chess.enums.Color.BLACK;
 import static com.maximilian.chess.enums.Color.WHITE;
@@ -237,6 +238,7 @@ public class GameStateTest {
         assertFalse(gameStateTwo.canDeclareDraw());
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Test
     public void testDoMoveFailureBecauseNullBoard () {
         exception.expect(IllegalArgumentException.class);
@@ -246,6 +248,7 @@ public class GameStateTest {
         gameState.doMove(null, Move.create(WHITE, PAWN, E2, E4));
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Test
     public void testDoMoveFailureBecauseNullMove () {
         exception.expect(IllegalArgumentException.class);
@@ -292,7 +295,7 @@ public class GameStateTest {
 
     @Test
     public void testDoMoveFailureBecauseWhiteDoesNotHaveKingsideCastlingRights () {
-        EnumSet<CastlingRight> castlingRights = EnumSet.of(CastlingRight.WHITE_QUEENSIDE);
+        Set<CastlingRight> castlingRights = EnumSet.of(CastlingRight.WHITE_QUEENSIDE);
 
         exception.expect(IllegalMoveException.class);
         exception.expectMessage(
@@ -313,7 +316,7 @@ public class GameStateTest {
 
     @Test
     public void testDoMoveFailureBecauseWhiteDoesNotHaveQueensideCastlingRights () {
-        EnumSet<CastlingRight> castlingRights = EnumSet.of(CastlingRight.WHITE_KINGSIDE);
+        Set<CastlingRight> castlingRights = EnumSet.of(CastlingRight.WHITE_KINGSIDE);
 
         exception.expect(IllegalMoveException.class);
         exception.expectMessage(
@@ -334,7 +337,7 @@ public class GameStateTest {
 
     @Test
     public void testDoMoveFailureBecauseBlackDoesNotHaveKingsideCastlingRights () {
-        EnumSet<CastlingRight> castlingRights = EnumSet.of(CastlingRight.BLACK_QUEENSIDE);
+        Set<CastlingRight> castlingRights = EnumSet.of(CastlingRight.BLACK_QUEENSIDE);
 
         exception.expect(IllegalMoveException.class);
         exception.expectMessage(
@@ -355,7 +358,7 @@ public class GameStateTest {
 
     @Test
     public void testDoMoveFailureBecauseBlackDoesNotHaveQueensideCastlingRights () {
-        EnumSet<CastlingRight> castlingRights = EnumSet.of(CastlingRight.BLACK_KINGSIDE);
+        Set<CastlingRight> castlingRights = EnumSet.of(CastlingRight.BLACK_KINGSIDE);
 
         exception.expect(IllegalMoveException.class);
         exception.expectMessage(
@@ -621,6 +624,7 @@ public class GameStateTest {
         assertNull(newGameState.enPassantSquare());
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Test
     public void testUndoMoveFailureBecauseNullBoard () {
         exception.expect(IllegalArgumentException.class);
@@ -630,6 +634,7 @@ public class GameStateTest {
         startingGameState.undoMove(null, Move.create(WHITE, PAWN, E2, E4));
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Test
     public void testUndoMoveFailureBecauseNullMove () {
         exception.expect(IllegalArgumentException.class);

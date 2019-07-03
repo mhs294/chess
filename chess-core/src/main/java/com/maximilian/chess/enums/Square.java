@@ -2,13 +2,13 @@ package com.maximilian.chess.enums;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.HashMap;
-import java.util.Map;
 
 import static com.maximilian.chess.enums.Square.Type.DARK;
 import static com.maximilian.chess.enums.Square.Type.LIGHT;
@@ -86,7 +86,7 @@ public enum Square {
     H8(63, DARK);
 
     private static final Int2ObjectMap<Square> INDEX_TO_SQUARE_MAP;
-    private static final Map<Long, Square> BITMASK_TO_SQUARE_MAP;
+    private static final Long2ObjectMap<Square> BITMASK_TO_SQUARE_MAP;
 
     static {
         Square[] squares = Square.values();
@@ -95,7 +95,7 @@ public enum Square {
             INDEX_TO_SQUARE_MAP.put(square.index, square);
         }
 
-        BITMASK_TO_SQUARE_MAP = new HashMap<>(squares.length, 1.0F);
+        BITMASK_TO_SQUARE_MAP = new Long2ObjectOpenHashMap<>(squares.length, 1.0F);
         for (Square square : squares) {
             BITMASK_TO_SQUARE_MAP.put(square.bitmask, square);
         }

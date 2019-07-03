@@ -253,6 +253,7 @@ public class BoardTest {
         assertEquals(16, STARTING_BOARD.blackPiecesCount());
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Test
     public void testDoMoveFailureBecauseNullMove () {
         exception.expect(IllegalArgumentException.class);
@@ -592,6 +593,7 @@ public class BoardTest {
         assertEquals(Pair.of(BLACK, ROOK), boardMap.get(D8));
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Test
     public void testUndoMoveFailureBecauseNullMove () {
         exception.expect(IllegalArgumentException.class);
