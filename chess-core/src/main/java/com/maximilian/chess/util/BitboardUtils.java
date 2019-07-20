@@ -34,15 +34,15 @@ public final class BitboardUtils {
     /**
      * Gets the {@link Set} of {@link Square}s represented by the high bits in the specified bitmask.
      *
-     * @param movementBitmask The bitmask to get the {@link Square}s from.
+     * @param bitmask The bitmask to get the {@link Square}s from.
      * @return The {@link Set} of {@link Square}s represented by the high bits in the specified bitmask. Will never
      * be null, may be empty.
      */
     @Nonnull
-    public static Set<Square> getSquaresFromBitmask (long movementBitmask) {
-        Set<Square> targetSquares = new HashSet<>(countHighBitsInBitmask(movementBitmask));
+    public static Set<Square> getSquaresFromBitmask (long bitmask) {
+        Set<Square> targetSquares = new HashSet<>(countHighBitsInBitmask(bitmask));
         for (Square square : Square.values()) {
-            if ((square.bitmask() & movementBitmask) == EMPTY_BITMASK) {
+            if ((square.bitmask() & bitmask) == EMPTY_BITMASK) {
                 continue;
             }
 

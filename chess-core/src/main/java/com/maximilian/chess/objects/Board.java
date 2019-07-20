@@ -14,6 +14,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import static com.maximilian.chess.enums.Color.BLACK;
 import static com.maximilian.chess.enums.Color.WHITE;
@@ -294,7 +295,147 @@ public class Board {
     }
 
     /**
-     * Creates a bitmask representing all of the occupied squares on the {@link Board}.
+     * Gets the {@link Set} of {@link Square}s containing white pawns.
+     *
+     * @return The {@link Set} of {@link Square}s containing white pawns. Will never be null, may be empty (if the
+     * {@link Board} contains no white pawns).
+     */
+    @Nonnull
+    public Set<Square> whitePawnSquares () {
+        return BitboardUtils.getSquaresFromBitmask(whitePawnsBitmask);
+    }
+
+    /**
+     * Gets the {@link Set} of {@link Square}s containing white knights.
+     *
+     * @return The {@link Set} of {@link Square}s containing white knights. Will never be null, may be empty (if the
+     * {@link Board} contains no white knights).
+     */
+    @Nonnull
+    public Set<Square> whiteKnightSquares () {
+        return BitboardUtils.getSquaresFromBitmask(whiteKnightsBitmask);
+    }
+
+    /**
+     * Gets the {@link Set} of {@link Square}s containing white bishops.
+     *
+     * @return The {@link Set} of {@link Square}s containing white bishops. Will never be null, may be empty (if the
+     * {@link Board} contains no white bishops).
+     */
+    @Nonnull
+    public Set<Square> whiteBishopSquares () {
+        return BitboardUtils.getSquaresFromBitmask(whiteBishopsBitmask);
+    }
+
+    /**
+     * Gets the {@link Set} of {@link Square}s containing white rooks.
+     *
+     * @return The {@link Set} of {@link Square}s containing white rooks. Will never be null, may be empty (if the
+     * {@link Board} contains no white rooks).
+     */
+    @Nonnull
+    public Set<Square> whiteRookSquares () {
+        return BitboardUtils.getSquaresFromBitmask(whiteRooksBitmask);
+    }
+
+    /**
+     * Gets the {@link Set} of {@link Square}s containing white queens.
+     *
+     * @return The {@link Set} of {@link Square}s containing white queens. Will never be null, may be empty (if the
+     * {@link Board} contains no white queens).
+     */
+    @Nonnull
+    public Set<Square> whiteQueenSquares () {
+        return BitboardUtils.getSquaresFromBitmask(whiteQueensBitmask);
+    }
+
+    /**
+     * Gets the {@link Square} containing the white king.
+     *
+     * @return The {@link Square} containing the white king. Will never be null.
+     */
+    @Nonnull
+    public Square whiteKingSquare () {
+        Square square = Square.fromBitmask(whiteKingBitmask);
+        if (square == null) {
+            throw new IllegalStateException("board does not contain a white king.");
+        }
+
+        return square;
+    }
+
+    /**
+     * Gets the {@link Set} of {@link Square}s containing black pawns.
+     *
+     * @return The {@link Set} of {@link Square}s containing black pawns. Will never be null, may be empty (if the
+     * {@link Board} contains no black pawns).
+     */
+    @Nonnull
+    public Set<Square> blackPawnSquares () {
+        return BitboardUtils.getSquaresFromBitmask(blackPawnsBitmask);
+    }
+
+    /**
+     * Gets the {@link Set} of {@link Square}s containing black knights.
+     *
+     * @return The {@link Set} of {@link Square}s containing black knights. Will never be null, may be empty (if the
+     * {@link Board} contains no black knights).
+     */
+    @Nonnull
+    public Set<Square> blackKnightSquares () {
+        return BitboardUtils.getSquaresFromBitmask(blackKnightsBitmask);
+    }
+
+    /**
+     * Gets the {@link Set} of {@link Square}s containing black bishops.
+     *
+     * @return The {@link Set} of {@link Square}s containing black bishops. Will never be null, may be empty (if the
+     * {@link Board} contains no black bishops).
+     */
+    @Nonnull
+    public Set<Square> blackBishopSquares () {
+        return BitboardUtils.getSquaresFromBitmask(blackBishopsBitmask);
+    }
+
+    /**
+     * Gets the {@link Set} of {@link Square}s containing black rooks.
+     *
+     * @return The {@link Set} of {@link Square}s containing black rooks. Will never be null, may be empty (if the
+     * {@link Board} contains no black rooks).
+     */
+    @Nonnull
+    public Set<Square> blackRookSquares () {
+        return BitboardUtils.getSquaresFromBitmask(blackRooksBitmask);
+    }
+
+    /**
+     * Gets the {@link Set} of {@link Square}s containing black queens.
+     *
+     * @return The {@link Set} of {@link Square}s containing black queens. Will never be null, may be empty (if the
+     * {@link Board} contains no black queens).
+     */
+    @Nonnull
+    public Set<Square> blackQueenSquares () {
+        return BitboardUtils.getSquaresFromBitmask(blackQueensBitmask);
+    }
+
+    /**
+     * Gets the {@link Square} containing the black king.
+     *
+     * @return The {@link Square} containing the black king. Will never be null.
+     */
+    @Nonnull
+    public Square blackKingSquare () {
+        Square square = Square.fromBitmask(blackKingBitmask);
+        if (square == null) {
+            throw new IllegalStateException("board does not contain a black king.");
+        }
+
+        return square;
+    }
+
+    /**
+     * Gets a bitmask representing all of the occupied squares on the {@link Board}.
      *
      * @return A bitmask representing all of the occupied squares on the {@link Board}.
      */
@@ -303,7 +444,17 @@ public class Board {
     }
 
     /**
-     * Creates a bitmask representing all of the vacant squares on the {@link Board}.
+     * Gets the {@link Set} of occupied {@link Square}s on the {@link Board}.
+     *
+     * @return The {@link Set} of occupied {@link Square}s on the {@link Board}. Will never be null, may be empty (if
+     * the {@link Board} is empty).
+     */
+    public Set<Square> occupiedSquares () {
+        return BitboardUtils.getSquaresFromBitmask(occupiedBitmask());
+    }
+
+    /**
+     * Gets a bitmask representing all of the vacant squares on the {@link Board}.
      *
      * @return A bitmask representing all of the vacant squares on the {@link Board}.
      */
@@ -312,7 +463,17 @@ public class Board {
     }
 
     /**
-     * Creates a bitmask representing all of the squares on the {@link Board} occupied by white pieces.
+     * Gets the {@link Set} of vacant {@link Square}s on the {@link Board}.
+     *
+     * @return The {@link Set} of vacant {@link Square}s on the {@link Board}. Will never be null, may be empty (if
+     * the {@link Board} is full).
+     */
+    public Set<Square> vacantSquares () {
+        return BitboardUtils.getSquaresFromBitmask(vacantBitmask());
+    }
+
+    /**
+     * Gets a bitmask representing all of the squares on the {@link Board} occupied by white pieces.
      *
      * @return A bitmask representing all of the squares on the {@link Board} occupied by white pieces.
      */
@@ -322,13 +483,33 @@ public class Board {
     }
 
     /**
-     * Creates a bitmask representing all of the squares on the {@link Board} occupied by white pieces.
+     * Gets the {@link Set} of {@link Square}s occupied by white pieces on the {@link Board}.
+     *
+     * @return The {@link Set} of {@link Square}s occupied by white pieces on the {@link Board}. Will never be null,
+     * may be empty (if the {@link Board} has no white pieces).
+     */
+    public Set<Square> whiteOccupiedSquares () {
+        return BitboardUtils.getSquaresFromBitmask(whiteOccupiedBitmask());
+    }
+
+    /**
+     * Gets a bitmask representing all of the squares on the {@link Board} occupied by white pieces.
      *
      * @return A bitmask representing all of the squares on the {@link Board} occupied by white pieces.
      */
     public long blackOccupiedBitmask () {
         return blackPawnsBitmask | blackKnightsBitmask | blackBishopsBitmask | blackRooksBitmask | blackQueensBitmask |
                 blackKingBitmask;
+    }
+
+    /**
+     * Gets the {@link Set} of {@link Square}s occupied by black pieces on the {@link Board}.
+     *
+     * @return The {@link Set} of {@link Square}s occupied by black pieces on the {@link Board}. Will never be null,
+     * may be empty (if the {@link Board} has no black pieces).
+     */
+    public Set<Square> blackOccupiedSquares () {
+        return BitboardUtils.getSquaresFromBitmask(blackOccupiedBitmask());
     }
 
     /**

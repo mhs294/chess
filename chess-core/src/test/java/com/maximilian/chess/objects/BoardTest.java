@@ -1,5 +1,6 @@
 package com.maximilian.chess.objects;
 
+import com.google.common.collect.Sets;
 import com.maximilian.chess.enums.Color;
 import com.maximilian.chess.enums.Piece;
 import com.maximilian.chess.enums.Square;
@@ -146,7 +147,67 @@ public class BoardTest {
     }
 
     @Test
-    public void testVacantSquares () {
+    public void testWhitePawnSquares () {
+        assertEquals(Sets.newHashSet(A2, B2, C2, D2, E2, F2, G2, H2), STARTING_BOARD.whitePawnSquares());
+    }
+
+    @Test
+    public void testWhiteKnightSquares () {
+        assertEquals(Sets.newHashSet(B1, G1), STARTING_BOARD.whiteKnightSquares());
+    }
+
+    @Test
+    public void testWhiteBishopSquares () {
+        assertEquals(Sets.newHashSet(C1, F1), STARTING_BOARD.whiteBishopSquares());
+    }
+
+    @Test
+    public void testWhiteRookSquares () {
+        assertEquals(Sets.newHashSet(A1, H1), STARTING_BOARD.whiteRookSquares());
+    }
+
+    @Test
+    public void testWhiteQueenSquares () {
+        assertEquals(Sets.newHashSet(D1), STARTING_BOARD.whiteQueenSquares());
+    }
+
+    @Test
+    public void testWhiteKingSquare () {
+        assertEquals(E1, STARTING_BOARD.whiteKingSquare());
+    }
+
+    @Test
+    public void testBlackPawnSquares () {
+        assertEquals(Sets.newHashSet(A7, B7, C7, D7, E7, F7, G7, H7), STARTING_BOARD.blackPawnSquares());
+    }
+
+    @Test
+    public void testBlackKnightSquares () {
+        assertEquals(Sets.newHashSet(B8, G8), STARTING_BOARD.blackKnightSquares());
+    }
+
+    @Test
+    public void testBlackBishopSquares () {
+        assertEquals(Sets.newHashSet(C8, F8), STARTING_BOARD.blackBishopSquares());
+    }
+
+    @Test
+    public void testBlackRookSquares () {
+        assertEquals(Sets.newHashSet(A8, H8), STARTING_BOARD.blackRookSquares());
+    }
+
+    @Test
+    public void testBlackQueenSquares () {
+        assertEquals(Sets.newHashSet(D8), STARTING_BOARD.blackQueenSquares());
+    }
+
+    @Test
+    public void testBlackKingSquare () {
+        assertEquals(E8, STARTING_BOARD.blackKingSquare());
+    }
+
+    @Test
+    public void testVacant () {
         long expectedVacantBitmask = EMPTY_BITMASK;
         Set<Square> expectedVacantSquares = EnumSet.of(A3, A4, A5, A6, B3, B4, B5, B6, C3, C4, C5, C6, D3, D4, D5,
                 D6, E3, E4, E5, E6, F3, F4, F5, F6, G3, G4, G5, G6, H3, H4, H5, H6);
@@ -155,10 +216,11 @@ public class BoardTest {
         }
 
         assertEquals(expectedVacantBitmask, STARTING_BOARD.vacantBitmask());
+        assertEquals(expectedVacantSquares, STARTING_BOARD.vacantSquares());
     }
 
     @Test
-    public void testWhiteOccupiedSquares () {
+    public void testWhiteOccupied () {
         long expectedWhiteOccupiedBitmask = EMPTY_BITMASK;
         Set<Square> expectedWhiteOccupiedSquares = EnumSet.of(A1, B1, C1, D1, E1, F1, G1, H1, A2, B2, C2, D2, E2,
                 F2, G2, H2);
@@ -167,10 +229,11 @@ public class BoardTest {
         }
 
         assertEquals(expectedWhiteOccupiedBitmask, STARTING_BOARD.whiteOccupiedBitmask());
+        assertEquals(expectedWhiteOccupiedSquares, STARTING_BOARD.whiteOccupiedSquares());
     }
 
     @Test
-    public void testBlackOccupiedSquares () {
+    public void testBlackOccupied () {
         long expectedBlackOccupiedBitmask = EMPTY_BITMASK;
         Set<Square> expectedBlackOccupiedSquares = EnumSet.of(A7, B7, C7, D7, E7, F7, G7, H7, A8, B8, C8, D8, E8,
                 F8, G8, H8);
@@ -179,10 +242,11 @@ public class BoardTest {
         }
 
         assertEquals(expectedBlackOccupiedBitmask, STARTING_BOARD.blackOccupiedBitmask());
+        assertEquals(expectedBlackOccupiedSquares, STARTING_BOARD.blackOccupiedSquares());
     }
 
     @Test
-    public void testAllOccupiedSquares () {
+    public void testAllOccupied () {
         long expectedOccupiedBitmask = EMPTY_BITMASK;
         Set<Square> expectedOccupiedSquares = EnumSet.of(A1, B1, C1, D1, E1, F1, G1, H1, A2, B2, C2, D2, E2, F2,
                 G2, H2, A7, B7, C7, D7, E7, F7, G7, H7, A8, B8, C8, D8, E8, F8, G8, H8);
@@ -191,6 +255,7 @@ public class BoardTest {
         }
 
         assertEquals(expectedOccupiedBitmask, STARTING_BOARD.occupiedBitmask());
+        assertEquals(expectedOccupiedSquares, STARTING_BOARD.occupiedSquares());
     }
 
     @Test
