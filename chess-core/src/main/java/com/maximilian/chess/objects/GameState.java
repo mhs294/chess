@@ -235,26 +235,26 @@ public class GameState {
         if (move == null) {
             throw new IllegalArgumentException("move cannot be null.");
         } else if (move.color() != colorToMove) {
-            throw new IllegalMoveException("it is not " + move.color() + "'s turn to move.");
+            throw new IllegalMoveException("It is not " + move.color() + "'s turn to move.");
         } else if (move.enPassantCaptureSquare() != null && move.end() != enPassantSquare) {
             throw new IllegalMoveException(move,
-                    "illegal en passant square specified for move (legal en passant = " + enPassantSquare + ").");
+                    "Illegal en passant square specified for move (legal en passant = " + enPassantSquare + ").");
         } else if (move.isCastling()) {
             if (move.equals(Move.WHITE_KINGSIDE_CASTLE) && !castlingRights.contains(CastlingRight.WHITE_KINGSIDE)) {
                 throw new IllegalMoveException(move,
-                        "white does not have kingside castling rights (castling rights = " + castlingRights + ").");
+                        "White does not have kingside castling rights (castling rights = " + castlingRights + ").");
             } else if (move.equals(Move.WHITE_QUEENSIDE_CASTLE) &&
                     !castlingRights.contains(CastlingRight.WHITE_QUEENSIDE)) {
                 throw new IllegalMoveException(move,
-                        "white does not have queenside castling rights (castling rights = " + castlingRights + ").");
+                        "White does not have queenside castling rights (castling rights = " + castlingRights + ").");
             } else if (move.equals(Move.BLACK_KINGSIDE_CASTLE) &&
                     !castlingRights.contains(CastlingRight.BLACK_KINGSIDE)) {
                 throw new IllegalMoveException(move,
-                        "black does not have kingside castling rights (castling rights = " + castlingRights + ").");
+                        "Black does not have kingside castling rights (castling rights = " + castlingRights + ").");
             } else if (move.equals(Move.BLACK_QUEENSIDE_CASTLE) &&
                     !castlingRights.contains(CastlingRight.BLACK_QUEENSIDE)) {
                 throw new IllegalMoveException(move,
-                        "black does not have queenside castling rights (castling rights = " + castlingRights + ").");
+                        "Black does not have queenside castling rights (castling rights = " + castlingRights + ").");
             }
         }
 
