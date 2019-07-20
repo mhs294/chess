@@ -254,39 +254,39 @@ public class Board {
     public Object2ObjectMap<Square, Pair<Color, Piece>> toMap () {
         Object2ObjectMap<Square, Pair<Color, Piece>> squareToPieceMap = new Object2ObjectOpenHashMap<>(32, 1.0F);
         for (Square square : Square.values()) {
-            if ((square.bitmask() & occupiedBitmask()) == 0L) {
+            if ((square.bitmask() & occupiedBitmask()) == EMPTY_BITMASK) {
                 // The current square is vacant.
                 continue;
             }
 
-            if ((square.bitmask() & whiteOccupiedBitmask()) != 0L) {
+            if ((square.bitmask() & whiteOccupiedBitmask()) != EMPTY_BITMASK) {
                 // The piece in the current square is white.
-                if ((square.bitmask() & whitePawnsBitmask) != 0L) {
+                if ((square.bitmask() & whitePawnsBitmask) != EMPTY_BITMASK) {
                     squareToPieceMap.put(square, Pair.of(WHITE, PAWN));
-                } else if ((square.bitmask() & whiteKnightsBitmask) != 0L) {
+                } else if ((square.bitmask() & whiteKnightsBitmask) != EMPTY_BITMASK) {
                     squareToPieceMap.put(square, Pair.of(WHITE, KNIGHT));
-                } else if ((square.bitmask() & whiteBishopsBitmask) != 0L) {
+                } else if ((square.bitmask() & whiteBishopsBitmask) != EMPTY_BITMASK) {
                     squareToPieceMap.put(square, Pair.of(WHITE, BISHOP));
-                } else if ((square.bitmask() & whiteRooksBitmask) != 0L) {
+                } else if ((square.bitmask() & whiteRooksBitmask) != EMPTY_BITMASK) {
                     squareToPieceMap.put(square, Pair.of(WHITE, ROOK));
-                } else if ((square.bitmask() & whiteQueensBitmask) != 0L) {
+                } else if ((square.bitmask() & whiteQueensBitmask) != EMPTY_BITMASK) {
                     squareToPieceMap.put(square, Pair.of(WHITE, QUEEN));
-                } else if ((square.bitmask() & whiteKingBitmask) != 0L) {
+                } else if ((square.bitmask() & whiteKingBitmask) != EMPTY_BITMASK) {
                     squareToPieceMap.put(square, Pair.of(WHITE, KING));
                 }
-            } else if ((square.bitmask() & blackOccupiedBitmask()) != 0L) {
+            } else if ((square.bitmask() & blackOccupiedBitmask()) != EMPTY_BITMASK) {
                 // The piece in the current square is black.
-                if ((square.bitmask() & blackPawnsBitmask) != 0L) {
+                if ((square.bitmask() & blackPawnsBitmask) != EMPTY_BITMASK) {
                     squareToPieceMap.put(square, Pair.of(BLACK, PAWN));
-                } else if ((square.bitmask() & blackKnightsBitmask) != 0L) {
+                } else if ((square.bitmask() & blackKnightsBitmask) != EMPTY_BITMASK) {
                     squareToPieceMap.put(square, Pair.of(BLACK, KNIGHT));
-                } else if ((square.bitmask() & blackBishopsBitmask) != 0L) {
+                } else if ((square.bitmask() & blackBishopsBitmask) != EMPTY_BITMASK) {
                     squareToPieceMap.put(square, Pair.of(BLACK, BISHOP));
-                } else if ((square.bitmask() & blackRooksBitmask) != 0L) {
+                } else if ((square.bitmask() & blackRooksBitmask) != EMPTY_BITMASK) {
                     squareToPieceMap.put(square, Pair.of(BLACK, ROOK));
-                } else if ((square.bitmask() & blackQueensBitmask) != 0L) {
+                } else if ((square.bitmask() & blackQueensBitmask) != EMPTY_BITMASK) {
                     squareToPieceMap.put(square, Pair.of(BLACK, QUEEN));
-                } else if ((square.bitmask() & blackKingBitmask) != 0L) {
+                } else if ((square.bitmask() & blackKingBitmask) != EMPTY_BITMASK) {
                     squareToPieceMap.put(square, Pair.of(BLACK, KING));
                 }
             }
@@ -763,7 +763,7 @@ public class Board {
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted") // This method is intended to be consumed with the "!" operator.
     private boolean addPieceToSquare (@Nonnull Color color, @Nonnull Piece piece, @Nonnull Square square) {
-        if ((square.bitmask() & vacantBitmask()) == 0L) {
+        if ((square.bitmask() & vacantBitmask()) == EMPTY_BITMASK) {
             // The square we are trying to add the piece to is occupied.
             return false;
         }
@@ -834,42 +834,42 @@ public class Board {
             case WHITE:
                 switch (piece) {
                     case PAWN:
-                        if ((square.bitmask() & whitePawnsBitmask) == 0L) {
+                        if ((square.bitmask() & whitePawnsBitmask) == EMPTY_BITMASK) {
                             // There is no white pawn at the square we are trying to remove it from.
                             return false;
                         }
                         whitePawnsBitmask &= removeBitmask;
                         break;
                     case KNIGHT:
-                        if ((square.bitmask() & whiteKnightsBitmask) == 0L) {
+                        if ((square.bitmask() & whiteKnightsBitmask) == EMPTY_BITMASK) {
                             // There is no white knight at the square we are trying to remove it from.
                             return false;
                         }
                         whiteKnightsBitmask &= removeBitmask;
                         break;
                     case BISHOP:
-                        if ((square.bitmask() & whiteBishopsBitmask) == 0L) {
+                        if ((square.bitmask() & whiteBishopsBitmask) == EMPTY_BITMASK) {
                             // There is no white bishop at the square we are trying to remove it from.
                             return false;
                         }
                         whiteBishopsBitmask &= removeBitmask;
                         break;
                     case ROOK:
-                        if ((square.bitmask() & whiteRooksBitmask) == 0L) {
+                        if ((square.bitmask() & whiteRooksBitmask) == EMPTY_BITMASK) {
                             // There is no white rook at the square we are trying to remove it from.
                             return false;
                         }
                         whiteRooksBitmask &= removeBitmask;
                         break;
                     case QUEEN:
-                        if ((square.bitmask() & whiteQueensBitmask) == 0L) {
+                        if ((square.bitmask() & whiteQueensBitmask) == EMPTY_BITMASK) {
                             // There is no white queen at the square we are trying to remove it from.
                             return false;
                         }
                         whiteQueensBitmask &= removeBitmask;
                         break;
                     case KING:
-                        if ((square.bitmask() & whiteKingBitmask) == 0L) {
+                        if ((square.bitmask() & whiteKingBitmask) == EMPTY_BITMASK) {
                             // There is no white king at the square we are trying to remove it from.
                             return false;
                         }
@@ -880,42 +880,42 @@ public class Board {
             case BLACK:
                 switch (piece) {
                     case PAWN:
-                        if ((square.bitmask() & blackPawnsBitmask) == 0L) {
+                        if ((square.bitmask() & blackPawnsBitmask) == EMPTY_BITMASK) {
                             // There is no black pawn at the square we are trying to remove it from.
                             return false;
                         }
                         blackPawnsBitmask &= removeBitmask;
                         break;
                     case KNIGHT:
-                        if ((square.bitmask() & blackKnightsBitmask) == 0L) {
+                        if ((square.bitmask() & blackKnightsBitmask) == EMPTY_BITMASK) {
                             // There is no black knight at the square we are trying to remove it from.
                             return false;
                         }
                         blackKnightsBitmask &= removeBitmask;
                         break;
                     case BISHOP:
-                        if ((square.bitmask() & blackBishopsBitmask) == 0L) {
+                        if ((square.bitmask() & blackBishopsBitmask) == EMPTY_BITMASK) {
                             // There is no black bishop at the square we are trying to remove it from.
                             return false;
                         }
                         blackBishopsBitmask &= removeBitmask;
                         break;
                     case ROOK:
-                        if ((square.bitmask() & blackRooksBitmask) == 0L) {
+                        if ((square.bitmask() & blackRooksBitmask) == EMPTY_BITMASK) {
                             // There is no black rook at the square we are trying to remove it from.
                             return false;
                         }
                         blackRooksBitmask &= removeBitmask;
                         break;
                     case QUEEN:
-                        if ((square.bitmask() & blackQueensBitmask) == 0L) {
+                        if ((square.bitmask() & blackQueensBitmask) == EMPTY_BITMASK) {
                             // There is no black queen at the square we are trying to remove it from.
                             return false;
                         }
                         blackQueensBitmask &= removeBitmask;
                         break;
                     case KING:
-                        if ((square.bitmask() & blackKingBitmask) == 0L) {
+                        if ((square.bitmask() & blackKingBitmask) == EMPTY_BITMASK) {
                             // There is no black king at the square we are trying to remove it from.
                             return false;
                         }
