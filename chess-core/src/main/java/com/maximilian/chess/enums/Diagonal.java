@@ -157,4 +157,19 @@ public enum Diagonal {
     public static Set<Diagonal> fromSquare (@Nonnull Square square) {
         return SQUARE_TO_DIAGONALS_MAP.get(square);
     }
+
+    /**
+     * Gets the bitwise-or combined bitmask from the specified {@link Set} of {@link Diagonal}s.
+     *
+     * @param diagonals The {@link Set} of {@link Diagonal}s to get the combined bitmask for. Cannot be null.
+     * @return The bitwise-or combined bitmask from the specified {@link Set} of {@link Diagonal}s.
+     */
+    public static long combinedBitmask (@Nonnull Set<Diagonal> diagonals) {
+        long combinedBitmask = EMPTY_BITMASK;
+        for (Diagonal diagonal : diagonals) {
+            combinedBitmask |= diagonal.bitmask;
+        }
+
+        return combinedBitmask;
+    }
 }

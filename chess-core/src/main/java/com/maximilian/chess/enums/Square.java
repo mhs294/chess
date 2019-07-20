@@ -9,6 +9,7 @@ import lombok.experimental.Accessors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Set;
 
 import static com.maximilian.chess.enums.Square.Type.DARK;
 import static com.maximilian.chess.enums.Square.Type.LIGHT;
@@ -144,6 +145,16 @@ public enum Square {
     @Nonnull
     public Rank rank () {
         return Rank.getFromSquare(this);
+    }
+
+    /**
+     * Gets the {@link Set} of {@link Diagonal}s for this {@link Square}.
+     *
+     * @return The {@link Set} of {@link Diagonal}s for this {@link Square}. Will never be null.
+     */
+    @Nonnull
+    public Set<Diagonal> diagonals () {
+        return Diagonal.fromSquare(this);
     }
 
     /**
