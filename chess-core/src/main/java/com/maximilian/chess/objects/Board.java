@@ -5,6 +5,8 @@ import com.maximilian.chess.enums.Piece;
 import com.maximilian.chess.enums.Square;
 import com.maximilian.chess.exception.IllegalMoveException;
 import com.maximilian.chess.util.BitboardUtils;
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.experimental.Accessors;
@@ -12,8 +14,6 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 import static com.maximilian.chess.enums.Color.BLACK;
@@ -242,16 +242,16 @@ public class Board {
     }
 
     /**
-     * Creates a {@link Map} representation of the state of the {@link Board}.
+     * Creates a {@link Object2ObjectMap} representation of the state of the {@link Board}.
      *
-     * @return A {@link Map} representation of the state of the {@link Board}, using {@link Square} keys and
-     * {@link Pair} values (which consist of {@link Color} and {@link Piece}). Only occupied squares will be present
-     * in the map's key set, thus, if {@code null} is returned from {@link Map#get(Object)}, it is implied that the
-     * specified {@link Square} is vacant.
+     * @return A {@link Object2ObjectMap} representation of the state of the {@link Board}, using {@link Square} keys
+     * and {@link Pair} values (which consist of {@link Color} and {@link Piece}). Only occupied squares will be present
+     * in the map's key set, thus, if {@code null} is returned from {@link Object2ObjectMap#get(Object)}, it is
+     * implied that the specified {@link Square} is vacant.
      */
     @Nonnull
-    public Map<Square, Pair<Color, Piece>> toMap () {
-        Map<Square, Pair<Color, Piece>> squareToPieceMap = new HashMap<>(32);
+    public Object2ObjectMap<Square, Pair<Color, Piece>> toMap () {
+        Object2ObjectMap<Square, Pair<Color, Piece>> squareToPieceMap = new Object2ObjectOpenHashMap<>(32, 1.0F);
         for (Square square : Square.values()) {
             if ((square.bitmask() & occupiedBitmask()) == 0L) {
                 // The current square is vacant.
@@ -931,18 +931,18 @@ public class Board {
      * Represents a builder class for constructing a {@link Board}.
      */
     public static final class Builder {
-        private long whitePawns = 0x0000000000000000L;
-        private long whiteKnights = 0x0000000000000000L;
-        private long whiteBishops = 0x0000000000000000L;
-        private long whiteRooks = 0x0000000000000000L;
-        private long whiteQueens = 0x0000000000000000L;
-        private long whiteKing = 0x0000000000000000L;
-        private long blackPawns = 0x0000000000000000L;
-        private long blackKnights = 0x0000000000000000L;
-        private long blackBishops = 0x0000000000000000L;
-        private long blackRooks = 0x0000000000000000L;
-        private long blackQueens = 0x0000000000000000L;
-        private long blackKing = 0x0000000000000000L;
+        private long whitePawns = EMPTY_BITMASK;
+        private long whiteKnights = EMPTY_BITMASK;
+        private long whiteBishops = EMPTY_BITMASK;
+        private long whiteRooks = EMPTY_BITMASK;
+        private long whiteQueens = EMPTY_BITMASK;
+        private long whiteKing = EMPTY_BITMASK;
+        private long blackPawns = EMPTY_BITMASK;
+        private long blackKnights = EMPTY_BITMASK;
+        private long blackBishops = EMPTY_BITMASK;
+        private long blackRooks = EMPTY_BITMASK;
+        private long blackQueens = EMPTY_BITMASK;
+        private long blackKing = EMPTY_BITMASK;
 
         /**
          * Adds white pawns to the board at the specified {@link Square}s.
