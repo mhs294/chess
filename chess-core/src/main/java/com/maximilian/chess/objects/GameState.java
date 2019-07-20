@@ -236,7 +236,7 @@ public class GameState {
             throw new IllegalArgumentException("move cannot be null.");
         } else if (move.color() != colorToMove) {
             throw new IllegalMoveException("it is not " + move.color() + "'s turn to move.");
-        } else if (move.enPassantCaptureSquare() != null && move.enPassantCaptureSquare() != enPassantSquare) {
+        } else if (move.enPassantCaptureSquare() != null && move.end() != enPassantSquare) {
             throw new IllegalMoveException(move,
                     "illegal en passant square specified for move (legal en passant = " + enPassantSquare + ").");
         } else if (move.isCastling()) {
