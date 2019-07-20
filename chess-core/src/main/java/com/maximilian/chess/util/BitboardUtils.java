@@ -13,7 +13,7 @@ import static com.maximilian.chess.objects.Board.EMPTY_BITMASK;
  *
  * @author Maximilian Schroeder
  */
-public class BitboardUtils {
+public final class BitboardUtils {
     /**
      * Counts the number of high bits in the specified bitmask.
      *

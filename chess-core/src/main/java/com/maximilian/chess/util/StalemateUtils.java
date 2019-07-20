@@ -11,7 +11,7 @@ import static com.maximilian.chess.objects.Board.LIGHT_SQUARES_BITMASK;
  *
  * @author Maximilian Schroeder
  */
-public class StalemateUtils {
+public final class StalemateUtils {
     /**
      * Determines if the current {@link GameState} represents a stalemate due to insufficient mating material (e.g. -
      * king and bishop vs. king).
