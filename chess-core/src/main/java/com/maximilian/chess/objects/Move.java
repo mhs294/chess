@@ -258,7 +258,11 @@ public class Move {
      */
     @Nonnull
     public Color color () {
-        return Color.fromIndex((bitmask >>> COLOR_START) & COLOR_MASK);
+        Color color = Color.fromIndex((bitmask >>> COLOR_START) & COLOR_MASK);
+        if (color == null) {
+            throw new IllegalStateException("move contained an invalid color bitmask: " + Long.toHexString(bitmask));
+        }
+        return color;
     }
 
     /**
@@ -268,7 +272,11 @@ public class Move {
      */
     @Nonnull
     public Square start () {
-        return Square.fromIndex((bitmask >>> START_START) & SQUARE_MASK);
+        Square square = Square.fromIndex((bitmask >>> START_START) & SQUARE_MASK);
+        if (square == null) {
+            throw new IllegalStateException("move contained an invalid start bitmask: " + Long.toHexString(bitmask));
+        }
+        return square;
     }
 
     /**
@@ -278,7 +286,11 @@ public class Move {
      */
     @Nonnull
     public Square end () {
-        return Square.fromIndex((bitmask >>> END_START) & SQUARE_MASK);
+        Square square = Square.fromIndex((bitmask >>> END_START) & SQUARE_MASK);
+        if (square == null) {
+            throw new IllegalStateException("move contained an invalid end bitmask: " + Long.toHexString(bitmask));
+        }
+        return square;
     }
 
     /**
@@ -288,7 +300,11 @@ public class Move {
      */
     @Nonnull
     public Piece piece () {
-        return Piece.fromId((bitmask >>> PIECE_START) & PIECE_MASK);
+        Piece piece = Piece.fromId((bitmask >>> PIECE_START) & PIECE_MASK);
+        if (piece == null) {
+            throw new IllegalStateException("move contained an invalid piece bitmask: " + Long.toHexString(bitmask));
+        }
+        return piece;
     }
 
     /**

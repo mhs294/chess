@@ -14,6 +14,7 @@ import java.util.List;
  *
  * @author Maximilian Schroeder
  */
+@SuppressWarnings("unused") // This interface is intended to be consumed outside of this module
 public interface MoveGenerator {
     /**
      * Generates all legal moves available to the player to move, given the current {@link Board} and {@link GameState}.

@@ -78,8 +78,8 @@ public class Board {
     /*
      * Convenient bitmask constants to use with bitboard operations.
      */
-    public static final long EMPTY_BITMASK = 0x0000000000000000L;
-    public static final long FULL_BITMASK = 0xFFFFFFFFFFFFFFFFL;
+    public static final long EMPTY_BITMASK = 0L;
+    public static final long FULL_BITMASK = Long.MIN_VALUE | Long.MAX_VALUE;
     public static final long LIGHT_SQUARES_BITMASK;
     public static final long DARK_SQUARES_BITMASK;
 
@@ -456,16 +456,19 @@ public class Board {
         }
 
         // If a capture needs to be performed, remove the piece being captured.
-        if (move.capturedPiece() != null) {
-            Square captureSquare = (move.enPassantCaptureSquare() != null) ? move.enPassantCaptureSquare() : move.end();
+        Piece capturedPiece = move.capturedPiece();
+        if (capturedPiece != null) {
+            Square enPassantCaptureSquare = move.enPassantCaptureSquare();
+            Square captureSquare = (enPassantCaptureSquare != null) ? enPassantCaptureSquare : move.end();
             if (!removePieceFromSquare(move.color()
-                    .opposite(), move.capturedPiece(), captureSquare)) {
+                    .opposite(), capturedPiece, captureSquare)) {
                 throw new IllegalMoveException(move, "The move's captured piece was not at the specified square.");
             }
         }
 
         // Add the moved piece to its ending position.
-        Piece endingPiece = (move.promoteTo() != null) ? move.promoteTo() : move.piece();
+        Piece promoteTo = move.promoteTo();
+        Piece endingPiece = (promoteTo != null) ? promoteTo : move.piece();
         if (!addPieceToSquare(move.color(), endingPiece, move.end())) {
             throw new IllegalMoveException(move, "Could not add the move's piece to the specified ending square.");
         }
@@ -506,16 +509,18 @@ public class Board {
         validateMove(move);
 
         // Remove the moved piece from its ending position.
-        Piece endingPiece = (move.promoteTo() != null) ? move.promoteTo() : move.piece();
+        Piece promoteTo = move.promoteTo();
+        Piece endingPiece = (promoteTo != null) ? promoteTo : move.piece();
         if (!removePieceFromSquare(move.color(), endingPiece, move.end())) {
             throw new IllegalMoveException(move, "The move's ending piece was not at the specified ending square.");
         }
 
         // If a piece was captured, add it back to the ending position.
-        if (move.capturedPiece() != null) {
+        Piece capturedPiece = move.capturedPiece();
+        if (capturedPiece != null) {
             Square captureSquare = (move.enPassantCaptureSquare() != null) ? move.enPassantCaptureSquare() : move.end();
-            if (!addPieceToSquare(move.color()
-                    .opposite(), move.capturedPiece(), captureSquare)) {
+            if (captureSquare == null || !addPieceToSquare(move.color()
+                    .opposite(), capturedPiece, captureSquare)) {
                 throw new IllegalMoveException(move,
                         "The move's captured piece could not be added to its original square.");
             }
@@ -576,6 +581,7 @@ public class Board {
      * @param square The {@link Square} where the piece will be added to. Cannot be null.
      * @return True if the {@link Piece} was successfully added to the {@link Square}, false otherwise.
      */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted") // This method is intended to be consumed with the "!" operator.
     private boolean addPieceToSquare (@Nonnull Color color, @Nonnull Piece piece, @Nonnull Square square) {
         if ((square.bitmask() & vacantBitmask()) == 0L) {
             // The square we are trying to add the piece to is occupied.
@@ -641,6 +647,7 @@ public class Board {
      * @param square The {@link Square} where the piece will be removed from. Cannot be null.
      * @return True if the {@link Piece} was successfully removed from the {@link Square}, false otherwise.
      */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted") // This method is intended to be consumed with the "!" operator.
     private boolean removePieceFromSquare (@Nonnull Color color, @Nonnull Piece piece, @Nonnull Square square) {
         long removeBitmask = ~square.bitmask();
         switch (color) {
