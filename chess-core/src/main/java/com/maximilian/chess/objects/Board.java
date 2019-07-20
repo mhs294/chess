@@ -1,5 +1,6 @@
 package com.maximilian.chess.objects;
 
+import com.maximilian.chess.constants.ANConstants;
 import com.maximilian.chess.enums.Color;
 import com.maximilian.chess.enums.Piece;
 import com.maximilian.chess.enums.Square;
@@ -358,7 +359,7 @@ public class Board {
     public Square whiteKingSquare () {
         Square square = Square.fromBitmask(whiteKingBitmask);
         if (square == null) {
-            throw new IllegalStateException("board does not contain a white king.");
+            throw new IllegalStateException("Board does not contain a white king.");
         }
 
         return square;
@@ -428,7 +429,7 @@ public class Board {
     public Square blackKingSquare () {
         Square square = Square.fromBitmask(blackKingBitmask);
         if (square == null) {
-            throw new IllegalStateException("board does not contain a black king.");
+            throw new IllegalStateException("Board does not contain a black king.");
         }
 
         return square;
@@ -925,6 +926,31 @@ public class Board {
         }
 
         return true;
+    }
+
+    @Override
+    public String toString () {
+        Object2ObjectMap<Square, Pair<Color, Piece>> piecesBySquares = toMap();
+        String fileMarkers = "  a b c d e f g h ";
+        StringBuilder boardStringBuilder = new StringBuilder(fileMarkers + "\n");
+        for (int rank = 8; rank >= 1; rank--) {
+            boardStringBuilder.append(rank).append(" ");
+            StringBuilder rowStringBuilder = new StringBuilder();
+            for (int i = 8; i > 0; i--) {
+                Square currentSquare = Square.fromIndex((8 * rank) - i);
+                Pair<Color, Piece> colorPiecePair = piecesBySquares.get(currentSquare);
+                if (colorPiecePair != null) {
+                    rowStringBuilder.append(ANConstants.SYMBOLS_BY_PIECES.get(colorPiecePair));
+                } else {
+                    rowStringBuilder.append(".");
+                }
+                if ((i - 1) > 0) {
+                    rowStringBuilder.append(" ");
+                }
+            }
+            boardStringBuilder.append(rowStringBuilder.toString()).append(" ").append(rank).append("\n");
+        }
+        return boardStringBuilder.append(fileMarkers).toString();
     }
 
     /**

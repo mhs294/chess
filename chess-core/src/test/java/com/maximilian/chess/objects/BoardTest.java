@@ -942,4 +942,9 @@ public class BoardTest {
         assertEquals(Pair.of(BLACK, KING), boardMap.get(E8));
         assertEquals(Pair.of(BLACK, ROOK), boardMap.get(A8));
     }
+
+    @Test
+    public void testToString () {
+        System.out.println(STARTING_BOARD.toString());
+    }
 }
