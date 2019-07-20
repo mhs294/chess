@@ -227,6 +227,8 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
             }
         }
 
+        // TODO - add logic for handling pins
+
         return moves;
     }
 
