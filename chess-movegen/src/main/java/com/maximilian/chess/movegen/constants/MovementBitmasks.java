@@ -84,8 +84,7 @@ public final class MovementBitmasks {
         }
 
         long squareBitmask = square.bitmask();
-        long nextRankBitmask = square.rank()
-                .bitmask() << 8;
+        long nextRankBitmask = square.rank().bitmask() << 8;
         return ((squareBitmask << 7) | (squareBitmask << 9)) & nextRankBitmask;
     }
 
@@ -121,8 +120,7 @@ public final class MovementBitmasks {
         }
 
         long squareBitmask = square.bitmask();
-        long nextRankBitmask = square.rank()
-                .bitmask() >>> 8;
+        long nextRankBitmask = square.rank().bitmask() >>> 8;
 
         return ((squareBitmask >>> 7) | (squareBitmask >>> 9)) & nextRankBitmask;
     }
@@ -173,10 +171,8 @@ public final class MovementBitmasks {
      * @return The bitmask representing the moves a king can make from the specified {@link Square}.
      */
     private static long getKingMovementBitmaskForSquare (@Nonnull Square square) {
-        long rankBitmask = square.rank()
-                .bitmask();
-        long fileBitmask = square.file()
-                .bitmask();
+        long rankBitmask = square.rank().bitmask();
+        long fileBitmask = square.file().bitmask();
         long ranksBitmask = (rankBitmask << 8) | rankBitmask | (rankBitmask >>> 8);
         long filesBitmask = (fileBitmask << 1) | fileBitmask | (fileBitmask >>> 1);
         long kingBitmask = (ranksBitmask & filesBitmask) ^ square.bitmask();
@@ -214,9 +210,7 @@ public final class MovementBitmasks {
      * @return The bitmask representing the potential slides a rook can make from the specified {@link Square}.
      */
     private static long getRookSlidingBitmaskForSquare (@Nonnull Square square) {
-        return (square.rank()
-                .bitmask() | square.file()
-                .bitmask()) ^ square.bitmask();
+        return (square.rank().bitmask() | square.file().bitmask()) ^ square.bitmask();
     }
 
     // This class should never be instantiated.

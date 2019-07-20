@@ -103,8 +103,7 @@ public class GameStateTest {
 
     @Test
     public void testPreviousHalfMoveClockNullPreviousGameState () {
-        GameState gameState = GameState.builder()
-                .build();
+        GameState gameState = GameState.builder().build();
 
         assertEquals(0, gameState.previousHalfMoveClock());
     }
@@ -112,12 +111,8 @@ public class GameStateTest {
     @Test
     public void testPreviousHalfMoveClockNonNullPreviousGameState () {
         int expectedPreviousHalfMoveClock = 12;
-        GameState previousGameState = GameState.builder()
-                .withHalfMoveClock(expectedPreviousHalfMoveClock)
-                .build();
-        GameState gameState = GameState.builder()
-                .withPreviousGameState(previousGameState)
-                .build();
+        GameState previousGameState = GameState.builder().withHalfMoveClock(expectedPreviousHalfMoveClock).build();
+        GameState gameState = GameState.builder().withPreviousGameState(previousGameState).build();
 
         assertEquals(expectedPreviousHalfMoveClock, gameState.previousHalfMoveClock());
     }
@@ -158,10 +153,7 @@ public class GameStateTest {
                 .addBlackRooks(E7, D7)
                 .build();
 
-        GameState gameStateStart = GameState.builder()
-                .withBoard(boardWhiteToMoveToF1)
-                .withColorToMove(WHITE)
-                .build();
+        GameState gameStateStart = GameState.builder().withBoard(boardWhiteToMoveToF1).withColorToMove(WHITE).build();
         GameState gameStateAfterWhiteMoveOne = GameState.builder()
                 .withBoard(boardBlackToMoveToD8)
                 .withColorToMove(BLACK)
@@ -208,9 +200,7 @@ public class GameStateTest {
 
     @Test
     public void testCanDeclareDrawTrueBecauseFiftyMoveRule () {
-        GameState gameState = GameState.builder()
-                .withHalfMoveClock(50)
-                .build();
+        GameState gameState = GameState.builder().withHalfMoveClock(50).build();
 
         assertTrue(gameState.canDeclareDraw());
     }
@@ -279,12 +269,7 @@ public class GameStateTest {
         exception.expectMessage(
                 "illegal en passant square specified for move (legal en passant = " + enPassantSquare + ").");
 
-        Board board = Board.builder()
-                .setWhiteKing(E1)
-                .setBlackKing(E8)
-                .addWhitePawns(C4, E4)
-                .addBlackPawns(D4)
-                .build();
+        Board board = Board.builder().setWhiteKing(E1).setBlackKing(E8).addWhitePawns(C4, E4).addBlackPawns(D4).build();
         GameState gameState = GameState.builder()
                 .withBoard(board)
                 .withEnPassantSquare(enPassantSquare)
@@ -301,11 +286,7 @@ public class GameStateTest {
         exception.expectMessage(
                 "white does not have kingside castling rights (castling rights = " + castlingRights + ").");
 
-        Board board = Board.builder()
-                .setWhiteKing(E1)
-                .addWhiteRooks(A1, H1)
-                .setBlackKing(E8)
-                .build();
+        Board board = Board.builder().setWhiteKing(E1).addWhiteRooks(A1, H1).setBlackKing(E8).build();
         GameState gameState = GameState.builder()
                 .withBoard(board)
                 .withCastlingRights(castlingRights)
@@ -322,11 +303,7 @@ public class GameStateTest {
         exception.expectMessage(
                 "white does not have queenside castling rights (castling rights = " + castlingRights + ").");
 
-        Board board = Board.builder()
-                .setWhiteKing(E1)
-                .addWhiteRooks(A1, H1)
-                .setBlackKing(E8)
-                .build();
+        Board board = Board.builder().setWhiteKing(E1).addWhiteRooks(A1, H1).setBlackKing(E8).build();
         GameState gameState = GameState.builder()
                 .withBoard(board)
                 .withCastlingRights(castlingRights)
@@ -343,11 +320,7 @@ public class GameStateTest {
         exception.expectMessage(
                 "black does not have kingside castling rights (castling rights = " + castlingRights + ").");
 
-        Board board = Board.builder()
-                .setWhiteKing(E1)
-                .setBlackKing(E8)
-                .addBlackRooks(A8, H8)
-                .build();
+        Board board = Board.builder().setWhiteKing(E1).setBlackKing(E8).addBlackRooks(A8, H8).build();
         GameState gameState = GameState.builder()
                 .withBoard(board)
                 .withCastlingRights(castlingRights)
@@ -364,11 +337,7 @@ public class GameStateTest {
         exception.expectMessage(
                 "black does not have queenside castling rights (castling rights = " + castlingRights + ").");
 
-        Board board = Board.builder()
-                .setWhiteKing(E1)
-                .setBlackKing(E8)
-                .addBlackRooks(A8, H8)
-                .build();
+        Board board = Board.builder().setWhiteKing(E1).setBlackKing(E8).addBlackRooks(A8, H8).build();
         GameState gameState = GameState.builder()
                 .withBoard(board)
                 .withCastlingRights(castlingRights)
@@ -379,17 +348,8 @@ public class GameStateTest {
 
     @Test
     public void testDoMoveSuccessHalfMoveResetOnCapture () {
-        Board board = Board.builder()
-                .setWhiteKing(E1)
-                .addWhiteRooks(A1)
-                .setBlackKing(E8)
-                .addBlackRooks(A8, H8)
-                .build();
-        GameState gameState = GameState.builder()
-                .withBoard(board)
-                .withColorToMove(WHITE)
-                .withHalfMoveClock(24)
-                .build();
+        Board board = Board.builder().setWhiteKing(E1).addWhiteRooks(A1).setBlackKing(E8).addBlackRooks(A8, H8).build();
+        GameState gameState = GameState.builder().withBoard(board).withColorToMove(WHITE).withHalfMoveClock(24).build();
         GameState newGameState = gameState.doMove(board, Move.createCapture(WHITE, ROOK, ROOK, A1, A8));
 
         assertEquals(0, newGameState.halfMoveClock());
@@ -397,16 +357,8 @@ public class GameStateTest {
 
     @Test
     public void testDoMoveSuccessHalfMoveResetOnPawnAdvance () {
-        Board board = Board.builder()
-                .setWhiteKing(E1)
-                .setBlackKing(E8)
-                .addBlackPawns(A7)
-                .build();
-        GameState gameState = GameState.builder()
-                .withBoard(board)
-                .withColorToMove(BLACK)
-                .withHalfMoveClock(24)
-                .build();
+        Board board = Board.builder().setWhiteKing(E1).setBlackKing(E8).addBlackPawns(A7).build();
+        GameState gameState = GameState.builder().withBoard(board).withColorToMove(BLACK).withHalfMoveClock(24).build();
         GameState newGameState = gameState.doMove(board, Move.create(BLACK, PAWN, A7, A5));
 
         assertEquals(0, newGameState.halfMoveClock());
@@ -414,17 +366,8 @@ public class GameStateTest {
 
     @Test
     public void testDoMoveSuccessHalfMoveIncrement () {
-        Board board = Board.builder()
-                .setWhiteKing(E1)
-                .addWhiteRooks(A1)
-                .setBlackKing(E8)
-                .addBlackRooks(A8, H8)
-                .build();
-        GameState gameState = GameState.builder()
-                .withBoard(board)
-                .withColorToMove(WHITE)
-                .withHalfMoveClock(24)
-                .build();
+        Board board = Board.builder().setWhiteKing(E1).addWhiteRooks(A1).setBlackKing(E8).addBlackRooks(A8, H8).build();
+        GameState gameState = GameState.builder().withBoard(board).withColorToMove(WHITE).withHalfMoveClock(24).build();
         GameState newGameState = gameState.doMove(board, Move.create(WHITE, ROOK, A1, B1));
 
         assertEquals(25, newGameState.halfMoveClock());
@@ -443,21 +386,15 @@ public class GameStateTest {
     public void testDoMoveSuccessFullMoveIncrementBecauseBlackMoved () {
         GameState gameState = GameState.createStartingGameState();
         Board board = Board.createStartingBoard();
-        GameState gameStateAfterWhiteMove = gameState.doMove(board,
-                Move.create(WHITE, PAWN, E2, E4));
-        GameState gameStateAfterBlackMove = gameStateAfterWhiteMove.doMove(board,
-                Move.create(BLACK, PAWN, E7, E5));
+        GameState gameStateAfterWhiteMove = gameState.doMove(board, Move.create(WHITE, PAWN, E2, E4));
+        GameState gameStateAfterBlackMove = gameStateAfterWhiteMove.doMove(board, Move.create(BLACK, PAWN, E7, E5));
 
         assertEquals(2, gameStateAfterBlackMove.fullMoveNumber());
     }
 
     @Test
     public void testDoMoveSuccessWhiteLosesAllCastlingRightsNonCastlingMove () {
-        Board board = Board.builder()
-                .setWhiteKing(E1)
-                .addWhiteRooks(A1, H1)
-                .setBlackKing(E8)
-                .build();
+        Board board = Board.builder().setWhiteKing(E1).addWhiteRooks(A1, H1).setBlackKing(E8).build();
         GameState gameState = GameState.builder()
                 .withBoard(board)
                 .withCastlingRights(EnumSet.of(CastlingRight.WHITE_KINGSIDE, CastlingRight.WHITE_QUEENSIDE))
@@ -470,11 +407,7 @@ public class GameStateTest {
 
     @Test
     public void testDoMoveSuccessWhiteLosesAllCastlingRightsCastlingMove () {
-        Board board = Board.builder()
-                .setWhiteKing(E1)
-                .addWhiteRooks(A1, H1)
-                .setBlackKing(E8)
-                .build();
+        Board board = Board.builder().setWhiteKing(E1).addWhiteRooks(A1, H1).setBlackKing(E8).build();
         GameState gameState = GameState.builder()
                 .withBoard(board)
                 .withCastlingRights(EnumSet.of(CastlingRight.WHITE_KINGSIDE, CastlingRight.WHITE_QUEENSIDE))
@@ -487,11 +420,7 @@ public class GameStateTest {
 
     @Test
     public void testDoMoveSuccessWhiteLosesKingsideCastlingRights () {
-        Board board = Board.builder()
-                .setWhiteKing(E1)
-                .addWhiteRooks(A1, H1)
-                .setBlackKing(E8)
-                .build();
+        Board board = Board.builder().setWhiteKing(E1).addWhiteRooks(A1, H1).setBlackKing(E8).build();
         GameState gameState = GameState.builder()
                 .withBoard(board)
                 .withCastlingRights(EnumSet.of(CastlingRight.WHITE_KINGSIDE, CastlingRight.WHITE_QUEENSIDE))
@@ -504,11 +433,7 @@ public class GameStateTest {
 
     @Test
     public void testDoMoveSuccessWhiteLosesQueensideCastlingRights () {
-        Board board = Board.builder()
-                .setWhiteKing(E1)
-                .addWhiteRooks(A1, H1)
-                .setBlackKing(E8)
-                .build();
+        Board board = Board.builder().setWhiteKing(E1).addWhiteRooks(A1, H1).setBlackKing(E8).build();
         GameState gameState = GameState.builder()
                 .withBoard(board)
                 .withCastlingRights(EnumSet.of(CastlingRight.WHITE_KINGSIDE, CastlingRight.WHITE_QUEENSIDE))
@@ -521,11 +446,7 @@ public class GameStateTest {
 
     @Test
     public void testDoMoveSuccessBlackLosesAllCastlingRightsNonCastlingMove () {
-        Board board = Board.builder()
-                .setWhiteKing(E1)
-                .setBlackKing(E8)
-                .addBlackRooks(A8, H8)
-                .build();
+        Board board = Board.builder().setWhiteKing(E1).setBlackKing(E8).addBlackRooks(A8, H8).build();
         GameState gameState = GameState.builder()
                 .withBoard(board)
                 .withCastlingRights(EnumSet.of(CastlingRight.BLACK_KINGSIDE, CastlingRight.BLACK_QUEENSIDE))
@@ -538,11 +459,7 @@ public class GameStateTest {
 
     @Test
     public void testDoMoveSuccessBlackLosesAllCastlingRightsCastlingMove () {
-        Board board = Board.builder()
-                .setWhiteKing(E1)
-                .setBlackKing(E8)
-                .addBlackRooks(A8, H8)
-                .build();
+        Board board = Board.builder().setWhiteKing(E1).setBlackKing(E8).addBlackRooks(A8, H8).build();
         GameState gameState = GameState.builder()
                 .withBoard(board)
                 .withCastlingRights(EnumSet.of(CastlingRight.BLACK_KINGSIDE, CastlingRight.BLACK_QUEENSIDE))
@@ -555,11 +472,7 @@ public class GameStateTest {
 
     @Test
     public void testDoMoveSuccessBlackLosesKingsideCastlingRights () {
-        Board board = Board.builder()
-                .setWhiteKing(E1)
-                .setBlackKing(E8)
-                .addBlackRooks(A8, H8)
-                .build();
+        Board board = Board.builder().setWhiteKing(E1).setBlackKing(E8).addBlackRooks(A8, H8).build();
         GameState gameState = GameState.builder()
                 .withBoard(board)
                 .withCastlingRights(EnumSet.of(CastlingRight.BLACK_KINGSIDE, CastlingRight.BLACK_QUEENSIDE))
@@ -572,11 +485,7 @@ public class GameStateTest {
 
     @Test
     public void testDoMoveSuccessBlackLosesQueensideCastlingRights () {
-        Board board = Board.builder()
-                .setWhiteKing(E1)
-                .setBlackKing(E8)
-                .addBlackRooks(A8, H8)
-                .build();
+        Board board = Board.builder().setWhiteKing(E1).setBlackKing(E8).addBlackRooks(A8, H8).build();
         GameState gameState = GameState.builder()
                 .withBoard(board)
                 .withCastlingRights(EnumSet.of(CastlingRight.BLACK_KINGSIDE, CastlingRight.BLACK_QUEENSIDE))
@@ -608,12 +517,7 @@ public class GameStateTest {
 
     @Test
     public void testDoMoveSuccessEnPassantSquareCleared () {
-        Board board = Board.builder()
-                .setWhiteKing(E1)
-                .addWhitePawns(F5)
-                .setBlackKing(E8)
-                .addBlackPawns(E5)
-                .build();
+        Board board = Board.builder().setWhiteKing(E1).addWhitePawns(F5).setBlackKing(E8).addBlackPawns(E5).build();
         GameState gameState = GameState.builder()
                 .withBoard(board)
                 .withColorToMove(WHITE)
@@ -657,16 +561,8 @@ public class GameStateTest {
 
     @Test
     public void testUndoMoveSuccess () {
-        Board previousBoard = Board.builder()
-                .setWhiteKing(E1)
-                .addWhiteQueens(D1)
-                .setBlackKing(E8)
-                .build();
-        Board currentBoard = Board.builder()
-                .setWhiteKing(E1)
-                .addWhiteQueens(D8)
-                .setBlackKing(E8)
-                .build();
+        Board previousBoard = Board.builder().setWhiteKing(E1).addWhiteQueens(D1).setBlackKing(E8).build();
+        Board currentBoard = Board.builder().setWhiteKing(E1).addWhiteQueens(D8).setBlackKing(E8).build();
         GameState previousGameState = GameState.builder()
                 .withBoard(previousBoard)
                 .withColorToMove(WHITE)

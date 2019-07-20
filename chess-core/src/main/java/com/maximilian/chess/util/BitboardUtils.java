@@ -81,8 +81,7 @@ public final class BitboardUtils {
         StringBuilder bitboardStringBuilder = new StringBuilder(fileMarkers + "\n");
         for (int i = 1; i <= 8; i++) {
             int rowLabel = (8 - i) + 1;
-            bitboardStringBuilder.append(rowLabel)
-                    .append(" ");
+            bitboardStringBuilder.append(rowLabel).append(" ");
             long bitboardRow = bitboard >>> (64 - (8 * i));
             StringBuilder rowStringBuilder = new StringBuilder();
             for (int k = 0; k < 8; k++) {
@@ -96,13 +95,9 @@ public final class BitboardUtils {
                     rowStringBuilder.append(" ");
                 }
             }
-            bitboardStringBuilder.append(rowStringBuilder.toString())
-                    .append(" ")
-                    .append(rowLabel)
-                    .append("\n");
+            bitboardStringBuilder.append(rowStringBuilder.toString()).append(" ").append(rowLabel).append("\n");
         }
-        return bitboardStringBuilder.append(fileMarkers)
-                .toString();
+        return bitboardStringBuilder.append(fileMarkers).toString();
     }
 
     // This class should never be instantiated.

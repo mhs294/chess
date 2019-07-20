@@ -26,44 +26,28 @@ import static org.junit.Assert.assertTrue;
 public class StalemateUtilsTest {
     @Test
     public void testWhiteKingVsBlackKingAndKnightStalemate () {
-        Board board = Board.builder()
-                .setWhiteKing(E1)
-                .setBlackKing(E8)
-                .addBlackKnights(B8)
-                .build();
+        Board board = Board.builder().setWhiteKing(E1).setBlackKing(E8).addBlackKnights(B8).build();
 
         assertTrue(StalemateUtils.isStalemateByInsufficientMaterial(board));
     }
 
     @Test
     public void testWhiteKingVsBlackKingAndBishopStalemate () {
-        Board board = Board.builder()
-                .setWhiteKing(E1)
-                .setBlackKing(E8)
-                .addBlackKnights(C8)
-                .build();
+        Board board = Board.builder().setWhiteKing(E1).setBlackKing(E8).addBlackKnights(C8).build();
 
         assertTrue(StalemateUtils.isStalemateByInsufficientMaterial(board));
     }
 
     @Test
     public void testBlackKingVsWhiteKingAndKnightStalemate () {
-        Board board = Board.builder()
-                .setWhiteKing(E1)
-                .addWhiteKnights(B1)
-                .setBlackKing(E8)
-                .build();
+        Board board = Board.builder().setWhiteKing(E1).addWhiteKnights(B1).setBlackKing(E8).build();
 
         assertTrue(StalemateUtils.isStalemateByInsufficientMaterial(board));
     }
 
     @Test
     public void testBlackKingVsWhiteKingAndBishopStalemate () {
-        Board board = Board.builder()
-                .setWhiteKing(E1)
-                .addWhiteBishops(C1)
-                .setBlackKing(E8)
-                .build();
+        Board board = Board.builder().setWhiteKing(E1).addWhiteBishops(C1).setBlackKing(E8).build();
 
         assertTrue(StalemateUtils.isStalemateByInsufficientMaterial(board));
     }
@@ -82,22 +66,14 @@ public class StalemateUtilsTest {
 
     @Test
     public void testOnlyKingsAndBishopsNotStalemateBecauseBishopsAreOnDifferentColorSquares () {
-        Board board = Board.builder()
-                .setWhiteKing(E1)
-                .addWhiteBishops(C1)
-                .setBlackKing(E8)
-                .addBlackBishops(C8)
-                .build();
+        Board board = Board.builder().setWhiteKing(E1).addWhiteBishops(C1).setBlackKing(E8).addBlackBishops(C8).build();
 
         assertFalse(StalemateUtils.isStalemateByInsufficientMaterial(board));
     }
 
     @Test
     public void testOnlyKingsStalemate () {
-        Board board = Board.builder()
-                .setWhiteKing(E1)
-                .setBlackKing(E8)
-                .build();
+        Board board = Board.builder().setWhiteKing(E1).setBlackKing(E8).build();
 
         assertTrue(StalemateUtils.isStalemateByInsufficientMaterial(board));
     }

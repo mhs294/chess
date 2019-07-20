@@ -356,8 +356,7 @@ public class Move {
                 color().toString() + " " + piece().toString() + " " + start().toString() + "-" + end().toString();
         Piece capturedPiece = capturedPiece();
         if (capturedPiece != null) {
-            moveString += "\nCapture: " + color().opposite()
-                    .toString() + " " + capturedPiece.toString();
+            moveString += "\nCapture: " + color().opposite().toString() + " " + capturedPiece.toString();
             Square enPassantCaptureSquare = enPassantCaptureSquare();
             if (enPassantCaptureSquare != null) {
                 moveString += " (en-passant on " + enPassantCaptureSquare.toString() + ")";

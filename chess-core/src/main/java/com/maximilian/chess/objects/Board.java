@@ -641,8 +641,7 @@ public class Board {
         if (capturedPiece != null) {
             Square enPassantCaptureSquare = move.enPassantCaptureSquare();
             Square captureSquare = (enPassantCaptureSquare != null) ? enPassantCaptureSquare : move.end();
-            if (!removePieceFromSquare(move.color()
-                    .opposite(), capturedPiece, captureSquare)) {
+            if (!removePieceFromSquare(move.color().opposite(), capturedPiece, captureSquare)) {
                 throw new IllegalMoveException(move, "The move's captured piece was not at the specified square.");
             }
         }
@@ -700,8 +699,7 @@ public class Board {
         Piece capturedPiece = move.capturedPiece();
         if (capturedPiece != null) {
             Square captureSquare = (move.enPassantCaptureSquare() != null) ? move.enPassantCaptureSquare() : move.end();
-            if (captureSquare == null || !addPieceToSquare(move.color()
-                    .opposite(), capturedPiece, captureSquare)) {
+            if (captureSquare == null || !addPieceToSquare(move.color().opposite(), capturedPiece, captureSquare)) {
                 throw new IllegalMoveException(move,
                         "The move's captured piece could not be added to its original square.");
             }

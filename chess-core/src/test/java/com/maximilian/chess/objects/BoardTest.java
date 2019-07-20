@@ -119,31 +119,24 @@ public class BoardTest {
         // Assert white pieces
         EnumSet.of(A2, B2, C2, D2, E2, F2, G2, H2)
                 .forEach(sq -> assertEquals(Pair.of(WHITE, PAWN), startingBoardMap.get(sq)));
-        EnumSet.of(B1, G1)
-                .forEach(sq -> assertEquals(Pair.of(WHITE, KNIGHT), startingBoardMap.get(sq)));
-        EnumSet.of(C1, F1)
-                .forEach(sq -> assertEquals(Pair.of(WHITE, BISHOP), startingBoardMap.get(sq)));
-        EnumSet.of(A1, H1)
-                .forEach(sq -> assertEquals(Pair.of(WHITE, ROOK), startingBoardMap.get(sq)));
+        EnumSet.of(B1, G1).forEach(sq -> assertEquals(Pair.of(WHITE, KNIGHT), startingBoardMap.get(sq)));
+        EnumSet.of(C1, F1).forEach(sq -> assertEquals(Pair.of(WHITE, BISHOP), startingBoardMap.get(sq)));
+        EnumSet.of(A1, H1).forEach(sq -> assertEquals(Pair.of(WHITE, ROOK), startingBoardMap.get(sq)));
         assertEquals(Pair.of(WHITE, QUEEN), startingBoardMap.get(D1));
         assertEquals(Pair.of(WHITE, KING), startingBoardMap.get(E1));
 
         // Assert black pieces
         EnumSet.of(A7, B7, C7, D7, E7, F7, G7, H7)
                 .forEach(sq -> assertEquals(Pair.of(BLACK, PAWN), startingBoardMap.get(sq)));
-        EnumSet.of(B8, G8)
-                .forEach(sq -> assertEquals(Pair.of(BLACK, KNIGHT), startingBoardMap.get(sq)));
-        EnumSet.of(C8, F8)
-                .forEach(sq -> assertEquals(Pair.of(BLACK, BISHOP), startingBoardMap.get(sq)));
-        EnumSet.of(A8, H8)
-                .forEach(sq -> assertEquals(Pair.of(BLACK, ROOK), startingBoardMap.get(sq)));
+        EnumSet.of(B8, G8).forEach(sq -> assertEquals(Pair.of(BLACK, KNIGHT), startingBoardMap.get(sq)));
+        EnumSet.of(C8, F8).forEach(sq -> assertEquals(Pair.of(BLACK, BISHOP), startingBoardMap.get(sq)));
+        EnumSet.of(A8, H8).forEach(sq -> assertEquals(Pair.of(BLACK, ROOK), startingBoardMap.get(sq)));
         assertEquals(Pair.of(BLACK, QUEEN), startingBoardMap.get(D8));
         assertEquals(Pair.of(BLACK, KING), startingBoardMap.get(E8));
 
         // Assert vacant squares
-        EnumSet.of(A3, A4, A5, A6, B3, B4, B5, B6, C3, C4, C5, C6, D3, D4, D5, D6, E3, E4, E5, E6, F3, F4, F5, F6,
-                G3, G4, G5, G6, H3, H4, H5, H6)
-                .forEach(sq -> assertNull(startingBoardMap.get(sq)));
+        EnumSet.of(A3, A4, A5, A6, B3, B4, B5, B6, C3, C4, C5, C6, D3, D4, D5, D6, E3, E4, E5, E6, F3, F4, F5, F6, G3,
+                G4, G5, G6, H3, H4, H5, H6).forEach(sq -> assertNull(startingBoardMap.get(sq)));
     }
 
     @Test
@@ -209,8 +202,8 @@ public class BoardTest {
     @Test
     public void testVacant () {
         long expectedVacantBitmask = EMPTY_BITMASK;
-        Set<Square> expectedVacantSquares = EnumSet.of(A3, A4, A5, A6, B3, B4, B5, B6, C3, C4, C5, C6, D3, D4, D5,
-                D6, E3, E4, E5, E6, F3, F4, F5, F6, G3, G4, G5, G6, H3, H4, H5, H6);
+        Set<Square> expectedVacantSquares = EnumSet.of(A3, A4, A5, A6, B3, B4, B5, B6, C3, C4, C5, C6, D3, D4, D5, D6,
+                E3, E4, E5, E6, F3, F4, F5, F6, G3, G4, G5, G6, H3, H4, H5, H6);
         for (Square square : expectedVacantSquares) {
             expectedVacantBitmask |= square.bitmask();
         }
@@ -222,8 +215,8 @@ public class BoardTest {
     @Test
     public void testWhiteOccupied () {
         long expectedWhiteOccupiedBitmask = EMPTY_BITMASK;
-        Set<Square> expectedWhiteOccupiedSquares = EnumSet.of(A1, B1, C1, D1, E1, F1, G1, H1, A2, B2, C2, D2, E2,
-                F2, G2, H2);
+        Set<Square> expectedWhiteOccupiedSquares = EnumSet.of(A1, B1, C1, D1, E1, F1, G1, H1, A2, B2, C2, D2, E2, F2,
+                G2, H2);
         for (Square square : expectedWhiteOccupiedSquares) {
             expectedWhiteOccupiedBitmask |= square.bitmask();
         }
@@ -235,8 +228,8 @@ public class BoardTest {
     @Test
     public void testBlackOccupied () {
         long expectedBlackOccupiedBitmask = EMPTY_BITMASK;
-        Set<Square> expectedBlackOccupiedSquares = EnumSet.of(A7, B7, C7, D7, E7, F7, G7, H7, A8, B8, C8, D8, E8,
-                F8, G8, H8);
+        Set<Square> expectedBlackOccupiedSquares = EnumSet.of(A7, B7, C7, D7, E7, F7, G7, H7, A8, B8, C8, D8, E8, F8,
+                G8, H8);
         for (Square square : expectedBlackOccupiedSquares) {
             expectedBlackOccupiedBitmask |= square.bitmask();
         }
@@ -248,8 +241,8 @@ public class BoardTest {
     @Test
     public void testAllOccupied () {
         long expectedOccupiedBitmask = EMPTY_BITMASK;
-        Set<Square> expectedOccupiedSquares = EnumSet.of(A1, B1, C1, D1, E1, F1, G1, H1, A2, B2, C2, D2, E2, F2,
-                G2, H2, A7, B7, C7, D7, E7, F7, G7, H7, A8, B8, C8, D8, E8, F8, G8, H8);
+        Set<Square> expectedOccupiedSquares = EnumSet.of(A1, B1, C1, D1, E1, F1, G1, H1, A2, B2, C2, D2, E2, F2, G2, H2,
+                A7, B7, C7, D7, E7, F7, G7, H7, A8, B8, C8, D8, E8, F8, G8, H8);
         for (Square square : expectedOccupiedSquares) {
             expectedOccupiedBitmask |= square.bitmask();
         }
@@ -341,10 +334,7 @@ public class BoardTest {
         exception.expect(IllegalMoveException.class);
         exception.expectMessage("capturedPiece cannot be KING.");
 
-        Board board = Board.builder()
-                .addWhitePawns(E4)
-                .setBlackKing(F5)
-                .build();
+        Board board = Board.builder().addWhitePawns(E4).setBlackKing(F5).build();
         Move move = Move.createCapture(WHITE, PAWN, KING, E4, F5);
         board.doMove(move);
     }
@@ -354,9 +344,7 @@ public class BoardTest {
         exception.expect(IllegalMoveException.class);
         exception.expectMessage("promoteTo cannot be PAWN or KING.");
 
-        Board board = Board.builder()
-                .addBlackPawns(A2)
-                .build();
+        Board board = Board.builder().addBlackPawns(A2).build();
         Move move = Move.createPromotion(BLACK, A2, A1, PAWN);
         board.doMove(move);
     }
@@ -366,9 +354,7 @@ public class BoardTest {
         exception.expect(IllegalMoveException.class);
         exception.expectMessage("promoteTo cannot be PAWN or KING.");
 
-        Board board = Board.builder()
-                .addBlackPawns(A2)
-                .build();
+        Board board = Board.builder().addBlackPawns(A2).build();
         Move move = Move.createPromotion(BLACK, A2, A1, KING);
         board.doMove(move);
     }
@@ -378,9 +364,7 @@ public class BoardTest {
         exception.expect(IllegalMoveException.class);
         exception.expectMessage("The move's piece was not at the specified starting square.");
 
-        Board board = Board.builder()
-                .addBlackBishops(F8)
-                .build();
+        Board board = Board.builder().addBlackBishops(F8).build();
         Move move = Move.create(BLACK, BISHOP, C8, B7);
         board.doMove(move);
     }
@@ -390,9 +374,7 @@ public class BoardTest {
         exception.expect(IllegalMoveException.class);
         exception.expectMessage("The move's piece was not at the specified starting square.");
 
-        Board board = Board.builder()
-                .addBlackBishops(F8)
-                .build();
+        Board board = Board.builder().addBlackBishops(F8).build();
         Move move = Move.create(BLACK, ROOK, F8, B8);
         board.doMove(move);
     }
@@ -402,9 +384,7 @@ public class BoardTest {
         exception.expect(IllegalMoveException.class);
         exception.expectMessage("The move's piece was not at the specified starting square.");
 
-        Board board = Board.builder()
-                .addWhiteBishops(F8)
-                .build();
+        Board board = Board.builder().addWhiteBishops(F8).build();
         Move move = Move.create(BLACK, BISHOP, F8, B8);
         board.doMove(move);
     }
@@ -414,10 +394,7 @@ public class BoardTest {
         exception.expect(IllegalMoveException.class);
         exception.expectMessage("The move's captured piece was not at the specified square.");
 
-        Board board = Board.builder()
-                .addWhiteKnights(B4)
-                .addBlackBishops(A6)
-                .build();
+        Board board = Board.builder().addWhiteKnights(B4).addBlackBishops(A6).build();
         Move move = Move.createCapture(WHITE, KNIGHT, BISHOP, B4, D5);
         board.doMove(move);
     }
@@ -427,10 +404,7 @@ public class BoardTest {
         exception.expect(IllegalMoveException.class);
         exception.expectMessage("The move's captured piece was not at the specified square.");
 
-        Board board = Board.builder()
-                .addWhiteKnights(B4)
-                .addBlackBishops(A6)
-                .build();
+        Board board = Board.builder().addWhiteKnights(B4).addBlackBishops(A6).build();
         Move move = Move.createCapture(WHITE, KNIGHT, ROOK, B4, A6);
         board.doMove(move);
     }
@@ -440,10 +414,7 @@ public class BoardTest {
         exception.expect(IllegalMoveException.class);
         exception.expectMessage("The move's captured piece was not at the specified square.");
 
-        Board board = Board.builder()
-                .addWhiteKnights(B4)
-                .addWhiteBishops(A6)
-                .build();
+        Board board = Board.builder().addWhiteKnights(B4).addWhiteBishops(A6).build();
         Move move = Move.createCapture(WHITE, KNIGHT, BISHOP, B4, A6);
         board.doMove(move);
     }
@@ -453,10 +424,7 @@ public class BoardTest {
         exception.expect(IllegalMoveException.class);
         exception.expectMessage("The move's captured piece was not at the specified square.");
 
-        Board board = Board.builder()
-                .addWhitePawns(F4)
-                .addBlackPawns(E4)
-                .build();
+        Board board = Board.builder().addWhitePawns(F4).addBlackPawns(E4).build();
         Move move = Move.createEnPassant(BLACK, E4, D3, D4);
         board.doMove(move);
     }
@@ -466,10 +434,7 @@ public class BoardTest {
         exception.expect(IllegalMoveException.class);
         exception.expectMessage("The move's captured piece was not at the specified square.");
 
-        Board board = Board.builder()
-                .addWhiteKnights(F4)
-                .addBlackPawns(E4)
-                .build();
+        Board board = Board.builder().addWhiteKnights(F4).addBlackPawns(E4).build();
         Move move = Move.createEnPassant(BLACK, E4, F3, F4);
         board.doMove(move);
     }
@@ -479,9 +444,7 @@ public class BoardTest {
         exception.expect(IllegalMoveException.class);
         exception.expectMessage("The move's captured piece was not at the specified square.");
 
-        Board board = Board.builder()
-                .addBlackPawns(E4, F4)
-                .build();
+        Board board = Board.builder().addBlackPawns(E4, F4).build();
         Move move = Move.createEnPassant(BLACK, E4, F3, F4);
         board.doMove(move);
     }
@@ -491,9 +454,7 @@ public class BoardTest {
         exception.expect(IllegalMoveException.class);
         exception.expectMessage("Could not add the move's piece to the specified ending square.");
 
-        Board board = Board.builder()
-                .addWhiteRooks(A1, A8)
-                .build();
+        Board board = Board.builder().addWhiteRooks(A1, A8).build();
         Move move = Move.create(WHITE, ROOK, A1, A8);
         board.doMove(move);
     }
@@ -503,9 +464,7 @@ public class BoardTest {
         exception.expect(IllegalMoveException.class);
         exception.expectMessage("The rook could not be removed from its starting square for castling.");
 
-        Board board = Board.builder()
-                .setWhiteKing(E1)
-                .build();
+        Board board = Board.builder().setWhiteKing(E1).build();
         board.doMove(Move.WHITE_KINGSIDE_CASTLE);
     }
 
@@ -514,10 +473,7 @@ public class BoardTest {
         exception.expect(IllegalMoveException.class);
         exception.expectMessage("The rook could not be removed from its starting square for castling.");
 
-        Board board = Board.builder()
-                .setWhiteKing(E1)
-                .addWhiteQueens(H1)
-                .build();
+        Board board = Board.builder().setWhiteKing(E1).addWhiteQueens(H1).build();
         board.doMove(Move.WHITE_KINGSIDE_CASTLE);
     }
 
@@ -526,19 +482,13 @@ public class BoardTest {
         exception.expect(IllegalMoveException.class);
         exception.expectMessage("The rook could not be added to its ending square for castling.");
 
-        Board board = Board.builder()
-                .addWhiteQueens(D1)
-                .addWhiteRooks(A1)
-                .setWhiteKing(E1)
-                .build();
+        Board board = Board.builder().addWhiteQueens(D1).addWhiteRooks(A1).setWhiteKing(E1).build();
         board.doMove(Move.WHITE_QUEENSIDE_CASTLE);
     }
 
     @Test
     public void testDoMoveNormal () {
-        Board board = Board.builder()
-                .setBlackKing(E8)
-                .build();
+        Board board = Board.builder().setBlackKing(E8).build();
         Move move = Move.create(BLACK, KING, E8, F8);
         board.doMove(move);
         Map<Square, Pair<Color, Piece>> boardMap = board.toMap();
@@ -549,10 +499,7 @@ public class BoardTest {
 
     @Test
     public void testDoMoveNormalCapture () {
-        Board board = Board.builder()
-                .addWhiteBishops(E4)
-                .addBlackPawns(C6)
-                .build();
+        Board board = Board.builder().addWhiteBishops(E4).addBlackPawns(C6).build();
         Move move = Move.createCapture(WHITE, BISHOP, PAWN, E4, C6);
         board.doMove(move);
         Map<Square, Pair<Color, Piece>> boardMap = board.toMap();
@@ -563,10 +510,7 @@ public class BoardTest {
 
     @Test
     public void testDoMoveEnPassantCapture () {
-        Board board = Board.builder()
-                .addWhitePawns(E4)
-                .addBlackPawns(F4)
-                .build();
+        Board board = Board.builder().addWhitePawns(E4).addBlackPawns(F4).build();
         Move move = Move.createEnPassant(BLACK, F4, E3, E4);
         board.doMove(move);
         Map<Square, Pair<Color, Piece>> boardMap = board.toMap();
@@ -577,9 +521,7 @@ public class BoardTest {
 
     @Test
     public void testDoMovePromotion () {
-        Board board = Board.builder()
-                .addWhitePawns(A7)
-                .build();
+        Board board = Board.builder().addWhitePawns(A7).build();
         Move move = Move.createPromotion(WHITE, A7, A8, QUEEN);
         board.doMove(move);
         Map<Square, Pair<Color, Piece>> boardMap = board.toMap();
@@ -590,10 +532,7 @@ public class BoardTest {
 
     @Test
     public void testDoMoveCaptureAndPromotion () {
-        Board board = Board.builder()
-                .addBlackPawns(F2)
-                .addWhiteKnights(G1)
-                .build();
+        Board board = Board.builder().addBlackPawns(F2).addWhiteKnights(G1).build();
         Move move = Move.createCapturePromotion(BLACK, KNIGHT, F2, G1, QUEEN);
         board.doMove(move);
         Map<Square, Pair<Color, Piece>> boardMap = board.toMap();
@@ -604,10 +543,7 @@ public class BoardTest {
 
     @Test
     public void testDoMoveWhiteKingsideCastle () {
-        Board board = Board.builder()
-                .setWhiteKing(E1)
-                .addWhiteRooks(H1)
-                .build();
+        Board board = Board.builder().setWhiteKing(E1).addWhiteRooks(H1).build();
         board.doMove(Move.WHITE_KINGSIDE_CASTLE);
         Map<Square, Pair<Color, Piece>> boardMap = board.toMap();
 
@@ -618,10 +554,7 @@ public class BoardTest {
 
     @Test
     public void testDoMoveWhiteQueensideCastle () {
-        Board board = Board.builder()
-                .setWhiteKing(E1)
-                .addWhiteRooks(A1)
-                .build();
+        Board board = Board.builder().setWhiteKing(E1).addWhiteRooks(A1).build();
         board.doMove(Move.WHITE_QUEENSIDE_CASTLE);
         Map<Square, Pair<Color, Piece>> boardMap = board.toMap();
 
@@ -632,10 +565,7 @@ public class BoardTest {
 
     @Test
     public void testDoMoveBlackKingsideCastle () {
-        Board board = Board.builder()
-                .setBlackKing(E8)
-                .addBlackRooks(H8)
-                .build();
+        Board board = Board.builder().setBlackKing(E8).addBlackRooks(H8).build();
         board.doMove(Move.BLACK_KINGSIDE_CASTLE);
         Map<Square, Pair<Color, Piece>> boardMap = board.toMap();
 
@@ -646,10 +576,7 @@ public class BoardTest {
 
     @Test
     public void testDoMoveBlackQueensideCastle () {
-        Board board = Board.builder()
-                .setBlackKing(E8)
-                .addBlackRooks(A8)
-                .build();
+        Board board = Board.builder().setBlackKing(E8).addBlackRooks(A8).build();
         board.doMove(Move.BLACK_QUEENSIDE_CASTLE);
         Map<Square, Pair<Color, Piece>> boardMap = board.toMap();
 
@@ -681,10 +608,7 @@ public class BoardTest {
         exception.expect(IllegalMoveException.class);
         exception.expectMessage("capturedPiece cannot be KING.");
 
-        Board board = Board.builder()
-                .addWhitePawns(E4)
-                .setBlackKing(F5)
-                .build();
+        Board board = Board.builder().addWhitePawns(E4).setBlackKing(F5).build();
         Move move = Move.createCapture(WHITE, PAWN, KING, E4, F5);
         board.undoMove(move);
     }
@@ -694,9 +618,7 @@ public class BoardTest {
         exception.expect(IllegalMoveException.class);
         exception.expectMessage("promoteTo cannot be PAWN or KING.");
 
-        Board board = Board.builder()
-                .addBlackPawns(A2)
-                .build();
+        Board board = Board.builder().addBlackPawns(A2).build();
         Move move = Move.createPromotion(BLACK, A2, A1, PAWN);
         board.undoMove(move);
     }
@@ -706,9 +628,7 @@ public class BoardTest {
         exception.expect(IllegalMoveException.class);
         exception.expectMessage("promoteTo cannot be PAWN or KING.");
 
-        Board board = Board.builder()
-                .addBlackPawns(A2)
-                .build();
+        Board board = Board.builder().addBlackPawns(A2).build();
         Move move = Move.createPromotion(BLACK, A2, A1, KING);
         board.undoMove(move);
     }
@@ -718,9 +638,7 @@ public class BoardTest {
         exception.expect(IllegalMoveException.class);
         exception.expectMessage("Could not add the move's piece to the specified starting square.");
 
-        Board board = Board.builder()
-                .addWhiteKnights(C3, D5)
-                .build();
+        Board board = Board.builder().addWhiteKnights(C3, D5).build();
         Move move = Move.create(WHITE, KNIGHT, C3, D5);
         board.undoMove(move);
     }
@@ -730,9 +648,7 @@ public class BoardTest {
         exception.expect(IllegalMoveException.class);
         exception.expectMessage("The move's ending piece was not at the specified ending square.");
 
-        Board board = Board.builder()
-                .addWhiteKnights(F1)
-                .build();
+        Board board = Board.builder().addWhiteKnights(F1).build();
         Move move = Move.create(WHITE, KNIGHT, C3, B1);
         board.undoMove(move);
     }
@@ -742,9 +658,7 @@ public class BoardTest {
         exception.expect(IllegalMoveException.class);
         exception.expectMessage("The move's ending piece was not at the specified ending square.");
 
-        Board board = Board.builder()
-                .addWhiteBishops(B1)
-                .build();
+        Board board = Board.builder().addWhiteBishops(B1).build();
         Move move = Move.create(WHITE, KNIGHT, C3, B1);
         board.undoMove(move);
     }
@@ -754,9 +668,7 @@ public class BoardTest {
         exception.expect(IllegalMoveException.class);
         exception.expectMessage("The move's ending piece was not at the specified ending square.");
 
-        Board board = Board.builder()
-                .addBlackKnights(B1)
-                .build();
+        Board board = Board.builder().addBlackKnights(B1).build();
         Move move = Move.create(WHITE, KNIGHT, C3, B1);
         board.undoMove(move);
     }
@@ -766,9 +678,7 @@ public class BoardTest {
         exception.expect(IllegalMoveException.class);
         exception.expectMessage("The move's ending piece was not at the specified ending square.");
 
-        Board board = Board.builder()
-                .addWhiteRooks(F3)
-                .build();
+        Board board = Board.builder().addWhiteRooks(F3).build();
         Move move = Move.createCapture(WHITE, ROOK, ROOK, F3, F5);
         board.undoMove(move);
     }
@@ -778,9 +688,7 @@ public class BoardTest {
         exception.expect(IllegalMoveException.class);
         exception.expectMessage("The move's ending piece was not at the specified ending square.");
 
-        Board board = Board.builder()
-                .addWhiteBishops(F5)
-                .build();
+        Board board = Board.builder().addWhiteBishops(F5).build();
         Move move = Move.createCapture(WHITE, ROOK, ROOK, F3, F5);
         board.undoMove(move);
     }
@@ -790,9 +698,7 @@ public class BoardTest {
         exception.expect(IllegalMoveException.class);
         exception.expectMessage("The move's ending piece was not at the specified ending square.");
 
-        Board board = Board.builder()
-                .addBlackRooks(F5)
-                .build();
+        Board board = Board.builder().addBlackRooks(F5).build();
         Move move = Move.createCapture(WHITE, ROOK, ROOK, F3, F5);
         board.undoMove(move);
     }
@@ -802,9 +708,7 @@ public class BoardTest {
         exception.expect(IllegalMoveException.class);
         exception.expectMessage("Could not add the move's piece to the specified starting square.");
 
-        Board board = Board.builder()
-                .addWhiteRooks(F3, F5)
-                .build();
+        Board board = Board.builder().addWhiteRooks(F3, F5).build();
         Move move = Move.createCapture(WHITE, ROOK, ROOK, F3, F5);
         board.undoMove(move);
     }
@@ -814,9 +718,7 @@ public class BoardTest {
         exception.expect(IllegalMoveException.class);
         exception.expectMessage("The move's ending piece was not at the specified ending square.");
 
-        Board board = Board.builder()
-                .addWhitePawns(E4)
-                .build();
+        Board board = Board.builder().addWhitePawns(E4).build();
         Move move = Move.createEnPassant(BLACK, F4, E3, E4);
         board.undoMove(move);
     }
@@ -826,9 +728,7 @@ public class BoardTest {
         exception.expect(IllegalMoveException.class);
         exception.expectMessage("The move's ending piece was not at the specified ending square.");
 
-        Board board = Board.builder()
-                .addBlackKnights(E3)
-                .build();
+        Board board = Board.builder().addBlackKnights(E3).build();
         Move move = Move.createEnPassant(BLACK, F4, E3, E4);
         board.undoMove(move);
     }
@@ -838,9 +738,7 @@ public class BoardTest {
         exception.expect(IllegalMoveException.class);
         exception.expectMessage("The move's ending piece was not at the specified ending square.");
 
-        Board board = Board.builder()
-                .addWhitePawns(E3)
-                .build();
+        Board board = Board.builder().addWhitePawns(E3).build();
         Move move = Move.createEnPassant(BLACK, F4, E3, E4);
         board.undoMove(move);
     }
@@ -850,9 +748,7 @@ public class BoardTest {
         exception.expect(IllegalMoveException.class);
         exception.expectMessage("Could not add the move's piece to the specified starting square.");
 
-        Board board = Board.builder()
-                .addBlackPawns(E3, F4)
-                .build();
+        Board board = Board.builder().addBlackPawns(E3, F4).build();
         Move move = Move.createEnPassant(BLACK, F4, E3, E4);
         board.undoMove(move);
     }
@@ -862,10 +758,7 @@ public class BoardTest {
         exception.expect(IllegalMoveException.class);
         exception.expectMessage("The move's captured piece could not be added to its original square.");
 
-        Board board = Board.builder()
-                .addBlackPawns(E3)
-                .addWhitePawns(E4)
-                .build();
+        Board board = Board.builder().addBlackPawns(E3).addWhitePawns(E4).build();
         Move move = Move.createEnPassant(BLACK, F4, E3, E4);
         board.undoMove(move);
     }
@@ -875,9 +768,7 @@ public class BoardTest {
         exception.expect(IllegalMoveException.class);
         exception.expectMessage("The move's ending piece was not at the specified ending square.");
 
-        Board board = Board.builder()
-                .addBlackPawns(F2)
-                .build();
+        Board board = Board.builder().addBlackPawns(F2).build();
         Move move = Move.createPromotion(BLACK, F2, F1, QUEEN);
         board.undoMove(move);
     }
@@ -887,9 +778,7 @@ public class BoardTest {
         exception.expect(IllegalMoveException.class);
         exception.expectMessage("The move's ending piece was not at the specified ending square.");
 
-        Board board = Board.builder()
-                .addBlackRooks(F1)
-                .build();
+        Board board = Board.builder().addBlackRooks(F1).build();
         Move move = Move.createPromotion(BLACK, F2, F1, QUEEN);
         board.undoMove(move);
     }
@@ -899,9 +788,7 @@ public class BoardTest {
         exception.expect(IllegalMoveException.class);
         exception.expectMessage("The move's ending piece was not at the specified ending square.");
 
-        Board board = Board.builder()
-                .addWhiteQueens(F1)
-                .build();
+        Board board = Board.builder().addWhiteQueens(F1).build();
         Move move = Move.createPromotion(BLACK, F2, F1, QUEEN);
         board.undoMove(move);
     }
@@ -911,9 +798,7 @@ public class BoardTest {
         exception.expect(IllegalMoveException.class);
         exception.expectMessage("The move's ending piece was not at the specified ending square.");
 
-        Board board = Board.builder()
-                .addWhitePawns(E7)
-                .build();
+        Board board = Board.builder().addWhitePawns(E7).build();
         Move move = Move.createCapturePromotion(WHITE, KNIGHT, E7, F8, QUEEN);
         board.undoMove(move);
     }
@@ -923,9 +808,7 @@ public class BoardTest {
         exception.expect(IllegalMoveException.class);
         exception.expectMessage("The move's ending piece was not at the specified ending square.");
 
-        Board board = Board.builder()
-                .addWhiteRooks(F8)
-                .build();
+        Board board = Board.builder().addWhiteRooks(F8).build();
         Move move = Move.createCapturePromotion(WHITE, KNIGHT, E7, F8, QUEEN);
         board.undoMove(move);
     }
@@ -935,9 +818,7 @@ public class BoardTest {
         exception.expect(IllegalMoveException.class);
         exception.expectMessage("The move's ending piece was not at the specified ending square.");
 
-        Board board = Board.builder()
-                .addBlackQueens(F8)
-                .build();
+        Board board = Board.builder().addBlackQueens(F8).build();
         Move move = Move.createCapturePromotion(WHITE, KNIGHT, E7, F8, QUEEN);
         board.undoMove(move);
     }
@@ -947,10 +828,7 @@ public class BoardTest {
         exception.expect(IllegalMoveException.class);
         exception.expectMessage("The rook could not be removed from its ending square for castling.");
 
-        Board board = Board.builder()
-                .setBlackKing(G8)
-                .addBlackQueens(F8)
-                .build();
+        Board board = Board.builder().setBlackKing(G8).addBlackQueens(F8).build();
         board.undoMove(Move.BLACK_KINGSIDE_CASTLE);
     }
 
@@ -959,18 +837,13 @@ public class BoardTest {
         exception.expect(IllegalMoveException.class);
         exception.expectMessage("The rook could not be added to its starting square for castling.");
 
-        Board board = Board.builder()
-                .addBlackRooks(A8, D8)
-                .setBlackKing(C8)
-                .build();
+        Board board = Board.builder().addBlackRooks(A8, D8).setBlackKing(C8).build();
         board.undoMove(Move.BLACK_QUEENSIDE_CASTLE);
     }
 
     @Test
     public void testUndoMoveNormal () {
-        Board board = Board.builder()
-                .addWhitePawns(E4)
-                .build();
+        Board board = Board.builder().addWhitePawns(E4).build();
         Move move = Move.create(WHITE, PAWN, E2, E4);
         board.undoMove(move);
         Map<Square, Pair<Color, Piece>> boardMap = board.toMap();
@@ -981,9 +854,7 @@ public class BoardTest {
 
     @Test
     public void testUndoMoveNormalCapture () {
-        Board board = Board.builder()
-                .addBlackBishops(F3)
-                .build();
+        Board board = Board.builder().addBlackBishops(F3).build();
         Move move = Move.createCapture(BLACK, BISHOP, KNIGHT, B7, F3);
         board.undoMove(move);
         Map<Square, Pair<Color, Piece>> boardMap = board.toMap();
@@ -995,9 +866,7 @@ public class BoardTest {
 
     @Test
     public void testUndoMoveEnPassantCapture () {
-        Board board = Board.builder()
-                .addBlackPawns(E3)
-                .build();
+        Board board = Board.builder().addBlackPawns(E3).build();
         Move move = Move.createEnPassant(BLACK, D4, E3, E4);
         board.undoMove(move);
         Map<Square, Pair<Color, Piece>> boardMap = board.toMap();
@@ -1009,9 +878,7 @@ public class BoardTest {
 
     @Test
     public void testUndoMovePromotion () {
-        Board board = Board.builder()
-                .addWhiteQueens(B8)
-                .build();
+        Board board = Board.builder().addWhiteQueens(B8).build();
         Move move = Move.createPromotion(WHITE, B7, B8, QUEEN);
         board.undoMove(move);
         Map<Square, Pair<Color, Piece>> boardMap = board.toMap();
@@ -1022,9 +889,7 @@ public class BoardTest {
 
     @Test
     public void testUndoMoveCaptureAndPromotion () {
-        Board board = Board.builder()
-                .addWhiteQueens(B8)
-                .build();
+        Board board = Board.builder().addWhiteQueens(B8).build();
         Move move = Move.createCapturePromotion(WHITE, KNIGHT, C7, B8, QUEEN);
         board.undoMove(move);
         Map<Square, Pair<Color, Piece>> boardMap = board.toMap();
@@ -1036,10 +901,7 @@ public class BoardTest {
 
     @Test
     public void testUndoMoveWhiteKingsideCastle () {
-        Board board = Board.builder()
-                .setWhiteKing(G1)
-                .addWhiteRooks(F1)
-                .build();
+        Board board = Board.builder().setWhiteKing(G1).addWhiteRooks(F1).build();
         board.undoMove(Move.WHITE_KINGSIDE_CASTLE);
         Map<Square, Pair<Color, Piece>> boardMap = board.toMap();
 
@@ -1050,10 +912,7 @@ public class BoardTest {
 
     @Test
     public void testUndoMoveWhiteQueensideCastle () {
-        Board board = Board.builder()
-                .setWhiteKing(C1)
-                .addWhiteRooks(D1)
-                .build();
+        Board board = Board.builder().setWhiteKing(C1).addWhiteRooks(D1).build();
         board.undoMove(Move.WHITE_QUEENSIDE_CASTLE);
         Map<Square, Pair<Color, Piece>> boardMap = board.toMap();
 
@@ -1064,10 +923,7 @@ public class BoardTest {
 
     @Test
     public void testUndoMoveBlackKingsideCastle () {
-        Board board = Board.builder()
-                .setBlackKing(G8)
-                .addBlackRooks(F8)
-                .build();
+        Board board = Board.builder().setBlackKing(G8).addBlackRooks(F8).build();
         board.undoMove(Move.BLACK_KINGSIDE_CASTLE);
         Map<Square, Pair<Color, Piece>> boardMap = board.toMap();
 
@@ -1078,10 +934,7 @@ public class BoardTest {
 
     @Test
     public void testUndoMoveBlackQueensideCastle () {
-        Board board = Board.builder()
-                .setBlackKing(C8)
-                .addBlackRooks(D8)
-                .build();
+        Board board = Board.builder().setBlackKing(C8).addBlackRooks(D8).build();
         board.undoMove(Move.BLACK_QUEENSIDE_CASTLE);
         Map<Square, Pair<Color, Piece>> boardMap = board.toMap();
 
