@@ -634,7 +634,7 @@ public class Board {
 
         // Remove the moved piece from its starting position.
         if (!removePieceFromSquare(move.color(), move.piece(), move.start())) {
-            throw new IllegalMoveException(move, "The move's piece was not at the specified starting square.");
+            throw new IllegalMoveException(move, this, "The move's piece was not at the specified starting square.");
         }
 
         // If a capture needs to be performed, remove the piece being captured.
@@ -643,7 +643,8 @@ public class Board {
             Square enPassantCaptureSquare = move.enPassantCaptureSquare();
             Square captureSquare = (enPassantCaptureSquare != null) ? enPassantCaptureSquare : move.end();
             if (!removePieceFromSquare(move.color().opposite(), capturedPiece, captureSquare)) {
-                throw new IllegalMoveException(move, "The move's captured piece was not at the specified square.");
+                throw new IllegalMoveException(move, this,
+                        "The move's captured piece was not at the specified square.");
             }
         }
 
@@ -651,7 +652,8 @@ public class Board {
         Piece promoteTo = move.promoteTo();
         Piece endingPiece = (promoteTo != null) ? promoteTo : move.piece();
         if (!addPieceToSquare(move.color(), endingPiece, move.end())) {
-            throw new IllegalMoveException(move, "Could not add the move's piece to the specified ending square.");
+            throw new IllegalMoveException(move, this,
+                    "Could not add the move's piece to the specified ending square.");
         }
 
         // If the move was a castling move, perform the rook movement in addition to the king movement.
@@ -693,7 +695,8 @@ public class Board {
         Piece promoteTo = move.promoteTo();
         Piece endingPiece = (promoteTo != null) ? promoteTo : move.piece();
         if (!removePieceFromSquare(move.color(), endingPiece, move.end())) {
-            throw new IllegalMoveException(move, "The move's ending piece was not at the specified ending square.");
+            throw new IllegalMoveException(move, this,
+                    "The move's ending piece was not at the specified ending square.");
         }
 
         // If a piece was captured, add it back to the ending position.
@@ -708,7 +711,8 @@ public class Board {
 
         // Add the moved piece to its starting position.
         if (!addPieceToSquare(move.color(), move.piece(), move.start())) {
-            throw new IllegalMoveException(move, "Could not add the move's piece to the specified starting square.");
+            throw new IllegalMoveException(move, this,
+                    "Could not add the move's piece to the specified starting square.");
         }
 
         // If the move was a castling move, undo the rook movement in addition to the king movement.
@@ -745,11 +749,11 @@ public class Board {
         if (move == null) {
             throw new IllegalArgumentException("move cannot be null.");
         } else if (move.start() == move.end()) {
-            throw new IllegalMoveException(move, "move start and end cannot be identical.");
+            throw new IllegalMoveException(move, this, "move start and end cannot be identical.");
         } else if (move.capturedPiece() == KING) {
-            throw new IllegalMoveException(move, "capturedPiece cannot be KING.");
+            throw new IllegalMoveException(move, this, "capturedPiece cannot be KING.");
         } else if (move.promoteTo() == PAWN || move.promoteTo() == KING) {
-            throw new IllegalMoveException(move, "promoteTo cannot be PAWN or KING.");
+            throw new IllegalMoveException(move, this, "promoteTo cannot be PAWN or KING.");
         }
     }
 

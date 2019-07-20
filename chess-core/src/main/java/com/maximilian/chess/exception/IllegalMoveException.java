@@ -1,5 +1,6 @@
 package com.maximilian.chess.exception;
 
+import com.maximilian.chess.objects.Board;
 import com.maximilian.chess.objects.Move;
 
 import javax.annotation.Nonnull;
@@ -22,5 +23,12 @@ public class IllegalMoveException extends RuntimeException {
      */
     public IllegalMoveException (@Nonnull Move move, @Nonnull String message) {
         super(message + "\nMove:\n" + move.toString());
+    }
+
+    /**
+     * {@see {@link RuntimeException#RuntimeException(String)}}
+     */
+    public IllegalMoveException (@Nonnull Move move, @Nonnull Board board, @Nonnull String message) {
+        super(message + "\nMove:\n" + move + "\nBoard:\n" + board);
     }
 }
