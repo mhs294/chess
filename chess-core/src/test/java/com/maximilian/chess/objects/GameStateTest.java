@@ -254,7 +254,7 @@ public class GameStateTest {
         Color colorToMove = BLACK;
 
         exception.expect(IllegalMoveException.class);
-        exception.expectMessage("it is not " + colorToMove + "'s turn to move.");
+        exception.expectMessage("It is not " + colorToMove + "'s turn to move.");
 
         GameState gameState = GameState.createStartingGameState();
         Board board = Board.createStartingBoard();
@@ -267,7 +267,7 @@ public class GameStateTest {
 
         exception.expect(IllegalMoveException.class);
         exception.expectMessage(
-                "illegal en passant square specified for move (legal en passant = " + enPassantSquare + ").");
+                "Illegal en passant square specified for move (legal en passant = " + enPassantSquare + ").");
 
         Board board = Board.builder().setWhiteKing(E1).setBlackKing(E8).addWhitePawns(C4, E4).addBlackPawns(D4).build();
         GameState gameState = GameState.builder()
@@ -284,7 +284,7 @@ public class GameStateTest {
 
         exception.expect(IllegalMoveException.class);
         exception.expectMessage(
-                "white does not have kingside castling rights (castling rights = " + castlingRights + ").");
+                "White does not have kingside castling rights (castling rights = " + castlingRights + ").");
 
         Board board = Board.builder().setWhiteKing(E1).addWhiteRooks(A1, H1).setBlackKing(E8).build();
         GameState gameState = GameState.builder()
@@ -301,7 +301,7 @@ public class GameStateTest {
 
         exception.expect(IllegalMoveException.class);
         exception.expectMessage(
-                "white does not have queenside castling rights (castling rights = " + castlingRights + ").");
+                "White does not have queenside castling rights (castling rights = " + castlingRights + ").");
 
         Board board = Board.builder().setWhiteKing(E1).addWhiteRooks(A1, H1).setBlackKing(E8).build();
         GameState gameState = GameState.builder()
@@ -318,7 +318,7 @@ public class GameStateTest {
 
         exception.expect(IllegalMoveException.class);
         exception.expectMessage(
-                "black does not have kingside castling rights (castling rights = " + castlingRights + ").");
+                "Black does not have kingside castling rights (castling rights = " + castlingRights + ").");
 
         Board board = Board.builder().setWhiteKing(E1).setBlackKing(E8).addBlackRooks(A8, H8).build();
         GameState gameState = GameState.builder()
@@ -335,7 +335,7 @@ public class GameStateTest {
 
         exception.expect(IllegalMoveException.class);
         exception.expectMessage(
-                "black does not have queenside castling rights (castling rights = " + castlingRights + ").");
+                "Black does not have queenside castling rights (castling rights = " + castlingRights + ").");
 
         Board board = Board.builder().setWhiteKing(E1).setBlackKing(E8).addBlackRooks(A8, H8).build();
         GameState gameState = GameState.builder()
@@ -526,6 +526,20 @@ public class GameStateTest {
         GameState newGameState = gameState.doMove(board, Move.create(WHITE, PAWN, F5, F6));
 
         assertNull(newGameState.enPassantSquare());
+    }
+
+    @Test
+    public void testDoMoveSuccessEnPassantCapture () {
+        Board board = Board.builder().setWhiteKing(E1).addWhitePawns(F5).setBlackKing(E8).addBlackPawns(E5).build();
+        GameState gameState = GameState.builder()
+                .withBoard(board)
+                .withColorToMove(WHITE)
+                .withEnPassantSquare(E6)
+                .build();
+        GameState newGameState = gameState.doMove(board, Move.createEnPassant(WHITE, F5, E6, E5));
+
+        assertNull(newGameState.enPassantSquare());
+        assertEquals(0, board.blackPawnsCount());
     }
 
     @SuppressWarnings("ConstantConditions")
