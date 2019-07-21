@@ -9,7 +9,10 @@ import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 
 import javax.annotation.Nonnull;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import static com.maximilian.chess.enums.Diagonal.Direction.ASCENDING;
+import static com.maximilian.chess.enums.Diagonal.Direction.DESCENDING;
 import static com.maximilian.chess.enums.File.A;
 import static com.maximilian.chess.enums.File.B;
 import static com.maximilian.chess.enums.File.G;
@@ -38,6 +41,29 @@ public final class MovementBitmasks {
     public static final Object2LongMap<Square> KING_MOVES = new Object2LongOpenHashMap<>(64, 1.0F);
     public static final Object2LongMap<Square> BISHOP_SLIDES = new Object2LongOpenHashMap<>(64, 1.0F);
     public static final Object2LongMap<Square> ROOK_SLIDES = new Object2LongOpenHashMap<>(64, 1.0F);
+    /*
+     * The cardinal direction slides are the portions of the bishop/rook slides corresponding to their respective
+     * direction on the board.
+     */
+    public static final Object2LongMap<Square> NORTH_SLIDES = new Object2LongOpenHashMap<>(64, 1.0F);
+    public static final Object2LongMap<Square> EAST_SLIDES = new Object2LongOpenHashMap<>(64, 1.0F);
+    public static final Object2LongMap<Square> SOUTH_SLIDES = new Object2LongOpenHashMap<>(64, 1.0F);
+    public static final Object2LongMap<Square> WEST_SLIDES = new Object2LongOpenHashMap<>(64, 1.0F);
+    public static final Object2LongMap<Square> NORTHWEST_SLIDES = new Object2LongOpenHashMap<>(64, 1.0F);
+    public static final Object2LongMap<Square> NORTHEAST_SLIDES = new Object2LongOpenHashMap<>(64, 1.0F);
+    public static final Object2LongMap<Square> SOUTHWEST_SLIDES = new Object2LongOpenHashMap<>(64, 1.0F);
+    public static final Object2LongMap<Square> SOUTHEAST_SLIDES = new Object2LongOpenHashMap<>(64, 1.0F);
+
+    private enum CardinalDirection {
+        NORTH,
+        EAST,
+        SOUTH,
+        WEST,
+        NORTHWEST,
+        NORTHEAST,
+        SOUTHWEST,
+        SOUTHEAST
+    }
 
     static {
         for (Square square : Square.values()) {
@@ -49,6 +75,19 @@ public final class MovementBitmasks {
             KING_MOVES.put(square, getKingMovementBitmaskForSquare(square));
             BISHOP_SLIDES.put(square, getBishopSlidingBitmaskForSquare(square));
             ROOK_SLIDES.put(square, getRookSlidingBitmaskForSquare(square));
+
+            NORTH_SLIDES.put(square, getCardinalDirectionSlidingBitmaskForSquare(square, CardinalDirection.NORTH));
+            EAST_SLIDES.put(square, getCardinalDirectionSlidingBitmaskForSquare(square, CardinalDirection.EAST));
+            SOUTH_SLIDES.put(square, getCardinalDirectionSlidingBitmaskForSquare(square, CardinalDirection.SOUTH));
+            WEST_SLIDES.put(square, getCardinalDirectionSlidingBitmaskForSquare(square, CardinalDirection.WEST));
+            NORTHWEST_SLIDES.put(square,
+                    getCardinalDirectionSlidingBitmaskForSquare(square, CardinalDirection.NORTHWEST));
+            NORTHEAST_SLIDES.put(square,
+                    getCardinalDirectionSlidingBitmaskForSquare(square, CardinalDirection.NORTHEAST));
+            SOUTHWEST_SLIDES.put(square,
+                    getCardinalDirectionSlidingBitmaskForSquare(square, CardinalDirection.SOUTHWEST));
+            SOUTHEAST_SLIDES.put(square,
+                    getCardinalDirectionSlidingBitmaskForSquare(square, CardinalDirection.SOUTHEAST));
         }
     }
 
@@ -211,6 +250,75 @@ public final class MovementBitmasks {
      */
     private static long getRookSlidingBitmaskForSquare (@Nonnull Square square) {
         return (square.rank().bitmask() | square.file().bitmask()) ^ square.bitmask();
+    }
+
+    /**
+     * Gets the bitmask representing the potential slides available starting from the specified {@link Square} and
+     * proceeding in the specified {@link CardinalDirection} until a boundary of the board is reached.
+     *
+     * @param square    The {@link Square} from which the sliding bitmask will start. Cannot be null.
+     * @param direction The {@link CardinalDirection} along which the sliding bitmask will be generated. Cannot be null.
+     * @return The bitmask representing the potential slides available starting from the specified {@link Square} in
+     * the specified {@link CardinalDirection}
+     */
+    private static long getCardinalDirectionSlidingBitmaskForSquare (@Nonnull Square square,
+            CardinalDirection direction) {
+        long squareBitmask = square.bitmask();
+        long slideBitmask = squareBitmask;
+        for (int i = 1; i <= 7; i++) {
+            switch (direction) {
+                case NORTH:
+                    slideBitmask |= (slideBitmask << (i * 8));
+                    break;
+                case EAST:
+                    slideBitmask |= (slideBitmask << (i));
+                    break;
+                case SOUTH:
+                    slideBitmask |= (slideBitmask >>> (i * 8));
+                    break;
+                case WEST:
+                    slideBitmask |= (slideBitmask >>> (i));
+                    break;
+                case NORTHWEST:
+                    slideBitmask |= (slideBitmask << (i * 7));
+                    break;
+                case NORTHEAST:
+                    slideBitmask |= (slideBitmask << (i * 9));
+                    break;
+                case SOUTHWEST:
+                    slideBitmask |= (slideBitmask >>> (i * 9));
+                    break;
+                case SOUTHEAST:
+                    slideBitmask |= (slideBitmask >>> (i * 7));
+                    break;
+            }
+        }
+        switch (direction) {
+            case NORTH:
+            case SOUTH:
+                slideBitmask &= square.file().bitmask();
+                break;
+            case EAST:
+            case WEST:
+                slideBitmask &= square.rank().bitmask();
+                break;
+            case NORTHWEST:
+            case SOUTHEAST:
+                slideBitmask &= Diagonal.combinedBitmask(square.diagonals()
+                        .stream()
+                        .filter(diagonal -> diagonal.direction() == DESCENDING)
+                        .collect(Collectors.toSet()));
+                break;
+            case NORTHEAST:
+            case SOUTHWEST:
+                slideBitmask &= Diagonal.combinedBitmask(square.diagonals()
+                        .stream()
+                        .filter(diagonal -> diagonal.direction() == ASCENDING)
+                        .collect(Collectors.toSet()));
+                break;
+        }
+
+        return slideBitmask & ~squareBitmask;
     }
 
     // This class should never be instantiated.

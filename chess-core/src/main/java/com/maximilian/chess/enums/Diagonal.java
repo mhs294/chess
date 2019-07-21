@@ -10,6 +10,8 @@ import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 
+import static com.maximilian.chess.enums.Diagonal.Direction.ASCENDING;
+import static com.maximilian.chess.enums.Diagonal.Direction.DESCENDING;
 import static com.maximilian.chess.enums.Square.A1;
 import static com.maximilian.chess.enums.Square.A2;
 import static com.maximilian.chess.enums.Square.A3;
@@ -83,32 +85,32 @@ import static com.maximilian.chess.objects.Board.EMPTY_BITMASK;
  */
 @Accessors(fluent = true)
 public enum Diagonal {
-    A1_H8(EnumSet.of(A1, B2, C3, D4, E5, F6, G7, H8)),
-    A2_G8(EnumSet.of(A2, B3, C4, D5, E6, F7, G8)),
-    A3_F8(EnumSet.of(A3, B4, C5, D6, E7, F8)),
-    A4_E8(EnumSet.of(A4, B5, C6, D7, E8)),
-    A5_D8(EnumSet.of(A5, B6, C7, D8)),
-    A6_C8(EnumSet.of(A6, B7, C8)),
-    A7_B8(EnumSet.of(A7, B8)),
-    B1_H7(EnumSet.of(B1, C2, D3, E4, F5, G6, H7)),
-    C1_H6(EnumSet.of(C1, D2, E3, F4, G5, H6)),
-    D1_H5(EnumSet.of(D1, E2, F3, G4, H5)),
-    E1_H4(EnumSet.of(E1, F2, G3, H4)),
-    F1_H3(EnumSet.of(F1, G2, H3)),
-    G1_H2(EnumSet.of(G1, H2)),
-    A8_H1(EnumSet.of(A8, B7, C6, D5, E4, F3, G2, H1)),
-    A7_G1(EnumSet.of(A7, B6, C5, D4, E3, F2, G1)),
-    A6_F1(EnumSet.of(A6, B5, C4, D3, E2, F1)),
-    A5_E1(EnumSet.of(A5, B4, C3, D2, E1)),
-    A4_D1(EnumSet.of(A4, B3, C2, D1)),
-    A3_C1(EnumSet.of(A3, B2, C1)),
-    A2_B1(EnumSet.of(A2, B1)),
-    B8_H2(EnumSet.of(B8, C7, D6, E5, F4, G3, H2)),
-    C8_H3(EnumSet.of(C8, D7, E6, F5, G4, H3)),
-    D8_H4(EnumSet.of(D8, E7, F6, G5, H4)),
-    E8_H5(EnumSet.of(E8, F7, G6, H5)),
-    F8_H6(EnumSet.of(F8, G7, H6)),
-    G8_H7(EnumSet.of(G8, H7));
+    A1_H8(EnumSet.of(A1, B2, C3, D4, E5, F6, G7, H8), ASCENDING),
+    A2_G8(EnumSet.of(A2, B3, C4, D5, E6, F7, G8), ASCENDING),
+    A3_F8(EnumSet.of(A3, B4, C5, D6, E7, F8), ASCENDING),
+    A4_E8(EnumSet.of(A4, B5, C6, D7, E8), ASCENDING),
+    A5_D8(EnumSet.of(A5, B6, C7, D8), ASCENDING),
+    A6_C8(EnumSet.of(A6, B7, C8), ASCENDING),
+    A7_B8(EnumSet.of(A7, B8), ASCENDING),
+    B1_H7(EnumSet.of(B1, C2, D3, E4, F5, G6, H7), ASCENDING),
+    C1_H6(EnumSet.of(C1, D2, E3, F4, G5, H6), ASCENDING),
+    D1_H5(EnumSet.of(D1, E2, F3, G4, H5), ASCENDING),
+    E1_H4(EnumSet.of(E1, F2, G3, H4), ASCENDING),
+    F1_H3(EnumSet.of(F1, G2, H3), ASCENDING),
+    G1_H2(EnumSet.of(G1, H2), ASCENDING),
+    A8_H1(EnumSet.of(A8, B7, C6, D5, E4, F3, G2, H1), DESCENDING),
+    A7_G1(EnumSet.of(A7, B6, C5, D4, E3, F2, G1), DESCENDING),
+    A6_F1(EnumSet.of(A6, B5, C4, D3, E2, F1), DESCENDING),
+    A5_E1(EnumSet.of(A5, B4, C3, D2, E1), DESCENDING),
+    A4_D1(EnumSet.of(A4, B3, C2, D1), DESCENDING),
+    A3_C1(EnumSet.of(A3, B2, C1), DESCENDING),
+    A2_B1(EnumSet.of(A2, B1), DESCENDING),
+    B8_H2(EnumSet.of(B8, C7, D6, E5, F4, G3, H2), DESCENDING),
+    C8_H3(EnumSet.of(C8, D7, E6, F5, G4, H3), DESCENDING),
+    D8_H4(EnumSet.of(D8, E7, F6, G5, H4), DESCENDING),
+    E8_H5(EnumSet.of(E8, F7, G6, H5), DESCENDING),
+    F8_H6(EnumSet.of(F8, G7, H6), DESCENDING),
+    G8_H7(EnumSet.of(G8, H7), DESCENDING);
 
     private static final SetMultimap<Square, Diagonal> SQUARE_TO_DIAGONALS_MAP;
 
@@ -132,18 +134,24 @@ public enum Diagonal {
      * The 64-bit bitmask that represents the specific {@link Diagonal} on a bitboard.
      */
     @Getter private final long bitmask;
+    /**
+     * The {@link Direction} of this {@link Diagonal} (as viewed from A file to H file).
+     */
+    @Getter private final Direction direction;
 
     /**
      * (Primary constructor)
      *
      * @param squares The {@link Set} of {@link Square}s comprising the {@link Diagonal}.
+     * @param direction The {@link Direction} of this {@link Diagonal} (as viewed from A file to H file).
      */
-    Diagonal (@Nonnull Set<Square> squares) {
+    Diagonal (@Nonnull Set<Square> squares, @Nonnull Direction direction) {
         long bitmask = EMPTY_BITMASK;
         for (Square square : squares) {
             bitmask |= square.bitmask();
         }
         this.bitmask = bitmask;
+        this.direction = direction;
     }
 
     /**
@@ -171,5 +179,12 @@ public enum Diagonal {
         }
 
         return combinedBitmask;
+    }
+
+    /**
+     * Represents the different directions of diagonals (as viewed from A file to H file).
+     */
+    public enum Direction {
+        ASCENDING, DESCENDING
     }
 }
