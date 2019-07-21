@@ -42,7 +42,13 @@ import static com.maximilian.chess.enums.Piece.PAWN;
 import static com.maximilian.chess.enums.Piece.QUEEN;
 import static com.maximilian.chess.enums.Piece.ROOK;
 import static com.maximilian.chess.enums.Rank.EIGHT;
+import static com.maximilian.chess.enums.Rank.FIVE;
+import static com.maximilian.chess.enums.Rank.FOUR;
 import static com.maximilian.chess.enums.Rank.ONE;
+import static com.maximilian.chess.enums.Rank.SEVEN;
+import static com.maximilian.chess.enums.Rank.SIX;
+import static com.maximilian.chess.enums.Rank.THREE;
+import static com.maximilian.chess.enums.Rank.TWO;
 import static com.maximilian.chess.enums.Square.C1;
 import static com.maximilian.chess.enums.Square.C8;
 import static com.maximilian.chess.enums.Square.D1;
@@ -341,8 +347,7 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
                         if (slidingPieceSquare == null) {
                             throw new IllegalStateException(
                                     "Invalid sliding piece bitmask when checking for invalid en passant capture. " +
-                                            "Bitmask:" +
-                                            " " + slidingPieceFromKingBitmask + "\nBoard:\n" + board);
+                                            "Bitmask:" + " " + slidingPieceFromKingBitmask + "\nBoard:\n" + board);
                         }
 
                         Pair<Color, Piece> slidingColorPiecePair = piecesBySquares.get(slidingPieceSquare);
@@ -413,6 +418,39 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
         long pawnMovesBitmask = allowedMovesBitmask & ((colorToMove == WHITE) ?
                 WHITE_PAWN_ADVANCES.getLong(pawnSquare) :
                 BLACK_PAWN_ADVANCES.getLong(pawnSquare));
+        // Modify advancement from the pawn's initial rank to account for blocking pieces.
+        switch (colorToMove) {
+            case WHITE:
+                if (pawnSquare.rank() == TWO) {
+                    long pawnFileBitmask = pawnSquare.file().bitmask();
+                    long rankThreeBitmask = THREE.bitmask();
+                    long rankFourBitmask = FOUR.bitmask();
+                    if ((rankThreeBitmask & pawnFileBitmask & allowedMovesBitmask) == EMPTY_BITMASK) {
+                        // There is a blocker on the third rank - this pawn cannot advance.
+                        pawnMovesBitmask &= ~(rankThreeBitmask & pawnFileBitmask);
+                        pawnMovesBitmask &= ~(rankFourBitmask & pawnFileBitmask);
+                    } else if ((rankFourBitmask & pawnFileBitmask & allowedMovesBitmask) == EMPTY_BITMASK) {
+                        // There is a blocker on the fourth rank - this pawn can only advance one square.
+                        pawnMovesBitmask &= ~(rankFourBitmask & pawnFileBitmask);
+                    }
+                }
+                break;
+            case BLACK:
+                if (pawnSquare.rank() == SEVEN) {
+                    long pawnFileBitmask = pawnSquare.file().bitmask();
+                    long rankSixBitmask = SIX.bitmask();
+                    long rankFiveBitmask = FIVE.bitmask();
+                    if ((rankSixBitmask & pawnFileBitmask & allowedMovesBitmask) == EMPTY_BITMASK) {
+                        // There is a blocker on the sixth rank - this pawn cannot advance.
+                        pawnMovesBitmask &= ~(rankSixBitmask & pawnFileBitmask);
+                        pawnMovesBitmask &= ~(rankFiveBitmask & pawnFileBitmask);
+                    } else if ((rankFiveBitmask & pawnFileBitmask & allowedMovesBitmask) == EMPTY_BITMASK) {
+                        // There is a blocker on the fifth rank - this pawn can only advance one square.
+                        pawnMovesBitmask &= ~(rankFiveBitmask & pawnFileBitmask);
+                    }
+                }
+                break;
+        }
         pawnMovesBitmask |= allowedCapturesBitmask & ((colorToMove == WHITE) ?
                 WHITE_PAWN_CAPTURES.getLong(pawnSquare) :
                 BLACK_PAWN_CAPTURES.getLong(pawnSquare));
