@@ -6,6 +6,7 @@ import com.maximilian.chess.enums.Diagonal;
 import com.maximilian.chess.enums.Piece;
 import com.maximilian.chess.enums.Square;
 import com.maximilian.chess.movegen.MoveGenerator;
+import com.maximilian.chess.movegen.constants.MovementBitmasks;
 import com.maximilian.chess.objects.Board;
 import com.maximilian.chess.objects.GameState;
 import com.maximilian.chess.objects.Move;
@@ -23,6 +24,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -60,9 +62,17 @@ import static com.maximilian.chess.enums.Square.G8;
 import static com.maximilian.chess.movegen.constants.MovementBitmasks.BISHOP_SLIDES;
 import static com.maximilian.chess.movegen.constants.MovementBitmasks.BLACK_PAWN_ADVANCES;
 import static com.maximilian.chess.movegen.constants.MovementBitmasks.BLACK_PAWN_CAPTURES;
+import static com.maximilian.chess.movegen.constants.MovementBitmasks.EAST_SLIDES;
 import static com.maximilian.chess.movegen.constants.MovementBitmasks.KING_MOVES;
 import static com.maximilian.chess.movegen.constants.MovementBitmasks.KNIGHT_MOVES;
+import static com.maximilian.chess.movegen.constants.MovementBitmasks.NORTHEAST_SLIDES;
+import static com.maximilian.chess.movegen.constants.MovementBitmasks.NORTHWEST_SLIDES;
+import static com.maximilian.chess.movegen.constants.MovementBitmasks.NORTH_SLIDES;
 import static com.maximilian.chess.movegen.constants.MovementBitmasks.ROOK_SLIDES;
+import static com.maximilian.chess.movegen.constants.MovementBitmasks.SOUTHEAST_SLIDES;
+import static com.maximilian.chess.movegen.constants.MovementBitmasks.SOUTHWEST_SLIDES;
+import static com.maximilian.chess.movegen.constants.MovementBitmasks.SOUTH_SLIDES;
+import static com.maximilian.chess.movegen.constants.MovementBitmasks.WEST_SLIDES;
 import static com.maximilian.chess.movegen.constants.MovementBitmasks.WHITE_PAWN_ADVANCES;
 import static com.maximilian.chess.movegen.constants.MovementBitmasks.WHITE_PAWN_CAPTURES;
 import static com.maximilian.chess.movegen.magic.MagicBitboardMoveGenerator.MagicMovementBitmasks.BISHOP_BLOCKERS;
@@ -99,7 +109,7 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
         Square kingSquare = (colorToMove == WHITE) ? board.whiteKingSquare() : board.blackKingSquare();
         Set<Square> kingAttackerSquares = getKingAttackerSquares(board, colorToMove, kingSquare, occupiedBitmask);
         long kingMovementBitmask = generateKingMovesBitmask(board, colorToMove, kingSquare,
-                allowedMovesBitmask & allowedCapturesBitmask, occupiedBitmask);
+                allowedMovesBitmask | allowedCapturesBitmask, occupiedBitmask);
         List<Move> moves = new LinkedList<>();
 
         /*
@@ -128,10 +138,14 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
                 if (attackerPiece == PAWN || attackerPiece == KNIGHT) {
                     // Since the attacking piece isn't a sliding piece, check can't be escaped by blocking.
                     allowedMovesBitmask = EMPTY_BITMASK;
+                } else {
+                    // The attacking piece is a sliding piece, so allowed squares only include squares that block check.
+                    allowedMovesBitmask = getAllowedCheckBlocksBitmask(board, colorToMove.opposite(), attackerSquare,
+                            kingSquare, occupiedBitmask);
                 }
+                moves.addAll(
+                        getMovesFromMovementBitmask(colorToMove, KING, kingSquare, kingMovementBitmask, piecesBySquares));
             }
-            moves.addAll(
-                    getMovesFromMovementBitmask(colorToMove, KING, kingSquare, kingMovementBitmask, piecesBySquares));
         }
         long allowedBitmask = allowedMovesBitmask | allowedCapturesBitmask;
 
@@ -649,6 +663,84 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
     }
 
     /**
+     * TODO - javadoc
+     *
+     * @param board
+     * @param attackingColor
+     * @param attackerSquare
+     * @param kingSquare
+     * @param occupiedBitmask
+     * @return
+     */
+    private long getAllowedCheckBlocksBitmask (@Nonnull Board board, @Nonnull Color attackingColor,
+            @Nonnull Square attackerSquare, @Nonnull Square kingSquare, long occupiedBitmask) {
+        long attackBitmask = getSlidingMovementAttackedByBitmaskForColor(board, attackingColor, occupiedBitmask);
+        long kingSquareBitmask = kingSquare.bitmask();
+        for (MovementBitmasks.CardinalDirection cardinalDirection : MovementBitmasks.CardinalDirection.values()) {
+            switch (cardinalDirection) {
+                case NORTH:
+                    long northSlidesBitmask = NORTH_SLIDES.getLong(attackerSquare);
+                    if ((kingSquareBitmask & attackBitmask & northSlidesBitmask) != EMPTY_BITMASK) {
+                        attackBitmask &= northSlidesBitmask;
+                        break;
+                    }
+                    break;
+                case EAST:
+                    long eastSlidesBitmask = EAST_SLIDES.getLong(attackerSquare);
+                    if ((kingSquareBitmask & attackBitmask & eastSlidesBitmask) != EMPTY_BITMASK) {
+                        attackBitmask &= eastSlidesBitmask;
+                        break;
+                    }
+                    break;
+                case SOUTH:
+                    long southSlidesBitmask = SOUTH_SLIDES.getLong(attackerSquare);
+                    if ((kingSquareBitmask & attackBitmask & southSlidesBitmask) != EMPTY_BITMASK) {
+                        attackBitmask &= southSlidesBitmask;
+                        break;
+                    }
+                    break;
+                case WEST:
+                    long westSlidesBitmask = WEST_SLIDES.getLong(attackerSquare);
+                    if ((kingSquareBitmask & attackBitmask & westSlidesBitmask) != EMPTY_BITMASK) {
+                        attackBitmask &= westSlidesBitmask;
+                        break;
+                    }
+                    break;
+                case NORTHWEST:
+                    long northwestSlidesBitmask = NORTHWEST_SLIDES.getLong(attackerSquare);
+                    if ((kingSquareBitmask & attackBitmask & northwestSlidesBitmask) != EMPTY_BITMASK) {
+                        attackBitmask &= northwestSlidesBitmask;
+                        break;
+                    }
+                    break;
+                case NORTHEAST:
+                    long northeastSlidesBitmask = NORTHEAST_SLIDES.getLong(attackerSquare);
+                    if ((kingSquareBitmask & attackBitmask & northeastSlidesBitmask) != EMPTY_BITMASK) {
+                        attackBitmask &= northeastSlidesBitmask;
+                        break;
+                    }
+                    break;
+                case SOUTHWEST:
+                    long southwestSlidesBitmask = SOUTHWEST_SLIDES.getLong(attackerSquare);
+                    if ((kingSquareBitmask & attackBitmask & southwestSlidesBitmask) != EMPTY_BITMASK) {
+                        attackBitmask &= southwestSlidesBitmask;
+                        break;
+                    }
+                    break;
+                case SOUTHEAST:
+                    long southeastSlidesBitmask = SOUTHEAST_SLIDES.getLong(attackerSquare);
+                    if ((kingSquareBitmask & attackBitmask & southeastSlidesBitmask) != EMPTY_BITMASK) {
+                        attackBitmask &= southeastSlidesBitmask;
+                        break;
+                    }
+                    break;
+            }
+        }
+
+        return attackBitmask &= ~kingSquareBitmask;
+    }
+
+    /**
      * Gets the {@link Set} of {@link Square}s containing pieces of the specified {@link Color} that are pinned (i.e.
      * - their movement is restricted because they are currently blocking the king from check).
      *
@@ -662,16 +754,167 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
     @Nonnull
     private Set<Square> getPinnedPieceSquares (@Nonnull Board board, @Nonnull Color colorToMove,
             @Nonnull Square kingSquare, long occupiedBitmask) {
-        long attackedSquaresBitmask = getSlidingMovementAttackedByBitmaskForColor(board, colorToMove.opposite(),
-                occupiedBitmask);
-        long slidesFromKingBitmask = EMPTY_BITMASK;
-        slidesFromKingBitmask |= BISHOP_MOVES.get(kingSquare)
-                .get(BISHOP_BLOCKERS.getLong(kingSquare) & occupiedBitmask);
-        slidesFromKingBitmask |= ROOK_MOVES.get(kingSquare).get(ROOK_BLOCKERS.getLong(kingSquare) & occupiedBitmask);
-        long pinnedPiecesBitmask = attackedSquaresBitmask & slidesFromKingBitmask &
-                ((colorToMove == WHITE) ? board.whiteOccupiedBitmask() : board.blackOccupiedBitmask());
+        // TODO - clean up code and redundant method calls
+        Set<Square> pinnedPieceSquares = new HashSet<>();
+        long colorToMovePiecesBitmask = (colorToMove == WHITE) ?
+                board.whiteOccupiedBitmask() :
+                board.blackOccupiedBitmask();
+        long verticalPinPiecesBitmask = (colorToMove == WHITE) ?
+                board.blackQueensBitmask() | board.blackRooksBitmask() :
+                board.whiteQueensBitmask() | board.whiteRooksBitmask();
+        long diagonalPinPiecesBitmask = (colorToMove == WHITE) ?
+                board.blackQueensBitmask() | board.blackBishopsBitmask() :
+                board.whiteQueensBitmask() | board.whiteBishopsBitmask();
 
-        return BitboardUtils.getSquaresFromBitmask(pinnedPiecesBitmask);
+        // North pins
+        long northSlidesBitmask = NORTH_SLIDES.getLong(kingSquare);
+        long northPinPiecesBitmask = northSlidesBitmask & verticalPinPiecesBitmask;
+        if (northPinPiecesBitmask != EMPTY_BITMASK) {
+            long slideFromKingBitmask =
+                    ROOK_MOVES.get(kingSquare).get(occupiedBitmask & ROOK_BLOCKERS.getLong(kingSquare)) &
+                            northSlidesBitmask;
+            for (Square square : BitboardUtils.getSquaresFromBitmask(northPinPiecesBitmask)) {
+                long slideToKingBitmask = ROOK_MOVES.get(square).get(occupiedBitmask & ROOK_BLOCKERS.getLong(square)) &
+                        SOUTH_SLIDES.getLong(square);
+                long pinnedPieceBitmask = slideFromKingBitmask & slideToKingBitmask;
+                if ((pinnedPieceBitmask & colorToMovePiecesBitmask) != EMPTY_BITMASK) {
+                    pinnedPieceSquares.add(square);
+                    break;
+                }
+            }
+        }
+
+        // South pins
+        long southSlidesBitmask = SOUTH_SLIDES.getLong(kingSquare);
+        long southPinPiecesBitmask = southSlidesBitmask & verticalPinPiecesBitmask;
+        if (southPinPiecesBitmask != EMPTY_BITMASK) {
+            long slideFromKingBitmask =
+                    ROOK_MOVES.get(kingSquare).get(occupiedBitmask & ROOK_BLOCKERS.getLong(kingSquare)) &
+                            southSlidesBitmask;
+            for (Square square : BitboardUtils.getSquaresFromBitmask(southPinPiecesBitmask)) {
+                long slideToKingBitmask = ROOK_MOVES.get(square).get(occupiedBitmask & ROOK_BLOCKERS.getLong(square)) &
+                        NORTH_SLIDES.getLong(square);
+                long pinnedPieceBitmask = slideFromKingBitmask & slideToKingBitmask & colorToMovePiecesBitmask;
+                if (pinnedPieceBitmask != EMPTY_BITMASK) {
+                    pinnedPieceSquares.add(Square.fromBitmask(pinnedPieceBitmask));
+                    break;
+                }
+            }
+        }
+
+        // East pins
+        long eastSlidesBitmask = EAST_SLIDES.getLong(kingSquare);
+        long eastPinPiecesBitmask = eastSlidesBitmask & verticalPinPiecesBitmask;
+        if (eastPinPiecesBitmask != EMPTY_BITMASK) {
+            long slideFromKingBitmask =
+                    ROOK_MOVES.get(kingSquare).get(occupiedBitmask & ROOK_BLOCKERS.getLong(kingSquare)) &
+                            eastSlidesBitmask;
+            for (Square square : BitboardUtils.getSquaresFromBitmask(eastPinPiecesBitmask)) {
+                long slideToKingBitmask = ROOK_MOVES.get(square).get(occupiedBitmask & ROOK_BLOCKERS.getLong(square)) &
+                        WEST_SLIDES.getLong(square);
+                long pinnedPieceBitmask = slideFromKingBitmask & slideToKingBitmask & colorToMovePiecesBitmask;
+                if (pinnedPieceBitmask != EMPTY_BITMASK) {
+                    pinnedPieceSquares.add(Square.fromBitmask(pinnedPieceBitmask));
+                    break;
+                }
+            }
+        }
+
+        // West pins
+        long westSlidesBitmask = WEST_SLIDES.getLong(kingSquare);
+        long westPinPiecesBitmask = westSlidesBitmask & verticalPinPiecesBitmask;
+        if (westPinPiecesBitmask != EMPTY_BITMASK) {
+            long slideFromKingBitmask =
+                    ROOK_MOVES.get(kingSquare).get(occupiedBitmask & ROOK_BLOCKERS.getLong(kingSquare)) &
+                            westSlidesBitmask;
+            for (Square square : BitboardUtils.getSquaresFromBitmask(westPinPiecesBitmask)) {
+                long slideToKingBitmask = ROOK_MOVES.get(square).get(occupiedBitmask & ROOK_BLOCKERS.getLong(square)) &
+                        EAST_SLIDES.getLong(square);
+                long pinnedPieceBitmask = slideFromKingBitmask & slideToKingBitmask & colorToMovePiecesBitmask;
+                if (pinnedPieceBitmask != EMPTY_BITMASK) {
+                    pinnedPieceSquares.add(Square.fromBitmask(pinnedPieceBitmask));
+                    break;
+                }
+            }
+        }
+
+        // Northeast pins
+        long northeastSlidesBitmask = NORTHEAST_SLIDES.getLong(kingSquare);
+        long northeastPinPiecesBitmask = northeastSlidesBitmask & diagonalPinPiecesBitmask;
+        if (northeastPinPiecesBitmask != EMPTY_BITMASK) {
+            long slideFromKingBitmask =
+                    BISHOP_MOVES.get(kingSquare).get(occupiedBitmask & BISHOP_BLOCKERS.getLong(kingSquare)) &
+                            northeastSlidesBitmask;
+            for (Square square : BitboardUtils.getSquaresFromBitmask(northeastPinPiecesBitmask)) {
+                long slideToKingBitmask =
+                        BISHOP_MOVES.get(square).get(occupiedBitmask & BISHOP_BLOCKERS.getLong(square)) &
+                                SOUTHWEST_SLIDES.getLong(square);
+                long pinnedPieceBitmask = slideFromKingBitmask & slideToKingBitmask & colorToMovePiecesBitmask;
+                if (pinnedPieceBitmask != EMPTY_BITMASK) {
+                    pinnedPieceSquares.add(Square.fromBitmask(pinnedPieceBitmask));
+                    break;
+                }
+            }
+        }
+
+        // Northwest pins
+        long northwestSlidesBitmask = NORTHWEST_SLIDES.getLong(kingSquare);
+        long northwestPinPiecesBitmask = northwestSlidesBitmask & diagonalPinPiecesBitmask;
+        if (northwestPinPiecesBitmask != EMPTY_BITMASK) {
+            long slideFromKingBitmask =
+                    BISHOP_MOVES.get(kingSquare).get(occupiedBitmask & BISHOP_BLOCKERS.getLong(kingSquare)) &
+                            northwestSlidesBitmask;
+            for (Square square : BitboardUtils.getSquaresFromBitmask(northwestPinPiecesBitmask)) {
+                long slideToKingBitmask =
+                        BISHOP_MOVES.get(square).get(occupiedBitmask & BISHOP_BLOCKERS.getLong(square)) &
+                                SOUTHEAST_SLIDES.getLong(square);
+                long pinnedPieceBitmask = slideFromKingBitmask & slideToKingBitmask & colorToMovePiecesBitmask;
+                if (pinnedPieceBitmask != EMPTY_BITMASK) {
+                    pinnedPieceSquares.add(Square.fromBitmask(pinnedPieceBitmask));
+                    break;
+                }
+            }
+        }
+
+        // Southeast pins
+        long southeastSlidesBitmask = SOUTHEAST_SLIDES.getLong(kingSquare);
+        long southeastPinPiecesBitmask = southeastSlidesBitmask & diagonalPinPiecesBitmask;
+        if (southeastPinPiecesBitmask != EMPTY_BITMASK) {
+            long slideFromKingBitmask =
+                    BISHOP_MOVES.get(kingSquare).get(occupiedBitmask & BISHOP_BLOCKERS.getLong(kingSquare)) &
+                            southeastSlidesBitmask;
+            for (Square square : BitboardUtils.getSquaresFromBitmask(southeastPinPiecesBitmask)) {
+                long slideToKingBitmask =
+                        BISHOP_MOVES.get(square).get(occupiedBitmask & BISHOP_BLOCKERS.getLong(square)) &
+                                NORTHWEST_SLIDES.getLong(square);
+                long pinnedPieceBitmask = slideFromKingBitmask & slideToKingBitmask & colorToMovePiecesBitmask;
+                if (pinnedPieceBitmask != EMPTY_BITMASK) {
+                    pinnedPieceSquares.add(Square.fromBitmask(pinnedPieceBitmask));
+                    break;
+                }
+            }
+        }
+
+        // Southwest pins
+        long southwestSlidesBitmask = SOUTHWEST_SLIDES.getLong(kingSquare);
+        long southwestPinPiecesBitmask = southwestSlidesBitmask & diagonalPinPiecesBitmask;
+        if (southwestPinPiecesBitmask != EMPTY_BITMASK) {
+            long slideFromKingBitmask =
+                    BISHOP_MOVES.get(kingSquare).get(occupiedBitmask & BISHOP_BLOCKERS.getLong(kingSquare)) &
+                            southwestSlidesBitmask;
+            for (Square square : BitboardUtils.getSquaresFromBitmask(southwestPinPiecesBitmask)) {
+                long slideToKingBitmask =
+                        BISHOP_MOVES.get(square).get(occupiedBitmask & BISHOP_BLOCKERS.getLong(square)) &
+                                NORTHEAST_SLIDES.getLong(square);
+                long pinnedPieceBitmask = slideFromKingBitmask & slideToKingBitmask & colorToMovePiecesBitmask;
+                if (pinnedPieceBitmask != EMPTY_BITMASK) {
+                    pinnedPieceSquares.add(Square.fromBitmask(pinnedPieceBitmask));
+                    break;
+                }
+            }
+        }
+
+        return pinnedPieceSquares;
     }
 
     /**

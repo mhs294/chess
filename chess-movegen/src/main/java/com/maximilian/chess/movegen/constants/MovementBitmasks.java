@@ -54,7 +54,7 @@ public final class MovementBitmasks {
     public static final Object2LongMap<Square> SOUTHWEST_SLIDES = new Object2LongOpenHashMap<>(64, 1.0F);
     public static final Object2LongMap<Square> SOUTHEAST_SLIDES = new Object2LongOpenHashMap<>(64, 1.0F);
 
-    private enum CardinalDirection {
+    public enum CardinalDirection {
         NORTH,
         EAST,
         SOUTH,
