@@ -143,8 +143,8 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
                     allowedMovesBitmask = getAllowedCheckBlocksBitmask(board, colorToMove.opposite(), attackerSquare,
                             kingSquare, occupiedBitmask);
                 }
-                moves.addAll(
-                        getMovesFromMovementBitmask(colorToMove, KING, kingSquare, kingMovementBitmask, piecesBySquares));
+                moves.addAll(getMovesFromMovementBitmask(colorToMove, KING, kingSquare, kingMovementBitmask,
+                        piecesBySquares));
             }
         }
         long allowedBitmask = allowedMovesBitmask | allowedCapturesBitmask;
@@ -663,14 +663,17 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
     }
 
     /**
-     * TODO - javadoc
+     * Gets the bitmask representing the squares that can be occupied by pieces of the color to move in order to
+     * block the king from check.
      *
-     * @param board
-     * @param attackingColor
-     * @param attackerSquare
-     * @param kingSquare
-     * @param occupiedBitmask
-     * @return
+     * @param board           The {@link Board} representing the current state of the pieces. Cannot be null.
+     * @param attackingColor  The {@link Color} of the pieces for which threatened squares will be determined. Cannot be
+     *                        null.
+     * @param attackerSquare  The {@link Square} containing the piece attacking the king. Cannot be null.
+     * @param kingSquare      The {@link Square} where the king of the player to move is located. Cannot be null.
+     * @param occupiedBitmask The bitmask representing all the occupied squares on the board.
+     * @return The bitmask representing the squares that can be occupied by pieces of the color to move in order to
+     * block the king from check.
      */
     private long getAllowedCheckBlocksBitmask (@Nonnull Board board, @Nonnull Color attackingColor,
             @Nonnull Square attackerSquare, @Nonnull Square kingSquare, long occupiedBitmask) {
