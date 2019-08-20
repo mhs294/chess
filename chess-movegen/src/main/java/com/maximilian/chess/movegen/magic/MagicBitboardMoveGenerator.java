@@ -777,9 +777,9 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
             for (Square square : BitboardUtils.getSquaresFromBitmask(northPinPiecesBitmask)) {
                 long slideToKingBitmask = ROOK_MOVES.get(square).get(occupiedBitmask & ROOK_BLOCKERS.getLong(square)) &
                         SOUTH_SLIDES.getLong(square);
-                long pinnedPieceBitmask = slideFromKingBitmask & slideToKingBitmask;
-                if ((pinnedPieceBitmask & colorToMovePiecesBitmask) != EMPTY_BITMASK) {
-                    pinnedPieceSquares.add(square);
+                long pinnedPieceBitmask = slideFromKingBitmask & slideToKingBitmask & colorToMovePiecesBitmask;
+                if (pinnedPieceBitmask != EMPTY_BITMASK) {
+                    pinnedPieceSquares.add(Square.fromBitmask(pinnedPieceBitmask));
                     break;
                 }
             }
