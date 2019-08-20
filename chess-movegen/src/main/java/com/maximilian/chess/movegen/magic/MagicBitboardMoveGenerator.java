@@ -110,7 +110,6 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
         Set<Square> kingAttackerSquares = getKingAttackerSquares(board, colorToMove, kingSquare, occupiedBitmask);
         long kingMovementBitmask = generateKingMovesBitmask(board, colorToMove, kingSquare,
                 allowedMovesBitmask | allowedCapturesBitmask, occupiedBitmask);
-        List<Move> moves = new LinkedList<>();
 
         /*
          * If the king is attacked by exactly one piece, the king is in check (i.e. - capturing and blocking the
@@ -143,10 +142,10 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
                     allowedMovesBitmask = getAllowedCheckBlocksBitmask(board, colorToMove.opposite(), attackerSquare,
                             kingSquare, occupiedBitmask);
                 }
-                moves.addAll(getMovesFromMovementBitmask(colorToMove, KING, kingSquare, kingMovementBitmask,
-                        piecesBySquares));
             }
         }
+        List<Move> moves = new LinkedList<>(
+                getMovesFromMovementBitmask(colorToMove, KING, kingSquare, kingMovementBitmask, piecesBySquares));
         long allowedBitmask = allowedMovesBitmask | allowedCapturesBitmask;
 
         // Generate moves for pinned pieces separately, since their movement will be restricted.
@@ -348,9 +347,8 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
                         BitboardUtils.countHighBitsInBitmask(blackPawnsInRankBitmask) == 1) {
                     /*
                      * If there's exactly one pawn of each color on the rank adjacent to the en passant square and
-                     * the king
-                     * of the player to move exists on that rank, see if the king would be in check if both pawns are
-                     * removed from the rank.
+                     * the king of the player to move exists on that rank, see if the king would be in check if both
+                     * pawns are removed from the rank.
                      */
                     long postEnPassantOccupiedBitmask =
                             occupiedBitmask ^ whitePawnsInRankBitmask ^ blackPawnsInRankBitmask;
