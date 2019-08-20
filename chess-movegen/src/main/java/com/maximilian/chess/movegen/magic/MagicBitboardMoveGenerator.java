@@ -738,7 +738,7 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
             }
         }
 
-        return attackBitmask &= ~kingSquareBitmask;
+        return attackBitmask & ~kingSquareBitmask;
     }
 
     /**
