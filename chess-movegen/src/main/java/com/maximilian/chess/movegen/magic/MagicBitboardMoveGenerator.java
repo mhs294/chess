@@ -91,6 +91,7 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
     @Override
     public List<Move> generateAllMoves (@Nonnull Board board, @Nonnull GameState gameState) {
         Color colorToMove = gameState.colorToMove();
+        Color enemyColor = colorToMove.opposite();
         Object2ObjectMap<Square, Pair<Color, Piece>> piecesBySquares = board.toMap();
 
         /*
@@ -109,7 +110,7 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
          */
         Square kingSquare = (colorToMove == WHITE) ? board.whiteKingSquare() : board.blackKingSquare();
         Set<Square> kingAttackerSquares = getKingAttackerSquares(board, colorToMove, kingSquare, occupiedBitmask);
-        long kingMovementBitmask = generateKingMovesBitmask(board, colorToMove, kingSquare,
+        long kingMovementBitmask = generateKingMovesBitmask(board, enemyColor, kingSquare,
                 allowedMovesBitmask | allowedCapturesBitmask, occupiedBitmask);
 
         /*
@@ -117,20 +118,15 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
          * attacking piece may be possible). If the king is attacked by multiple pieces, the king is in double check
          * (i.e. - the only legal moves are king moves).
          */
+        boolean isInCheck = false;
         if (!kingAttackerSquares.isEmpty()) {
-            /*
-             * Determine all squares that are attacked by enemy pieces assuming the king to move is not on the board
-             * (this helps to prevent allowing the king to move further away from a sliding piece that is still
-             * attacking it).
-             */
-            kingMovementBitmask &= ~getSlidingMovementAttackedByBitmaskForColor(board, colorToMove.opposite(),
-                    (occupiedBitmask & ~kingSquare.bitmask()));
             if (kingAttackerSquares.size() > 1) {
                 // King is double check - only legal moves are for the king to move out of check.
                 return new LinkedList<>(getMovesFromMovementBitmask(colorToMove, KING, kingSquare, kingMovementBitmask,
                         piecesBySquares));
-            } else if (kingAttackerSquares.size() == 1) {
+            } else {
                 // King is in check, restrict legal moves to those which remove the king from check.
+                isInCheck = true;
                 Square attackerSquare = kingAttackerSquares.iterator().next();
                 allowedCapturesBitmask = attackerSquare.bitmask();
                 Pair<Color, Piece> attackerColorPiecePair = piecesBySquares.get(attackerSquare);
@@ -146,8 +142,8 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
                     allowedMovesBitmask = EMPTY_BITMASK;
                 } else {
                     // The attacking piece is a sliding piece, so allowed squares only include squares that block check.
-                    allowedMovesBitmask = getAllowedCheckBlocksBitmask(board, colorToMove.opposite(), attackerSquare,
-                            kingSquare, occupiedBitmask);
+                    allowedMovesBitmask = getAllowedCheckBlocksBitmask(board, enemyColor, attackerSquare, kingSquare,
+                            occupiedBitmask);
                 }
             }
         }
@@ -283,7 +279,7 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
 
         // Castling
         Set<CastlingRight> castlingRights = gameState.castlingRights();
-        if (!castlingRights.isEmpty()) {
+        if (!isInCheck && !castlingRights.isEmpty()) {
             for (CastlingRight castlingRight : castlingRights) {
                 if (colorToMove == WHITE && (castlingRight == BLACK_KINGSIDE || castlingRight == BLACK_QUEENSIDE)) {
                     continue;
@@ -315,8 +311,8 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
                         throw new IllegalStateException(
                                 "Board.castlingRights() contained an invalid value: " + castlingRight);
                 }
-                long availableSquaresBitmask = (allowedMovesBitmask &
-                        ~getAttackedByBitmaskForColor(board, colorToMove.opposite(), occupiedBitmask));
+                long availableSquaresBitmask =
+                        allowedMovesBitmask & ~getAttackedByBitmaskForColor(board, enemyColor, occupiedBitmask);
                 if ((requiredSquaresBitmask & availableSquaresBitmask) == requiredSquaresBitmask) {
                     moves.add(castlingMove);
                 }
@@ -404,20 +400,25 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
     }
 
     /**
-     * Generates a bitmask representing the legal king moves for the specified {@link Color}.
+     * Generates a bitmask representing the legal king moves for the color to move.
      *
      * @param board           The {@link Board} representing the current state of the pieces. Cannot be null.
-     * @param colorToMove     The {@link Color} of the king for which legal moves will be generated. Cannot be null.
+     * @param enemyColor      The {@link Color} of the enemy pieces of the king. Cannot be null.
      * @param kingSquare      The {@link Square} where the king is located. Cannot be null.
      * @param allowedBitmask  The bitmask representing all the allowed destination squares for the color to move.
      * @param occupiedBitmask The bitmask representing all the occupied squares on the board.
-     * @return The bitmask representing the legal king moves for the specified {@link Color}.
+     * @return The bitmask representing the legal king moves for the color to move.
      */
-    private long generateKingMovesBitmask (@Nonnull Board board, @Nonnull Color colorToMove, @Nonnull Square kingSquare,
+    private long generateKingMovesBitmask (@Nonnull Board board, @Nonnull Color enemyColor, @Nonnull Square kingSquare,
             long allowedBitmask, long occupiedBitmask) {
-        return KING_MOVES.getLong(kingSquare) & allowedBitmask &
-                ~getFixedMovementAttackedByBitmaskForColor(board, colorToMove.opposite()) &
-                ~getSlidingMovementAttackedByBitmaskForColor(board, colorToMove.opposite(), occupiedBitmask);
+        /*
+         * Determine all squares that are attacked by sliding enemy pieces assuming the king to move is not on the
+         * board (this helps to prevent allowing the king to move further away from a sliding piece that is still
+         * attacking it).
+         */
+        long attackedSquaresBitmask = getAttackedByBitmaskForColor(board, enemyColor,
+                (occupiedBitmask & ~kingSquare.bitmask()));
+        return KING_MOVES.getLong(kingSquare) & allowedBitmask & ~attackedSquaresBitmask;
     }
 
     /**
