@@ -946,21 +946,23 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
             Piece capturedPiece = (capturedColorPiecePair != null) ? capturedColorPiecePair.getValue() : null;
 
             // If the piece being moved is a promoting pawn, generate all possible promotion moves.
-            if (piece == PAWN && (colorToMove == WHITE && endSquare.rank() == EIGHT) ||
-                    (colorToMove == BLACK && endSquare.rank() == ONE)) {
-                moves.add((capturedPiece != null) ?
-                        Move.createCapturePromotion(colorToMove, capturedPiece, startSquare, endSquare, QUEEN) :
-                        Move.createPromotion(colorToMove, startSquare, endSquare, QUEEN));
-                moves.add((capturedPiece != null) ?
-                        Move.createCapturePromotion(colorToMove, capturedPiece, startSquare, endSquare, KNIGHT) :
-                        Move.createPromotion(colorToMove, startSquare, endSquare, KNIGHT));
-                moves.add((capturedPiece != null) ?
-                        Move.createCapturePromotion(colorToMove, capturedPiece, startSquare, endSquare, ROOK) :
-                        Move.createPromotion(colorToMove, startSquare, endSquare, ROOK));
-                moves.add((capturedPiece != null) ?
-                        Move.createCapturePromotion(colorToMove, capturedPiece, startSquare, endSquare, BISHOP) :
-                        Move.createPromotion(colorToMove, startSquare, endSquare, BISHOP));
-                continue;
+            if (piece == PAWN) {
+                if ((colorToMove == WHITE && endSquare.rank() == EIGHT) ||
+                        (colorToMove == BLACK && endSquare.rank() == ONE)) {
+                    moves.add((capturedPiece != null) ?
+                            Move.createCapturePromotion(colorToMove, capturedPiece, startSquare, endSquare, QUEEN) :
+                            Move.createPromotion(colorToMove, startSquare, endSquare, QUEEN));
+                    moves.add((capturedPiece != null) ?
+                            Move.createCapturePromotion(colorToMove, capturedPiece, startSquare, endSquare, KNIGHT) :
+                            Move.createPromotion(colorToMove, startSquare, endSquare, KNIGHT));
+                    moves.add((capturedPiece != null) ?
+                            Move.createCapturePromotion(colorToMove, capturedPiece, startSquare, endSquare, ROOK) :
+                            Move.createPromotion(colorToMove, startSquare, endSquare, ROOK));
+                    moves.add((capturedPiece != null) ?
+                            Move.createCapturePromotion(colorToMove, capturedPiece, startSquare, endSquare, BISHOP) :
+                            Move.createPromotion(colorToMove, startSquare, endSquare, BISHOP));
+                    continue;
+                }
             }
 
             moves.add((capturedPiece != null) ?
