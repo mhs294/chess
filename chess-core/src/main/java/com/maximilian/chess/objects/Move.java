@@ -352,11 +352,21 @@ public class Move {
 
     @Override
     public String toString () {
+        if (this == WHITE_KINGSIDE_CASTLE) {
+            return "WHITE KINGSIDE CASTLE";
+        } else if (this == WHITE_QUEENSIDE_CASTLE) {
+            return "WHITE QUEENSIDE CASTLE";
+        } else if (this == BLACK_KINGSIDE_CASTLE) {
+            return "BLACK KINGSIDE CASTLE";
+        } else if (this == BLACK_QUEENSIDE_CASTLE) {
+            return "BLACK QUEENSIDE CASTLE";
+        }
+
         String moveString =
                 color().toString() + " " + piece().toString() + " " + start().toString() + "-" + end().toString();
         Piece capturedPiece = capturedPiece();
         if (capturedPiece != null) {
-            moveString += "\nCapture: " + color().opposite().toString() + " " + capturedPiece.toString();
+            moveString += ", Capture: " + color().opposite().toString() + " " + capturedPiece.toString();
             Square enPassantCaptureSquare = enPassantCaptureSquare();
             if (enPassantCaptureSquare != null) {
                 moveString += " (en-passant on " + enPassantCaptureSquare.toString() + ")";
@@ -364,7 +374,7 @@ public class Move {
         }
         Piece promoteTo = promoteTo();
         if (promoteTo != null) {
-            moveString += "\nPromotion to " + promoteTo.toString();
+            moveString += ", Promotion to " + promoteTo.toString();
         }
 
         return moveString;

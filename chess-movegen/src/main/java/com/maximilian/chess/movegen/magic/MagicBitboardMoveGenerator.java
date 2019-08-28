@@ -92,6 +92,7 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
     public List<Move> generateAllMoves (@Nonnull Board board, @Nonnull GameState gameState) {
         Color colorToMove = gameState.colorToMove();
         Object2ObjectMap<Square, Pair<Color, Piece>> piecesBySquares = board.toMap();
+
         /*
          * These bitmasks represent the squares where the pieces to move are allowed to move to/capture on (can be
          * restricted if the king is in check).
