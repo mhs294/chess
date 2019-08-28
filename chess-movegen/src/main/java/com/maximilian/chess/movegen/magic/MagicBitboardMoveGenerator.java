@@ -330,60 +330,55 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
                         BLACK_PAWN_ADVANCES.getLong(enPassantSquare) :
                         WHITE_PAWN_ADVANCES.getLong(enPassantSquare);
                 Square captureSquare = Square.fromBitmask(captureBitmask & allowedCapturesBitmask);
-                if (captureSquare == null) {
-                    throw new IllegalStateException(
-                            "Illegal en passant capture square specified. En passant square: " + enPassantSquare +
-                                    "\nBoard:\n" + board);
-                }
-
-                /*
-                 * Check for an illegal en passant capture (i.e. - one that would result in putting the king of the
-                 * player
-                 * to move in check)
-                 */
-                boolean isEnPassantLegal = true;
-                long rankBitmask = captureSquare.rank().bitmask();
-                long whitePawnsInRankBitmask = board.whitePawnsBitmask() & rankBitmask;
-                long blackPawnsInRankBitmask = board.blackPawnsBitmask() & rankBitmask;
-                if ((rankBitmask & kingSquare.bitmask()) != EMPTY_BITMASK &&
-                        BitboardUtils.countHighBitsInBitmask(whitePawnsInRankBitmask) == 1 &&
-                        BitboardUtils.countHighBitsInBitmask(blackPawnsInRankBitmask) == 1) {
+                if (captureSquare != null) {
                     /*
-                     * If there's exactly one pawn of each color on the rank adjacent to the en passant square and
-                     * the king of the player to move exists on that rank, see if the king would be in check if both
-                     * pawns are removed from the rank.
+                     * Check for an illegal en passant capture (i.e. - one that would result in putting the king of the
+                     * player to move in check)
                      */
-                    long postEnPassantOccupiedBitmask =
-                            occupiedBitmask ^ whitePawnsInRankBitmask ^ blackPawnsInRankBitmask;
-                    long slidingPieceFromKingBitmask =
-                            ROOK_MOVES.get(kingSquare).get(postEnPassantOccupiedBitmask) & allowedCapturesBitmask;
-                    if (slidingPieceFromKingBitmask != EMPTY_BITMASK) {
-                        Square slidingPieceSquare = Square.fromBitmask(slidingPieceFromKingBitmask);
-                        if (slidingPieceSquare == null) {
-                            throw new IllegalStateException(
-                                    "Invalid sliding piece bitmask when checking for invalid en passant capture. " +
-                                            "Bitmask:" + " " + slidingPieceFromKingBitmask + "\nBoard:\n" + board);
-                        }
+                    boolean isEnPassantLegal = true;
+                    long rankBitmask = captureSquare.rank().bitmask();
+                    long whitePawnsInRankBitmask = board.whitePawnsBitmask() & rankBitmask;
+                    long blackPawnsInRankBitmask = board.blackPawnsBitmask() & rankBitmask;
+                    if ((rankBitmask & kingSquare.bitmask()) != EMPTY_BITMASK &&
+                            BitboardUtils.countHighBitsInBitmask(whitePawnsInRankBitmask) == 1 &&
+                            BitboardUtils.countHighBitsInBitmask(blackPawnsInRankBitmask) == 1) {
+                        /*
+                         * If there's exactly one pawn of each color on the rank adjacent to the en passant square and
+                         * the king of the player to move exists on that rank, see if the king would be in check if both
+                         * pawns are removed from the rank.
+                         */
+                        long postEnPassantOccupiedBitmask =
+                                occupiedBitmask ^ whitePawnsInRankBitmask ^ blackPawnsInRankBitmask;
+                        long slidingPieceFromKingBitmask =
+                                ROOK_MOVES.get(kingSquare).get(postEnPassantOccupiedBitmask) & allowedCapturesBitmask;
+                        if (slidingPieceFromKingBitmask != EMPTY_BITMASK) {
+                            Square slidingPieceSquare = Square.fromBitmask(slidingPieceFromKingBitmask);
+                            if (slidingPieceSquare == null) {
+                                throw new IllegalStateException(
+                                        "Invalid sliding piece bitmask when checking for invalid en passant capture. " +
+                                                "Bitmask:" + " " + slidingPieceFromKingBitmask + "\nBoard:\n" + board);
+                            }
 
-                        Pair<Color, Piece> slidingColorPiecePair = piecesBySquares.get(slidingPieceSquare);
-                        if (slidingColorPiecePair == null) {
-                            throw new IllegalStateException(
-                                    "Sliding piece from king did not exist at expected square. Square: " +
-                                            slidingPieceSquare + "\nBoard:\n" + board);
-                        }
+                            Pair<Color, Piece> slidingColorPiecePair = piecesBySquares.get(slidingPieceSquare);
+                            if (slidingColorPiecePair == null) {
+                                throw new IllegalStateException(
+                                        "Sliding piece from king did not exist at expected square. Square: " +
+                                                slidingPieceSquare + "\nBoard:\n" + board);
+                            }
 
-                        Piece slidingPieceFromKing = slidingColorPiecePair.getValue();
-                        if (slidingPieceFromKing == ROOK || slidingPieceFromKing == QUEEN) {
-                            // Capturing via en passant would put the king of the player to move in check.
-                            isEnPassantLegal = false;
+                            Piece slidingPieceFromKing = slidingColorPiecePair.getValue();
+                            if (slidingPieceFromKing == ROOK || slidingPieceFromKing == QUEEN) {
+                                // Capturing via en passant would put the king of the player to move in check.
+                                isEnPassantLegal = false;
+                            }
                         }
                     }
-                }
 
-                if (isEnPassantLegal) {
-                    Set<Square> startSquares = BitboardUtils.getSquaresFromBitmask(enPassantStartBitmask);
-                    for (Square startSquare : startSquares) {
-                        moves.add(Move.createEnPassant(colorToMove, startSquare, enPassantSquare, captureSquare));
+                    if (isEnPassantLegal) {
+                        Set<Square> startSquares = BitboardUtils.getSquaresFromBitmask(enPassantStartBitmask);
+                        for (Square startSquare : startSquares) {
+                            moves.add(Move.createEnPassant(colorToMove, startSquare, enPassantSquare, captureSquare));
+                        }
                     }
                 }
             }
