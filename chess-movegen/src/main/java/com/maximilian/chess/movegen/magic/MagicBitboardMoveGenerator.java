@@ -118,7 +118,13 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
          * (i.e. - the only legal moves are king moves).
          */
         if (!kingAttackerSquares.isEmpty()) {
-            kingMovementBitmask &= ~getSlidingMovementThreatenedByBitmaskForColor(board, colorToMove.opposite());
+            /*
+             * Determine all squares that are attacked by enemy pieces assuming the king to move is not on the board
+             * (this helps to prevent allowing the king to move further away from a sliding piece that is still
+             * attacking it).
+             */
+            kingMovementBitmask &= ~getSlidingMovementAttackedByBitmaskForColor(board, colorToMove.opposite(),
+                    (occupiedBitmask & ~kingSquare.bitmask()));
             if (kingAttackerSquares.size() > 1) {
                 // King is double check - only legal moves are for the king to move out of check.
                 return new LinkedList<>(getMovesFromMovementBitmask(colorToMove, KING, kingSquare, kingMovementBitmask,
@@ -589,41 +595,6 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
         for (Square square : queenSquares) {
             attackedBitmask |= BISHOP_MOVES.get(square).get(BISHOP_BLOCKERS.getLong(square) & occupiedBitmask);
             attackedBitmask |= ROOK_MOVES.get(square).get(ROOK_BLOCKERS.getLong(square) & occupiedBitmask);
-        }
-
-        return attackedBitmask;
-    }
-
-    /**
-     * Gets the bitmask representing all squares threatened by sliding-movement pieces of the specified {@link Color}
-     * (threatened squares are squares which are either directly under attack or may become under attack by a
-     * sliding-movement piece if a blocking piece were to move out of the way).
-     *
-     * @param board          The {@link Board} representing the current state of the pieces. Cannot be null.
-     * @param attackingColor The {@link Color} of the pieces for which threatened squares will be determined. Cannot be
-     *                       null.
-     * @return The bitmask representing all squares threatened by sliding-movement pieces of the specified
-     * {@link Color}.
-     */
-    private long getSlidingMovementThreatenedByBitmaskForColor (@Nonnull Board board, @Nonnull Color attackingColor) {
-        long attackedBitmask = EMPTY_BITMASK;
-
-        // Bishops
-        Set<Square> bishopSquares = (attackingColor == WHITE) ? board.whiteBishopSquares() : board.blackBishopSquares();
-        for (Square square : bishopSquares) {
-            attackedBitmask |= BISHOP_SLIDES.getLong(square);
-        }
-
-        // Rooks
-        Set<Square> rookSquares = (attackingColor == WHITE) ? board.whiteRookSquares() : board.blackRookSquares();
-        for (Square square : rookSquares) {
-            attackedBitmask |= ROOK_SLIDES.getLong(square);
-        }
-
-        // Queens
-        Set<Square> queenSquares = (attackingColor == WHITE) ? board.whiteQueenSquares() : board.blackQueenSquares();
-        for (Square square : queenSquares) {
-            attackedBitmask |= (BISHOP_SLIDES.getLong(square) | ROOK_SLIDES.getLong(square));
         }
 
         return attackedBitmask;
