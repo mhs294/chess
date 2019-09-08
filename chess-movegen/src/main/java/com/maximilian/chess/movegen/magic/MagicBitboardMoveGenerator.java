@@ -335,6 +335,10 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
             long enPassantStartBitmask = (colorToMove == WHITE) ?
                     BLACK_PAWN_CAPTURES.getLong(enPassantSquare) & board.whitePawnsBitmask() :
                     WHITE_PAWN_CAPTURES.getLong(enPassantSquare) & board.blackPawnsBitmask();
+
+            // Ignore en passant for pinned pieces.
+            long pinnedPiecesBitmask = BitboardUtils.getBitmaskFromSquares(pinnedPieceSquares);
+            enPassantStartBitmask &= ~pinnedPiecesBitmask;
             if (enPassantStartBitmask != EMPTY_BITMASK) {
                 long captureBitmask = (colorToMove == WHITE) ?
                         BLACK_PAWN_ADVANCES.getLong(enPassantSquare) :
