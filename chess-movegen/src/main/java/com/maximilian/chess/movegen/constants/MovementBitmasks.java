@@ -118,7 +118,7 @@ public final class MovementBitmasks {
      * @return The bitmask representing the capturing moves a white pawn can make from the specified {@link Square}.
      */
     private static long getWhitePawnCaptureBitmaskForSquare (@Nonnull Square square) {
-        if (square.rank() == ONE || square.rank() == EIGHT) {
+        if (square.rank() == EIGHT) {
             return EMPTY_BITMASK;
         }
 
@@ -154,7 +154,7 @@ public final class MovementBitmasks {
      * @return The bitmask representing the capturing moves a black pawn can make from the specified {@link Square}.
      */
     private static long getBlackPawnCaptureBitmaskForSquare (@Nonnull Square square) {
-        if (square.rank() == ONE || square.rank() == EIGHT) {
+        if (square.rank() == ONE) {
             return EMPTY_BITMASK;
         }
 

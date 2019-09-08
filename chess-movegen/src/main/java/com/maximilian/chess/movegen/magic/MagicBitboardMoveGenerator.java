@@ -51,6 +51,8 @@ import static com.maximilian.chess.enums.Rank.SEVEN;
 import static com.maximilian.chess.enums.Rank.SIX;
 import static com.maximilian.chess.enums.Rank.THREE;
 import static com.maximilian.chess.enums.Rank.TWO;
+import static com.maximilian.chess.enums.Square.B1;
+import static com.maximilian.chess.enums.Square.B8;
 import static com.maximilian.chess.enums.Square.C1;
 import static com.maximilian.chess.enums.Square.C8;
 import static com.maximilian.chess.enums.Square.D1;
@@ -177,8 +179,9 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
                     continue;
                 }
 
-                movementBitmask = generateRookMovesBitmask(pinnedPieceSquare, allowedBitmask & rankBitmask,
-                        occupiedBitmask & rankBitmask);
+                movementBitmask =
+                        generateRookMovesBitmask(pinnedPieceSquare, allowedBitmask & rankBitmask, occupiedBitmask) &
+                                rankBitmask;
             } else if ((fileBitmask & kingSquare.bitmask()) != EMPTY_BITMASK) {
                 // The piece is pinned vertically, so only consider vertical moves.
                 if (pinnedPiece == BISHOP) {
@@ -186,32 +189,24 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
                     continue;
                 } else if (pinnedPiece == PAWN) {
                     // Pawns pinned vertically can only make advancing moves.
-                    movementBitmask = ((colorToMove == WHITE) ?
-                            WHITE_PAWN_ADVANCES.getLong(pinnedPieceSquare) :
-                            BLACK_PAWN_ADVANCES.getLong(pinnedPieceSquare)) & allowedMovesBitmask;
+                    movementBitmask = generatePawnMovesBitmask(colorToMove, pinnedPieceSquare, allowedMovesBitmask,
+                            EMPTY_BITMASK, occupiedBitmask);
                 } else {
-                    movementBitmask = generateRookMovesBitmask(pinnedPieceSquare, allowedBitmask & fileBitmask,
-                            occupiedBitmask & fileBitmask);
+                    movementBitmask =
+                            generateRookMovesBitmask(pinnedPieceSquare, allowedBitmask & fileBitmask, occupiedBitmask) &
+                                    fileBitmask;
                 }
-
-                moves.addAll(getMovesFromMovementBitmask(colorToMove, pinnedPiece, pinnedPieceSquare, movementBitmask,
-                        piecesBySquares));
             } else {
                 // The piece is pinned diagonally, so only consider diagonal moves.
                 if (pinnedPiece == ROOK) {
                     // Rooks pinned diagonally cannot make any legal moves.
                     continue;
-                } else if (pinnedPiece == PAWN) {
-                    // Pawns pinned diagonally can only make capturing moves.
-                    movementBitmask = ((colorToMove == WHITE) ?
-                            WHITE_PAWN_CAPTURES.getLong(pinnedPieceSquare) :
-                            BLACK_PAWN_CAPTURES.getLong(pinnedPieceSquare)) & allowedCapturesBitmask;
                 } else {
                     long diagonalBitmask = EMPTY_BITMASK;
                     Set<Diagonal> diagonals = pinnedPieceSquare.diagonals();
                     for (Diagonal diagonal : diagonals) {
                         long bitmask = diagonal.bitmask();
-                        if ((bitmask & pinnedPieceSquare.bitmask()) != EMPTY_BITMASK) {
+                        if ((bitmask & kingSquare.bitmask()) != EMPTY_BITMASK) {
                             diagonalBitmask = bitmask;
                             break;
                         }
@@ -221,8 +216,17 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
                                 "Diagonal pinning bitmask could not be found.\nBoard:\n" + board);
                     }
 
-                    movementBitmask = generateBishopMovesBitmask(pinnedPieceSquare, allowedBitmask & diagonalBitmask,
-                            occupiedBitmask & diagonalBitmask);
+                    if (pinnedPiece == PAWN) {
+                        // Pawns pinned diagonally can only make capturing moves.
+                        movementBitmask = ((colorToMove == WHITE) ?
+                                WHITE_PAWN_CAPTURES.getLong(pinnedPieceSquare) :
+                                BLACK_PAWN_CAPTURES.getLong(pinnedPieceSquare)) & allowedCapturesBitmask &
+                                diagonalBitmask;
+                    } else {
+                        movementBitmask =
+                                generateBishopMovesBitmask(pinnedPieceSquare, allowedBitmask & diagonalBitmask,
+                                        occupiedBitmask) & diagonalBitmask;
+                    }
                 }
             }
 
@@ -235,7 +239,7 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
         pawnSquares.removeAll(pinnedPieceSquares);
         for (Square pawnSquare : pawnSquares) {
             long pawnMovementBitmask = generatePawnMovesBitmask(colorToMove, pawnSquare, allowedMovesBitmask,
-                    allowedCapturesBitmask);
+                    allowedCapturesBitmask, occupiedBitmask);
             moves.addAll(
                     getMovesFromMovementBitmask(colorToMove, PAWN, pawnSquare, pawnMovementBitmask, piecesBySquares));
         }
@@ -288,23 +292,28 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
                     continue;
                 }
 
-                long requiredSquaresBitmask;
+                long requiredSafeSquaresBitmask;
+                long requiredVacantSquaresBitmask;
                 Move castlingMove;
                 switch (castlingRight) {
                     case WHITE_KINGSIDE:
-                        requiredSquaresBitmask = F1.bitmask() | G1.bitmask();
+                        requiredSafeSquaresBitmask = F1.bitmask() | G1.bitmask();
+                        requiredVacantSquaresBitmask = requiredSafeSquaresBitmask;
                         castlingMove = Move.WHITE_KINGSIDE_CASTLE;
                         break;
                     case WHITE_QUEENSIDE:
-                        requiredSquaresBitmask = C1.bitmask() | D1.bitmask();
+                        requiredSafeSquaresBitmask = C1.bitmask() | D1.bitmask();
+                        requiredVacantSquaresBitmask = requiredSafeSquaresBitmask | B1.bitmask();
                         castlingMove = Move.WHITE_QUEENSIDE_CASTLE;
                         break;
                     case BLACK_KINGSIDE:
-                        requiredSquaresBitmask = F8.bitmask() | G8.bitmask();
+                        requiredSafeSquaresBitmask = F8.bitmask() | G8.bitmask();
+                        requiredVacantSquaresBitmask = requiredSafeSquaresBitmask;
                         castlingMove = Move.BLACK_KINGSIDE_CASTLE;
                         break;
                     case BLACK_QUEENSIDE:
-                        requiredSquaresBitmask = C8.bitmask() | D8.bitmask();
+                        requiredSafeSquaresBitmask = C8.bitmask() | D8.bitmask();
+                        requiredVacantSquaresBitmask = requiredSafeSquaresBitmask | B8.bitmask();
                         castlingMove = Move.BLACK_QUEENSIDE_CASTLE;
                         break;
                     default:
@@ -313,7 +322,8 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
                 }
                 long availableSquaresBitmask =
                         allowedMovesBitmask & ~getAttackedByBitmaskForColor(board, enemyColor, occupiedBitmask);
-                if ((requiredSquaresBitmask & availableSquaresBitmask) == requiredSquaresBitmask) {
+                if ((requiredSafeSquaresBitmask & availableSquaresBitmask) == requiredSafeSquaresBitmask &&
+                        (requiredVacantSquaresBitmask & allowedMovesBitmask) == requiredVacantSquaresBitmask) {
                     moves.add(castlingMove);
                 }
             }
@@ -426,10 +436,11 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
      *                               color to move.
      * @param allowedCapturesBitmask The bitmask representing all the allowed capture destination squares for the
      *                               color to move.
+     * @param occupiedBitmask        The bitmask representing all the occupied squares on the board.
      * @return The bitmask representing the legal pawn moves for the specified {@link Color}.
      */
     private long generatePawnMovesBitmask (@Nonnull Color colorToMove, @Nonnull Square pawnSquare,
-            long allowedMovesBitmask, long allowedCapturesBitmask) {
+            long allowedMovesBitmask, long allowedCapturesBitmask, long occupiedBitmask) {
         long pawnMovesBitmask = allowedMovesBitmask & ((colorToMove == WHITE) ?
                 WHITE_PAWN_ADVANCES.getLong(pawnSquare) :
                 BLACK_PAWN_ADVANCES.getLong(pawnSquare));
@@ -440,11 +451,11 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
                     long pawnFileBitmask = pawnSquare.file().bitmask();
                     long rankThreeBitmask = THREE.bitmask();
                     long rankFourBitmask = FOUR.bitmask();
-                    if ((rankThreeBitmask & pawnFileBitmask & allowedMovesBitmask) == EMPTY_BITMASK) {
+                    if ((rankThreeBitmask & pawnFileBitmask & occupiedBitmask) != EMPTY_BITMASK) {
                         // There is a blocker on the third rank - this pawn cannot advance.
                         pawnMovesBitmask &= ~(rankThreeBitmask & pawnFileBitmask);
                         pawnMovesBitmask &= ~(rankFourBitmask & pawnFileBitmask);
-                    } else if ((rankFourBitmask & pawnFileBitmask & allowedMovesBitmask) == EMPTY_BITMASK) {
+                    } else if ((rankFourBitmask & pawnFileBitmask & occupiedBitmask) != EMPTY_BITMASK) {
                         // There is a blocker on the fourth rank - this pawn can only advance one square.
                         pawnMovesBitmask &= ~(rankFourBitmask & pawnFileBitmask);
                     }
@@ -455,11 +466,11 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
                     long pawnFileBitmask = pawnSquare.file().bitmask();
                     long rankSixBitmask = SIX.bitmask();
                     long rankFiveBitmask = FIVE.bitmask();
-                    if ((rankSixBitmask & pawnFileBitmask & allowedMovesBitmask) == EMPTY_BITMASK) {
+                    if ((rankSixBitmask & pawnFileBitmask & occupiedBitmask) != EMPTY_BITMASK) {
                         // There is a blocker on the sixth rank - this pawn cannot advance.
                         pawnMovesBitmask &= ~(rankSixBitmask & pawnFileBitmask);
                         pawnMovesBitmask &= ~(rankFiveBitmask & pawnFileBitmask);
-                    } else if ((rankFiveBitmask & pawnFileBitmask & allowedMovesBitmask) == EMPTY_BITMASK) {
+                    } else if ((rankFiveBitmask & pawnFileBitmask & occupiedBitmask) != EMPTY_BITMASK) {
                         // There is a blocker on the fifth rank - this pawn can only advance one square.
                         pawnMovesBitmask &= ~(rankFiveBitmask & pawnFileBitmask);
                     }
@@ -728,7 +739,7 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
         long colorToMovePiecesBitmask = (colorToMove == WHITE) ?
                 board.whiteOccupiedBitmask() :
                 board.blackOccupiedBitmask();
-        long verticalPinPiecesBitmask = (colorToMove == WHITE) ?
+        long orthogonalPinPiecesBitmask = (colorToMove == WHITE) ?
                 board.blackQueensBitmask() | board.blackRooksBitmask() :
                 board.whiteQueensBitmask() | board.whiteRooksBitmask();
         long diagonalPinPiecesBitmask = (colorToMove == WHITE) ?
@@ -737,7 +748,7 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
 
         // North pins
         long northSlidesBitmask = NORTH_SLIDES.getLong(kingSquare);
-        long northPinPiecesBitmask = northSlidesBitmask & verticalPinPiecesBitmask;
+        long northPinPiecesBitmask = northSlidesBitmask & orthogonalPinPiecesBitmask;
         if (northPinPiecesBitmask != EMPTY_BITMASK) {
             long slideFromKingBitmask =
                     ROOK_MOVES.get(kingSquare).get(occupiedBitmask & ROOK_BLOCKERS.getLong(kingSquare)) &
@@ -755,7 +766,7 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
 
         // South pins
         long southSlidesBitmask = SOUTH_SLIDES.getLong(kingSquare);
-        long southPinPiecesBitmask = southSlidesBitmask & verticalPinPiecesBitmask;
+        long southPinPiecesBitmask = southSlidesBitmask & orthogonalPinPiecesBitmask;
         if (southPinPiecesBitmask != EMPTY_BITMASK) {
             long slideFromKingBitmask =
                     ROOK_MOVES.get(kingSquare).get(occupiedBitmask & ROOK_BLOCKERS.getLong(kingSquare)) &
@@ -773,7 +784,7 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
 
         // East pins
         long eastSlidesBitmask = EAST_SLIDES.getLong(kingSquare);
-        long eastPinPiecesBitmask = eastSlidesBitmask & verticalPinPiecesBitmask;
+        long eastPinPiecesBitmask = eastSlidesBitmask & orthogonalPinPiecesBitmask;
         if (eastPinPiecesBitmask != EMPTY_BITMASK) {
             long slideFromKingBitmask =
                     ROOK_MOVES.get(kingSquare).get(occupiedBitmask & ROOK_BLOCKERS.getLong(kingSquare)) &
@@ -791,7 +802,7 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
 
         // West pins
         long westSlidesBitmask = WEST_SLIDES.getLong(kingSquare);
-        long westPinPiecesBitmask = westSlidesBitmask & verticalPinPiecesBitmask;
+        long westPinPiecesBitmask = westSlidesBitmask & orthogonalPinPiecesBitmask;
         if (westPinPiecesBitmask != EMPTY_BITMASK) {
             long slideFromKingBitmask =
                     ROOK_MOVES.get(kingSquare).get(occupiedBitmask & ROOK_BLOCKERS.getLong(kingSquare)) &
