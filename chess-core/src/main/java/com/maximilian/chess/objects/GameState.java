@@ -307,6 +307,19 @@ public class GameState {
                     }
                 }
             }
+
+            // If a rook is captured, remove castling rights for the side corresponding to that rook.
+            if (move.capturedPiece() == ROOK) {
+                if (move.end() == Square.H1) {
+                    newCastlingRights.remove(CastlingRight.WHITE_KINGSIDE);
+                } else if (move.end() == Square.A1) {
+                    newCastlingRights.remove(CastlingRight.WHITE_QUEENSIDE);
+                } else if (move.end() == Square.H8) {
+                    newCastlingRights.remove(CastlingRight.BLACK_KINGSIDE);
+                } else if (move.end() == Square.A8) {
+                    newCastlingRights.remove(CastlingRight.BLACK_QUEENSIDE);
+                }
+            }
         }
 
         // Update the en passant square.

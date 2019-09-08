@@ -419,7 +419,7 @@ public class GameStateTest {
     }
 
     @Test
-    public void testDoMoveSuccessWhiteLosesKingsideCastlingRights () {
+    public void testDoMoveSuccessWhiteLosesKingsideCastlingRightsByMovingRook () {
         Board board = Board.builder().setWhiteKing(E1).addWhiteRooks(A1, H1).setBlackKing(E8).build();
         GameState gameState = GameState.builder()
                 .withBoard(board)
@@ -432,7 +432,7 @@ public class GameStateTest {
     }
 
     @Test
-    public void testDoMoveSuccessWhiteLosesQueensideCastlingRights () {
+    public void testDoMoveSuccessWhiteLosesQueensideCastlingRightsByMovingRook () {
         Board board = Board.builder().setWhiteKing(E1).addWhiteRooks(A1, H1).setBlackKing(E8).build();
         GameState gameState = GameState.builder()
                 .withBoard(board)
@@ -440,6 +440,32 @@ public class GameStateTest {
                 .withColorToMove(WHITE)
                 .build();
         GameState newGameState = gameState.doMove(board, Move.create(WHITE, ROOK, A1, B1));
+
+        assertEquals(EnumSet.of(CastlingRight.WHITE_KINGSIDE), newGameState.castlingRights());
+    }
+
+    @Test
+    public void testDoMoveSuccessWhiteLosesKingsideCastlingRightsByBlackCapturingRook () {
+        Board board = Board.builder().setWhiteKing(E1).addWhiteRooks(A1, H1).addBlackRooks(H8).setBlackKing(E8).build();
+        GameState gameState = GameState.builder()
+                .withBoard(board)
+                .withCastlingRights(EnumSet.of(CastlingRight.WHITE_KINGSIDE, CastlingRight.WHITE_QUEENSIDE))
+                .withColorToMove(BLACK)
+                .build();
+        GameState newGameState = gameState.doMove(board, Move.createCapture(BLACK, ROOK, ROOK, H8, H1));
+
+        assertEquals(EnumSet.of(CastlingRight.WHITE_QUEENSIDE), newGameState.castlingRights());
+    }
+
+    @Test
+    public void testDoMoveSuccessWhiteLosesQueensideCastlingRightsByBlackCapturingRook () {
+        Board board = Board.builder().setWhiteKing(E1).addWhiteRooks(A1, H1).addBlackRooks(A8).setBlackKing(E8).build();
+        GameState gameState = GameState.builder()
+                .withBoard(board)
+                .withCastlingRights(EnumSet.of(CastlingRight.WHITE_KINGSIDE, CastlingRight.WHITE_QUEENSIDE))
+                .withColorToMove(BLACK)
+                .build();
+        GameState newGameState = gameState.doMove(board, Move.createCapture(BLACK, ROOK, ROOK, A8, A1));
 
         assertEquals(EnumSet.of(CastlingRight.WHITE_KINGSIDE), newGameState.castlingRights());
     }
@@ -471,7 +497,7 @@ public class GameStateTest {
     }
 
     @Test
-    public void testDoMoveSuccessBlackLosesKingsideCastlingRights () {
+    public void testDoMoveSuccessBlackLosesKingsideCastlingRightsByMovingRook () {
         Board board = Board.builder().setWhiteKing(E1).setBlackKing(E8).addBlackRooks(A8, H8).build();
         GameState gameState = GameState.builder()
                 .withBoard(board)
@@ -484,7 +510,7 @@ public class GameStateTest {
     }
 
     @Test
-    public void testDoMoveSuccessBlackLosesQueensideCastlingRights () {
+    public void testDoMoveSuccessBlackLosesQueensideCastlingRightsByMovingRook () {
         Board board = Board.builder().setWhiteKing(E1).setBlackKing(E8).addBlackRooks(A8, H8).build();
         GameState gameState = GameState.builder()
                 .withBoard(board)
@@ -492,6 +518,32 @@ public class GameStateTest {
                 .withColorToMove(BLACK)
                 .build();
         GameState newGameState = gameState.doMove(board, Move.create(BLACK, ROOK, A8, B8));
+
+        assertEquals(EnumSet.of(CastlingRight.BLACK_KINGSIDE), newGameState.castlingRights());
+    }
+
+    @Test
+    public void testDoMoveSuccessBlackLosesKingsideCastlingRightsByWhiteCapturingRook () {
+        Board board = Board.builder().setWhiteKing(E1).addWhiteRooks(H1).setBlackKing(E8).addBlackRooks(A8, H8).build();
+        GameState gameState = GameState.builder()
+                .withBoard(board)
+                .withCastlingRights(EnumSet.of(CastlingRight.BLACK_KINGSIDE, CastlingRight.BLACK_QUEENSIDE))
+                .withColorToMove(WHITE)
+                .build();
+        GameState newGameState = gameState.doMove(board, Move.createCapture(WHITE, ROOK, ROOK, H1, H8));
+
+        assertEquals(EnumSet.of(CastlingRight.BLACK_QUEENSIDE), newGameState.castlingRights());
+    }
+
+    @Test
+    public void testDoMoveSuccessBlackLosesQueensideCastlingRightsByWhiteCapturingRook () {
+        Board board = Board.builder().setWhiteKing(E1).addWhiteRooks(A1).setBlackKing(E8).addBlackRooks(A8, H8).build();
+        GameState gameState = GameState.builder()
+                .withBoard(board)
+                .withCastlingRights(EnumSet.of(CastlingRight.BLACK_KINGSIDE, CastlingRight.BLACK_QUEENSIDE))
+                .withColorToMove(WHITE)
+                .build();
+        GameState newGameState = gameState.doMove(board, Move.createCapture(WHITE, ROOK, ROOK, A1, A8));
 
         assertEquals(EnumSet.of(CastlingRight.BLACK_KINGSIDE), newGameState.castlingRights());
     }
