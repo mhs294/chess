@@ -107,11 +107,10 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
                 board.whiteOccupiedBitmask();
 
         /*
-         * Generate king moves first, since the king may be in check. If the king is in check, we can complete move
-         * generation early.
+         * Generate king moves first, since the king may be in check. If the king is in check, we may be able to
+         * complete move generation early.
          */
         Square kingSquare = (colorToMove == WHITE) ? board.whiteKingSquare() : board.blackKingSquare();
-        Set<Square> kingAttackerSquares = getKingAttackerSquares(board, colorToMove, kingSquare, occupiedBitmask);
         long kingMovementBitmask = generateKingMovesBitmask(board, enemyColor, kingSquare,
                 allowedMovesBitmask | allowedCapturesBitmask, occupiedBitmask);
 
@@ -121,6 +120,7 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
          * (i.e. - the only legal moves are king moves).
          */
         boolean isInCheck = false;
+        Set<Square> kingAttackerSquares = getKingAttackerSquares(board, colorToMove, kingSquare, occupiedBitmask);
         if (!kingAttackerSquares.isEmpty()) {
             if (kingAttackerSquares.size() > 1) {
                 // King is double check - only legal moves are for the king to move out of check.
@@ -144,7 +144,7 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
                     allowedMovesBitmask = EMPTY_BITMASK;
                 } else {
                     // The attacking piece is a sliding piece, so allowed squares only include squares that block check.
-                    allowedMovesBitmask = getAllowedCheckBlocksBitmask(board, enemyColor, attackerSquare, kingSquare,
+                    allowedMovesBitmask = getAllowedCheckBlocksBitmask(attackerPiece, attackerSquare, kingSquare,
                             occupiedBitmask);
                 }
             }
@@ -647,81 +647,115 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
      * Gets the bitmask representing the squares that can be occupied by pieces of the color to move in order to
      * block the king from check.
      *
-     * @param board           The {@link Board} representing the current state of the pieces. Cannot be null.
-     * @param attackingColor  The {@link Color} of the pieces for which threatened squares will be determined. Cannot be
-     *                        null.
+     * @param attackerPiece   The {@link Piece} attacking the king of the player to move. Cannot be null.
      * @param attackerSquare  The {@link Square} containing the piece attacking the king. Cannot be null.
      * @param kingSquare      The {@link Square} where the king of the player to move is located. Cannot be null.
      * @param occupiedBitmask The bitmask representing all the occupied squares on the board.
      * @return The bitmask representing the squares that can be occupied by pieces of the color to move in order to
      * block the king from check.
      */
-    private long getAllowedCheckBlocksBitmask (@Nonnull Board board, @Nonnull Color attackingColor,
-            @Nonnull Square attackerSquare, @Nonnull Square kingSquare, long occupiedBitmask) {
-        long attackBitmask = getSlidingMovementAttackedByBitmaskForColor(board, attackingColor, occupiedBitmask);
+    private long getAllowedCheckBlocksBitmask (@Nonnull Piece attackerPiece, @Nonnull Square attackerSquare,
+            @Nonnull Square kingSquare, long occupiedBitmask) {
         long kingSquareBitmask = kingSquare.bitmask();
+        long allowedBitmask = ~occupiedBitmask | kingSquareBitmask;
+        long attackerSlidesBitmask = EMPTY_BITMASK;
+        if (attackerPiece == ROOK || attackerPiece == QUEEN) {
+            attackerSlidesBitmask |= generateRookMovesBitmask(attackerSquare, allowedBitmask, occupiedBitmask);
+        }
+        if (attackerPiece == BISHOP || attackerPiece == QUEEN) {
+            attackerSlidesBitmask |= generateBishopMovesBitmask(attackerSquare, allowedBitmask, occupiedBitmask);
+        }
         for (MovementBitmasks.CardinalDirection cardinalDirection : MovementBitmasks.CardinalDirection.values()) {
             switch (cardinalDirection) {
                 case NORTH:
-                    long northSlidesBitmask = NORTH_SLIDES.getLong(attackerSquare);
-                    if ((kingSquareBitmask & attackBitmask & northSlidesBitmask) != EMPTY_BITMASK) {
-                        attackBitmask &= northSlidesBitmask;
-                        break;
+                    if (attackerPiece == BISHOP) {
+                        // Bishops can't check the king orthogonally.
+                        continue;
+                    }
+                    long northAttackSlidesBitmask = attackerSlidesBitmask & NORTH_SLIDES.getLong(attackerSquare);
+                    if ((kingSquareBitmask & northAttackSlidesBitmask) != EMPTY_BITMASK) {
+                        return northAttackSlidesBitmask & ~kingSquareBitmask;
                     }
                     break;
                 case EAST:
-                    long eastSlidesBitmask = EAST_SLIDES.getLong(attackerSquare);
-                    if ((kingSquareBitmask & attackBitmask & eastSlidesBitmask) != EMPTY_BITMASK) {
-                        attackBitmask &= eastSlidesBitmask;
-                        break;
+                    if (attackerPiece == BISHOP) {
+                        // Bishops can't check the king orthogonally.
+                        continue;
+                    }
+                    long eastAttackSlidesBitmask = attackerSlidesBitmask & EAST_SLIDES.getLong(attackerSquare);
+                    if ((kingSquareBitmask & eastAttackSlidesBitmask) != EMPTY_BITMASK) {
+                        return eastAttackSlidesBitmask & ~kingSquareBitmask;
                     }
                     break;
                 case SOUTH:
-                    long southSlidesBitmask = SOUTH_SLIDES.getLong(attackerSquare);
-                    if ((kingSquareBitmask & attackBitmask & southSlidesBitmask) != EMPTY_BITMASK) {
-                        attackBitmask &= southSlidesBitmask;
-                        break;
+                    if (attackerPiece == BISHOP) {
+                        // Bishops can't check the king orthogonally.
+                        continue;
+                    }
+                    long southAttackSlidesBitmask = attackerSlidesBitmask & SOUTH_SLIDES.getLong(attackerSquare);
+                    if ((kingSquareBitmask & southAttackSlidesBitmask) != EMPTY_BITMASK) {
+                        return southAttackSlidesBitmask & ~kingSquareBitmask;
                     }
                     break;
                 case WEST:
-                    long westSlidesBitmask = WEST_SLIDES.getLong(attackerSquare);
-                    if ((kingSquareBitmask & attackBitmask & westSlidesBitmask) != EMPTY_BITMASK) {
-                        attackBitmask &= westSlidesBitmask;
-                        break;
+                    if (attackerPiece == BISHOP) {
+                        // Bishops can't check the king orthogonally.
+                        continue;
+                    }
+                    long westAttackSlidesBitmask = attackerSlidesBitmask & WEST_SLIDES.getLong(attackerSquare);
+                    if ((kingSquareBitmask & westAttackSlidesBitmask) != EMPTY_BITMASK) {
+                        return westAttackSlidesBitmask & ~kingSquareBitmask;
                     }
                     break;
                 case NORTHWEST:
-                    long northwestSlidesBitmask = NORTHWEST_SLIDES.getLong(attackerSquare);
-                    if ((kingSquareBitmask & attackBitmask & northwestSlidesBitmask) != EMPTY_BITMASK) {
-                        attackBitmask &= northwestSlidesBitmask;
-                        break;
+                    if (attackerPiece == ROOK) {
+                        // Rooks can't check the king diagonally.
+                        continue;
+                    }
+                    long northwestAttackSlidesBitmask =
+                            attackerSlidesBitmask & NORTHWEST_SLIDES.getLong(attackerSquare);
+                    if ((kingSquareBitmask & northwestAttackSlidesBitmask) != EMPTY_BITMASK) {
+                        return northwestAttackSlidesBitmask & ~kingSquareBitmask;
                     }
                     break;
                 case NORTHEAST:
-                    long northeastSlidesBitmask = NORTHEAST_SLIDES.getLong(attackerSquare);
-                    if ((kingSquareBitmask & attackBitmask & northeastSlidesBitmask) != EMPTY_BITMASK) {
-                        attackBitmask &= northeastSlidesBitmask;
-                        break;
+                    if (attackerPiece == ROOK) {
+                        // Rooks can't check the king diagonally.
+                        continue;
+                    }
+                    long northeastAttackSlidesBitmask =
+                            attackerSlidesBitmask & NORTHEAST_SLIDES.getLong(attackerSquare);
+                    if ((kingSquareBitmask & northeastAttackSlidesBitmask) != EMPTY_BITMASK) {
+                        return northeastAttackSlidesBitmask & ~kingSquareBitmask;
                     }
                     break;
                 case SOUTHWEST:
-                    long southwestSlidesBitmask = SOUTHWEST_SLIDES.getLong(attackerSquare);
-                    if ((kingSquareBitmask & attackBitmask & southwestSlidesBitmask) != EMPTY_BITMASK) {
-                        attackBitmask &= southwestSlidesBitmask;
-                        break;
+                    if (attackerPiece == ROOK) {
+                        // Rooks can't check the king diagonally.
+                        continue;
+                    }
+                    long southwestAttackSlidesBitmask =
+                            attackerSlidesBitmask & SOUTHWEST_SLIDES.getLong(attackerSquare);
+                    if ((kingSquareBitmask & southwestAttackSlidesBitmask) != EMPTY_BITMASK) {
+                        return southwestAttackSlidesBitmask & ~kingSquareBitmask;
                     }
                     break;
                 case SOUTHEAST:
-                    long southeastSlidesBitmask = SOUTHEAST_SLIDES.getLong(attackerSquare);
-                    if ((kingSquareBitmask & attackBitmask & southeastSlidesBitmask) != EMPTY_BITMASK) {
-                        attackBitmask &= southeastSlidesBitmask;
-                        break;
+                    if (attackerPiece == ROOK) {
+                        // Rooks can't check the king diagonally.
+                        continue;
+                    }
+                    long southeastAttackSlidesBitmask =
+                            attackerSlidesBitmask & SOUTHEAST_SLIDES.getLong(attackerSquare);
+                    if ((kingSquareBitmask & southeastAttackSlidesBitmask) != EMPTY_BITMASK) {
+                        return southeastAttackSlidesBitmask & ~kingSquareBitmask;
                     }
                     break;
             }
         }
 
-        return attackBitmask & ~kingSquareBitmask;
+        // If we made it this far, something went wrong.
+        return EMPTY_BITMASK;
     }
 
     /**
