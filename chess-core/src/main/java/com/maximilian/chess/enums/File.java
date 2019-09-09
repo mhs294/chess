@@ -4,7 +4,6 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.experimental.Accessors;
 
 import javax.annotation.Nonnull;
@@ -101,7 +100,7 @@ public enum File {
         SQUARE_TO_FILE_MAP = new Object2ObjectOpenHashMap<>(squares.length, 1.0F);
         for (Square square : squares) {
             for (File file : File.values()) {
-                if ((file.bitmask & square.bitmask()) != EMPTY_BITMASK) {
+                if ((file.bitmask & square.bitmask) != EMPTY_BITMASK) {
                     SQUARE_TO_FILE_MAP.put(square, file);
                     break;
                 }
@@ -112,7 +111,7 @@ public enum File {
     /**
      * The 64-bit bitmask that represents the specific {@link File} on a bitboard.
      */
-    @Getter private final long bitmask;
+    public final long bitmask;
 
     /**
      * (Primary constructor)
@@ -122,7 +121,7 @@ public enum File {
     File (@Nonnull Set<Square> squares) {
         long bitmask = EMPTY_BITMASK;
         for (Square square : squares) {
-            bitmask |= square.bitmask();
+            bitmask |= square.bitmask;
         }
         this.bitmask = bitmask;
     }

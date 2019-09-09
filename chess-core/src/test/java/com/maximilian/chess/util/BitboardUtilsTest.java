@@ -64,7 +64,7 @@ public class BitboardUtilsTest {
                 "Light Squares:\n" + BitboardUtils.bitboardToBoardString(Board.LIGHT_SQUARES_BITMASK) + "\n");
         System.out.println("Full:\n" + BitboardUtils.bitboardToBoardString(Board.FULL_BITMASK));
         for (Square square : Square.values()) {
-            System.out.println(square + ":\n" + BitboardUtils.bitboardToBoardString(square.bitmask()));
+            System.out.println(square + ":\n" + BitboardUtils.bitboardToBoardString(square.bitmask));
         }
     }
 }

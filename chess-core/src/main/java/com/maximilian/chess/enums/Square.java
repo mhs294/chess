@@ -113,7 +113,7 @@ public enum Square {
     /**
      * The bitmask of this {@link Square}.
      */
-    @Getter private final long bitmask;
+    public final long bitmask;
 
     /**
      * (Primary constructor)
@@ -166,7 +166,7 @@ public enum Square {
      */
     @Nonnull
     public static Square fromFileAndRank (@Nonnull File file, @Nonnull Rank rank) {
-        return BITMASK_TO_SQUARE_MAP.get(file.bitmask() & rank.bitmask());
+        return BITMASK_TO_SQUARE_MAP.get(file.bitmask & rank.bitmask);
     }
 
     /**

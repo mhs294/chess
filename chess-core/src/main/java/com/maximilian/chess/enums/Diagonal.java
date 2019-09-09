@@ -119,7 +119,7 @@ public enum Diagonal {
         for (Square square : Square.values()) {
             Set<Diagonal> diagonals = new HashSet<>(2);
             for (Diagonal diagonal : Diagonal.values()) {
-                if ((diagonal.bitmask & square.bitmask()) != EMPTY_BITMASK) {
+                if ((diagonal.bitmask & square.bitmask) != EMPTY_BITMASK) {
                     diagonals.add(diagonal);
                     if (diagonals.size() == 2) {
                         break;
@@ -133,7 +133,7 @@ public enum Diagonal {
     /**
      * The 64-bit bitmask that represents the specific {@link Diagonal} on a bitboard.
      */
-    @Getter private final long bitmask;
+    public final long bitmask;
     /**
      * The {@link Direction} of this {@link Diagonal} (as viewed from A file to H file).
      */
@@ -148,7 +148,7 @@ public enum Diagonal {
     Diagonal (@Nonnull Set<Square> squares, @Nonnull Direction direction) {
         long bitmask = EMPTY_BITMASK;
         for (Square square : squares) {
-            bitmask |= square.bitmask();
+            bitmask |= square.bitmask;
         }
         this.bitmask = bitmask;
         this.direction = direction;

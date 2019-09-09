@@ -205,7 +205,7 @@ public class BoardTest {
         Set<Square> expectedVacantSquares = EnumSet.of(A3, A4, A5, A6, B3, B4, B5, B6, C3, C4, C5, C6, D3, D4, D5, D6,
                 E3, E4, E5, E6, F3, F4, F5, F6, G3, G4, G5, G6, H3, H4, H5, H6);
         for (Square square : expectedVacantSquares) {
-            expectedVacantBitmask |= square.bitmask();
+            expectedVacantBitmask |= square.bitmask;
         }
 
         assertEquals(expectedVacantBitmask, STARTING_BOARD.vacantBitmask());
@@ -218,7 +218,7 @@ public class BoardTest {
         Set<Square> expectedWhiteOccupiedSquares = EnumSet.of(A1, B1, C1, D1, E1, F1, G1, H1, A2, B2, C2, D2, E2, F2,
                 G2, H2);
         for (Square square : expectedWhiteOccupiedSquares) {
-            expectedWhiteOccupiedBitmask |= square.bitmask();
+            expectedWhiteOccupiedBitmask |= square.bitmask;
         }
 
         assertEquals(expectedWhiteOccupiedBitmask, STARTING_BOARD.whiteOccupiedBitmask());
@@ -231,7 +231,7 @@ public class BoardTest {
         Set<Square> expectedBlackOccupiedSquares = EnumSet.of(A7, B7, C7, D7, E7, F7, G7, H7, A8, B8, C8, D8, E8, F8,
                 G8, H8);
         for (Square square : expectedBlackOccupiedSquares) {
-            expectedBlackOccupiedBitmask |= square.bitmask();
+            expectedBlackOccupiedBitmask |= square.bitmask;
         }
 
         assertEquals(expectedBlackOccupiedBitmask, STARTING_BOARD.blackOccupiedBitmask());
@@ -244,7 +244,7 @@ public class BoardTest {
         Set<Square> expectedOccupiedSquares = EnumSet.of(A1, B1, C1, D1, E1, F1, G1, H1, A2, B2, C2, D2, E2, F2, G2, H2,
                 A7, B7, C7, D7, E7, F7, G7, H7, A8, B8, C8, D8, E8, F8, G8, H8);
         for (Square square : expectedOccupiedSquares) {
-            expectedOccupiedBitmask |= square.bitmask();
+            expectedOccupiedBitmask |= square.bitmask;
         }
 
         assertEquals(expectedOccupiedBitmask, STARTING_BOARD.occupiedBitmask());

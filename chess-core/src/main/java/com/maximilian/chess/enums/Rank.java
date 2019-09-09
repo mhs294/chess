@@ -2,7 +2,6 @@ package com.maximilian.chess.enums;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import lombok.Getter;
 import lombok.experimental.Accessors;
 
 import javax.annotation.Nonnull;
@@ -98,7 +97,7 @@ public enum Rank {
         SQUARE_TO_RANK_MAP = new Object2ObjectOpenHashMap<>(squares.length, 1.0F);
         for (Square square : squares) {
             for (Rank rank : Rank.values()) {
-                if ((rank.bitmask & square.bitmask()) != EMPTY_BITMASK) {
+                if ((rank.bitmask & square.bitmask) != EMPTY_BITMASK) {
                     SQUARE_TO_RANK_MAP.put(square, rank);
                     break;
                 }
@@ -109,7 +108,7 @@ public enum Rank {
     /**
      * The 64-bit bitmask that represents the specific {@link Rank} on a bitboard.
      */
-    @Getter private final long bitmask;
+    public final long bitmask;
 
     /**
      * (Primary constructor)
@@ -119,7 +118,7 @@ public enum Rank {
     Rank (@Nonnull Set<Square> squares) {
         long bitmask = EMPTY_BITMASK;
         for (Square square : squares) {
-            bitmask |= square.bitmask();
+            bitmask |= square.bitmask;
         }
         this.bitmask = bitmask;
     }

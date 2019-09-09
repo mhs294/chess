@@ -102,7 +102,7 @@ public final class MovementBitmasks {
             return EMPTY_BITMASK;
         }
 
-        long squareBitmask = square.bitmask();
+        long squareBitmask = square.bitmask;
         long pawnMoveBitmask = squareBitmask << 8;
         if (square.rank() == TWO) {
             pawnMoveBitmask |= (squareBitmask << 16);
@@ -122,8 +122,8 @@ public final class MovementBitmasks {
             return EMPTY_BITMASK;
         }
 
-        long squareBitmask = square.bitmask();
-        long nextRankBitmask = square.rank().bitmask() << 8;
+        long squareBitmask = square.bitmask;
+        long nextRankBitmask = square.rank().bitmask << 8;
         return ((squareBitmask << 7) | (squareBitmask << 9)) & nextRankBitmask;
     }
 
@@ -138,7 +138,7 @@ public final class MovementBitmasks {
             return EMPTY_BITMASK;
         }
 
-        long squareBitmask = square.bitmask();
+        long squareBitmask = square.bitmask;
         long pawnMoveBitmask = squareBitmask >>> 8;
         if (square.rank() == SEVEN) {
             pawnMoveBitmask |= (squareBitmask >>> 16);
@@ -158,8 +158,8 @@ public final class MovementBitmasks {
             return EMPTY_BITMASK;
         }
 
-        long squareBitmask = square.bitmask();
-        long nextRankBitmask = square.rank().bitmask() >>> 8;
+        long squareBitmask = square.bitmask;
+        long nextRankBitmask = square.rank().bitmask >>> 8;
 
         return ((squareBitmask >>> 7) | (squareBitmask >>> 9)) & nextRankBitmask;
     }
@@ -171,7 +171,7 @@ public final class MovementBitmasks {
      * @return The bitmask representing the moves a knight can make from the specified {@link Square}.
      */
     private static long getKnightMovementBitmaskForSquare (@Nonnull Square square) {
-        long squareBitmask = square.bitmask();
+        long squareBitmask = square.bitmask;
         long knightBitmask =
                 (squareBitmask << 6) | (squareBitmask << 10) | (squareBitmask << 15) | (squareBitmask << 17) |
                         (squareBitmask >>> 6) | (squareBitmask >>> 10) | (squareBitmask >>> 15) |
@@ -180,8 +180,8 @@ public final class MovementBitmasks {
         // Exclude any invalid squares included as a result of bit-shifting that wrapped around the board.
         Rank rank = square.rank();
         File file = square.file();
-        long rankBitmask = rank.bitmask();
-        long fileBitmask = file.bitmask();
+        long rankBitmask = rank.bitmask;
+        long fileBitmask = file.bitmask;
         long ranksBitmask =
                 (rankBitmask << 16) | (rankBitmask << 8) | rankBitmask | (rankBitmask >>> 8) | (rankBitmask >>> 16);
         long filesBitmask = fileBitmask;
@@ -210,17 +210,17 @@ public final class MovementBitmasks {
      * @return The bitmask representing the moves a king can make from the specified {@link Square}.
      */
     private static long getKingMovementBitmaskForSquare (@Nonnull Square square) {
-        long rankBitmask = square.rank().bitmask();
-        long fileBitmask = square.file().bitmask();
+        long rankBitmask = square.rank().bitmask;
+        long fileBitmask = square.file().bitmask;
         long ranksBitmask = (rankBitmask << 8) | rankBitmask | (rankBitmask >>> 8);
         long filesBitmask = (fileBitmask << 1) | fileBitmask | (fileBitmask >>> 1);
-        long kingBitmask = (ranksBitmask & filesBitmask) ^ square.bitmask();
+        long kingBitmask = (ranksBitmask & filesBitmask) ^ square.bitmask;
 
         // Exclude any invalid squares included as a result of bit-shifting that wrapped around the board.
         if (square.file() == A) {
-            kingBitmask &= ~H.bitmask();
+            kingBitmask &= ~H.bitmask;
         } else if (square.file() == H) {
-            kingBitmask &= ~A.bitmask();
+            kingBitmask &= ~A.bitmask;
         }
 
         return kingBitmask;
@@ -236,10 +236,10 @@ public final class MovementBitmasks {
         Set<Diagonal> diagonals = Diagonal.fromSquare(square);
         long bishopBitmask = EMPTY_BITMASK;
         for (Diagonal diagonal : diagonals) {
-            bishopBitmask |= diagonal.bitmask();
+            bishopBitmask |= diagonal.bitmask;
         }
 
-        return bishopBitmask ^ square.bitmask();
+        return bishopBitmask ^ square.bitmask;
     }
 
     /**
@@ -249,7 +249,7 @@ public final class MovementBitmasks {
      * @return The bitmask representing the potential slides a rook can make from the specified {@link Square}.
      */
     private static long getRookSlidingBitmaskForSquare (@Nonnull Square square) {
-        return (square.rank().bitmask() | square.file().bitmask()) ^ square.bitmask();
+        return (square.rank().bitmask | square.file().bitmask) ^ square.bitmask;
     }
 
     /**
@@ -263,7 +263,7 @@ public final class MovementBitmasks {
      */
     private static long getCardinalDirectionSlidingBitmaskForSquare (@Nonnull Square square,
             CardinalDirection direction) {
-        long squareBitmask = square.bitmask();
+        long squareBitmask = square.bitmask;
         long slideBitmask = squareBitmask;
         for (int i = 1; i <= 7; i++) {
             switch (direction) {
@@ -296,11 +296,11 @@ public final class MovementBitmasks {
         switch (direction) {
             case NORTH:
             case SOUTH:
-                slideBitmask &= square.file().bitmask();
+                slideBitmask &= square.file().bitmask;
                 break;
             case EAST:
             case WEST:
-                slideBitmask &= square.rank().bitmask();
+                slideBitmask &= square.rank().bitmask;
                 break;
             case NORTHWEST:
             case SOUTHEAST:
