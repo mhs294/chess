@@ -1035,8 +1035,7 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
          *
          * @param square The {@link Square} where the bishop is located. Cannot be null.
          * @return The blocker bitmask representing the {@link Square}s where a blocking piece can impact the
-         * movement of
-         * a bishop located on the specified {@link Square}.
+         * movement of a bishop located on the specified {@link Square}.
          */
         private static long getBishopBlockerBitmaskForSquare (@Nonnull Square square) {
             long bishopBlockerBitmask = BISHOP_SLIDES.getLong(square);
