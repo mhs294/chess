@@ -1,9 +1,9 @@
 package com.maximilian.chess.util;
 
 import com.maximilian.chess.enums.Square;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 import javax.annotation.Nonnull;
-import java.util.HashSet;
 import java.util.Set;
 
 import static com.maximilian.chess.objects.Board.EMPTY_BITMASK;
@@ -40,7 +40,7 @@ public final class BitboardUtils {
      */
     @Nonnull
     public static Set<Square> getSquaresFromBitmask (long bitmask) {
-        Set<Square> targetSquares = new HashSet<>(countHighBitsInBitmask(bitmask));
+        Set<Square> targetSquares = new ObjectOpenHashSet<>();
         for (Square square : Square.values()) {
             if ((square.bitmask & bitmask) == EMPTY_BITMASK) {
                 continue;

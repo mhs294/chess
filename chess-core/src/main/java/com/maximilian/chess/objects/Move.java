@@ -118,7 +118,7 @@ public class Move {
      */
     private Move (@Nonnull Color color, @Nonnull Piece piece, @Nullable Piece capturedPiece, @Nonnull Square start,
             @Nonnull Square end, @Nullable Piece promoteTo, @Nullable Square enPassantCaptureSquare) {
-        int bitmask = 0x00000000;
+        int bitmask = 0;
 
         bitmask += (color == BLACK) ? 1 : 0;
         bitmask <<= SQUARE_SIZE;

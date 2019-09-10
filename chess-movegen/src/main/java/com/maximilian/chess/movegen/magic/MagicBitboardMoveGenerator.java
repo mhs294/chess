@@ -20,11 +20,11 @@ import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -123,7 +123,7 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
         if (!kingAttackerSquares.isEmpty()) {
             if (kingAttackerSquares.size() > 1) {
                 // King is double check - only legal moves are for the king to move out of check.
-                return new LinkedList<>(getMovesFromMovementBitmask(colorToMove, KING, kingSquare, kingMovementBitmask,
+                return new ObjectArrayList<>(getMovesFromMovementBitmask(colorToMove, KING, kingSquare, kingMovementBitmask,
                         piecesBySquares));
             } else {
                 // King is in check, restrict legal moves to those which remove the king from check.
@@ -148,7 +148,7 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
                 }
             }
         }
-        List<Move> moves = new LinkedList<>(
+        List<Move> moves = new ObjectArrayList<>(
                 getMovesFromMovementBitmask(colorToMove, KING, kingSquare, kingMovementBitmask, piecesBySquares));
         long allowedBitmask = allowedMovesBitmask | allowedCapturesBitmask;
 
@@ -397,7 +397,7 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
     @Override
     public List<Move> generateNonQuietMoves (@Nonnull Board board, @Nonnull GameState gameState) {
         // TODO - implement this method
-        return new LinkedList<>();
+        return new ObjectArrayList<>();
     }
 
     /**
@@ -765,7 +765,7 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
     private Set<Square> getPinnedPieceSquares (@Nonnull Board board, @Nonnull Color colorToMove,
             @Nonnull Square kingSquare, long occupiedBitmask) {
         // TODO - clean up code and redundant method calls
-        Set<Square> pinnedPieceSquares = new HashSet<>();
+        Set<Square> pinnedPieceSquares = new ObjectOpenHashSet<>();
         long colorToMovePiecesBitmask = (colorToMove == WHITE) ?
                 board.whiteOccupiedBitmask() :
                 board.blackOccupiedBitmask();
@@ -943,7 +943,7 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
     private List<Move> getMovesFromMovementBitmask (@Nonnull Color colorToMove, @Nonnull Piece piece,
             @Nonnull Square startSquare, long movementBitmask,
             @Nonnull Object2ObjectMap<Square, Pair<Color, Piece>> piecesBySquares) {
-        List<Move> moves = new LinkedList<>();
+        List<Move> moves = new ObjectArrayList<>();
         if (movementBitmask == EMPTY_BITMASK) {
             return moves;
         }
