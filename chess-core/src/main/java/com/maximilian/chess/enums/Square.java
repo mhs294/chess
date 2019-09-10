@@ -4,87 +4,83 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-import lombok.Getter;
-import lombok.experimental.Accessors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Set;
 
 import static com.maximilian.chess.enums.Square.Type.DARK;
 import static com.maximilian.chess.enums.Square.Type.LIGHT;
 
 /**
- * Represents the individual squares on a chessboard using bitmasks.
+ * Represents the individual squares on a chessboard.
  *
  * @author Maximilian Schroeder
  */
-@Accessors(fluent = true)
 public enum Square {
-    A1(0, DARK),
-    B1(1, LIGHT),
-    C1(2, DARK),
-    D1(3, LIGHT),
-    E1(4, DARK),
-    F1(5, LIGHT),
-    G1(6, DARK),
-    H1(7, LIGHT),
-    A2(8, LIGHT),
-    B2(9, DARK),
-    C2(10, LIGHT),
-    D2(11, DARK),
-    E2(12, LIGHT),
-    F2(13, DARK),
-    G2(14, LIGHT),
-    H2(15, DARK),
-    A3(16, DARK),
-    B3(17, LIGHT),
-    C3(18, DARK),
-    D3(19, LIGHT),
-    E3(20, DARK),
-    F3(21, LIGHT),
-    G3(22, DARK),
-    H3(23, LIGHT),
-    A4(24, LIGHT),
-    B4(25, DARK),
-    C4(26, LIGHT),
-    D4(27, DARK),
-    E4(28, LIGHT),
-    F4(29, DARK),
-    G4(30, LIGHT),
-    H4(31, DARK),
-    A5(32, DARK),
-    B5(33, LIGHT),
-    C5(34, DARK),
-    D5(35, LIGHT),
-    E5(36, DARK),
-    F5(37, LIGHT),
-    G5(38, DARK),
-    H5(39, LIGHT),
-    A6(40, LIGHT),
-    B6(41, DARK),
-    C6(42, LIGHT),
-    D6(43, DARK),
-    E6(44, LIGHT),
-    F6(45, DARK),
-    G6(46, LIGHT),
-    H6(47, DARK),
-    A7(48, DARK),
-    B7(49, LIGHT),
-    C7(50, DARK),
-    D7(51, LIGHT),
-    E7(52, DARK),
-    F7(53, LIGHT),
-    G7(54, DARK),
-    H7(55, LIGHT),
-    A8(56, LIGHT),
-    B8(57, DARK),
-    C8(58, LIGHT),
-    D8(59, DARK),
-    E8(60, LIGHT),
-    F8(61, DARK),
-    G8(62, LIGHT),
-    H8(63, DARK);
+    A1(0),
+    B1(1),
+    C1(2),
+    D1(3),
+    E1(4),
+    F1(5),
+    G1(6),
+    H1(7),
+    A2(8),
+    B2(9),
+    C2(10),
+    D2(11),
+    E2(12),
+    F2(13),
+    G2(14),
+    H2(15),
+    A3(16),
+    B3(17),
+    C3(18),
+    D3(19),
+    E3(20),
+    F3(21),
+    G3(22),
+    H3(23),
+    A4(24),
+    B4(25),
+    C4(26),
+    D4(27),
+    E4(28),
+    F4(29),
+    G4(30),
+    H4(31),
+    A5(32),
+    B5(33),
+    C5(34),
+    D5(35),
+    E5(36),
+    F5(37),
+    G5(38),
+    H5(39),
+    A6(40),
+    B6(41),
+    C6(42),
+    D6(43),
+    E6(44),
+    F6(45),
+    G6(46),
+    H6(47),
+    A7(48),
+    B7(49),
+    C7(50),
+    D7(51),
+    E7(52),
+    F7(53),
+    G7(54),
+    H7(55),
+    A8(56),
+    B8(57),
+    C8(58),
+    D8(59),
+    E8(60),
+    F8(61),
+    G8(62),
+    H8(63);
 
     private static final Int2ObjectMap<Square> INDEX_TO_SQUARE_MAP;
     private static final Long2ObjectMap<Square> BITMASK_TO_SQUARE_MAP;
@@ -105,56 +101,51 @@ public enum Square {
     /**
      * The index of this {@link Square} in a 64-bitmask.
      */
-    @Getter private final int index;
+    private final int index;
+    /**
+     * The 64-bit bitmask that represents this {@link Square} on a bitboard.
+     */
+    public final long bitmask;
+    /**
+     * The {@link File} containing this {@link Square}.
+     */
+    @Nonnull public final File file;
+    /**
+     * The {@link Rank} containing this {@link Square}.
+     */
+    @Nonnull public final Rank rank;
+    /**
+     * The {@link Diagonal} containing this {@link Square}.
+     */
+    @Nonnull public final Diagonal diagonal;
+    /**
+     * The {@link AntiDiagonal} containing this {@link Square}.
+     */
+    @Nonnull public final AntiDiagonal antiDiagonal;
     /**
      * The {@link Type} of this {@link Square}.
      */
-    @Getter private final Type type;
-    /**
-     * The bitmask of this {@link Square}.
-     */
-    public final long bitmask;
+    @Nonnull public final Type type;
 
     /**
      * (Primary constructor)
      *
      * @param index The index of this {@link Square} in a 64-bit bitmask.
-     * @param type  The {@link Type} of this {@link Square}.
      */
-    Square (int index, @Nonnull Type type) {
+    Square (int index) {
         this.index = index;
-        this.type = type;
         this.bitmask = 1L << index;
-    }
 
-    /**
-     * Gets the {@link File} for this {@link Square}.
-     *
-     * @return The {@link File} for this {@link Square}. Will never be null.
-     */
-    @Nonnull
-    public File file () {
-        return File.getFromSquare(this);
-    }
+        int fileIndex = index % 8;
+        int rankIndex = index / 8;
+        this.file = File.fromIndex(fileIndex);
+        this.rank = Rank.fromIndex(rankIndex);
+        this.diagonal = Diagonal.fromIndex((rankIndex - fileIndex) & 15);
+        this.antiDiagonal = AntiDiagonal.fromIndex((fileIndex + rankIndex) ^ 7);
 
-    /**
-     * Gets the {@link Rank} for this {@link Square}.
-     *
-     * @return The {@link Rank} for this {@link Square}. Will never be null.
-     */
-    @Nonnull
-    public Rank rank () {
-        return Rank.getFromSquare(this);
-    }
-
-    /**
-     * Gets the {@link Set} of {@link Diagonal}s for this {@link Square}.
-     *
-     * @return The {@link Set} of {@link Diagonal}s for this {@link Square}. Will never be null.
-     */
-    @Nonnull
-    public Set<Diagonal> diagonals () {
-        return Diagonal.fromSquare(this);
+        boolean isEvenRankIndex = (index / 8) % 2 == 0;
+        boolean isEvenFileIndex = index % 2 == 0;
+        this.type = (isEvenRankIndex ^ isEvenFileIndex) ? LIGHT : DARK;
     }
 
     /**

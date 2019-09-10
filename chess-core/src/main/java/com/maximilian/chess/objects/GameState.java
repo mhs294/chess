@@ -325,10 +325,10 @@ public class GameState {
         // Update the en passant square.
         Square newEnPassantSquare = null;
         if (move.piece() == PAWN) {
-            if (move.color() == WHITE && move.start().rank() == TWO && move.end().rank() == FOUR) {
-                newEnPassantSquare = Square.fromFileAndRank(move.start().file(), THREE);
-            } else if (move.color() == BLACK && move.start().rank() == SEVEN && move.end().rank() == FIVE) {
-                newEnPassantSquare = Square.fromFileAndRank(move.start().file(), SIX);
+            if (move.color() == WHITE && move.start().rank == TWO && move.end().rank == FOUR) {
+                newEnPassantSquare = Square.fromFileAndRank(move.start().file, THREE);
+            } else if (move.color() == BLACK && move.start().rank == SEVEN && move.end().rank == FIVE) {
+                newEnPassantSquare = Square.fromFileAndRank(move.start().file, SIX);
             }
         }
 

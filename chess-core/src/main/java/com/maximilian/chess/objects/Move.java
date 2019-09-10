@@ -86,7 +86,7 @@ public class Move {
     /**
      * Internal class containing constants used for serializing/deserializing information to/from the bitmask.
      */
-    final class Bitmask {
+    static final class Bitmask {
         static final int COLOR_MASK = 0x00000001;
         static final int SQUARE_MASK = 0x0000003F;
         static final int PIECE_MASK = 0x00000007;

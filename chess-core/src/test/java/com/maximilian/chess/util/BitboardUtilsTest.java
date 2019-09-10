@@ -33,11 +33,11 @@ public class BitboardUtilsTest {
         assertEquals(EnumSet.noneOf(Square.class), BitboardUtils.getSquaresFromBitmask(Board.EMPTY_BITMASK));
         assertEquals(EnumSet.allOf(Square.class), BitboardUtils.getSquaresFromBitmask(Board.FULL_BITMASK));
         Set<Square> lightSquares = Arrays.stream(Square.values())
-                .filter(square -> square.type() == Square.Type.LIGHT)
+                .filter(square -> square.type == Square.Type.LIGHT)
                 .collect(Collectors.toSet());
         assertEquals(lightSquares, BitboardUtils.getSquaresFromBitmask(Board.LIGHT_SQUARES_BITMASK));
         Set<Square> darkSquares = Arrays.stream(Square.values())
-                .filter(square -> square.type() == Square.Type.DARK)
+                .filter(square -> square.type == Square.Type.DARK)
                 .collect(Collectors.toSet());
         assertEquals(darkSquares, BitboardUtils.getSquaresFromBitmask(Board.DARK_SQUARES_BITMASK));
     }
@@ -47,11 +47,11 @@ public class BitboardUtilsTest {
         assertEquals(Board.EMPTY_BITMASK, BitboardUtils.getBitmaskFromSquares(EnumSet.noneOf(Square.class)));
         assertEquals(Board.FULL_BITMASK, BitboardUtils.getBitmaskFromSquares(EnumSet.allOf(Square.class)));
         Set<Square> lightSquares = Arrays.stream(Square.values())
-                .filter(square -> square.type() == Square.Type.LIGHT)
+                .filter(square -> square.type == Square.Type.LIGHT)
                 .collect(Collectors.toSet());
         assertEquals(Board.LIGHT_SQUARES_BITMASK, BitboardUtils.getBitmaskFromSquares(lightSquares));
         Set<Square> darkSquares = Arrays.stream(Square.values())
-                .filter(square -> square.type() == Square.Type.DARK)
+                .filter(square -> square.type == Square.Type.DARK)
                 .collect(Collectors.toSet());
         assertEquals(Board.DARK_SQUARES_BITMASK, BitboardUtils.getBitmaskFromSquares(darkSquares));
     }

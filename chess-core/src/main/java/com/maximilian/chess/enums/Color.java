@@ -5,8 +5,6 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.experimental.Accessors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -16,7 +14,6 @@ import javax.annotation.Nullable;
  *
  * @author Maximilian Schroeder
  */
-@Accessors(fluent = true)
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 public enum Color {
     WHITE(0),
@@ -35,7 +32,7 @@ public enum Color {
     /**
      * The index of the {@link Color} when used in {@link Move} bitmasks.
      */
-    @Getter private final int index;
+    private final int index;
 
     /**
      * Gets the {@link Color} that is the opposite of this {@link Color}.

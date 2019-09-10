@@ -89,9 +89,9 @@ public class Board {
         long lightSquaresBitmask = EMPTY_BITMASK;
         long darkSquaresBitmask = EMPTY_BITMASK;
         for (Square square : Square.values()) {
-            if (square.type() == LIGHT) {
+            if (square.type == LIGHT) {
                 lightSquaresBitmask |= square.bitmask;
-            } else if (square.type() == DARK) {
+            } else if (square.type == DARK) {
                 darkSquaresBitmask |= square.bitmask;
             }
         }
