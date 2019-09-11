@@ -6,7 +6,6 @@ import com.maximilian.chess.enums.Piece;
 import com.maximilian.chess.enums.Square;
 import com.maximilian.chess.exception.IllegalMoveException;
 import com.maximilian.chess.util.BitboardUtils;
-import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -15,6 +14,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Map;
 import java.util.Set;
 
 import static com.maximilian.chess.enums.Color.BLACK;
@@ -157,6 +157,11 @@ public class Board {
      * The 64-bit bitmask representing the square occupied by the black king.
      */
     @Getter private long blackKingBitmask;
+    /**
+     * The {@link Map} of {@link Square} keys and {@link Pair} of {@link Color} and {@link Piece} values representing
+     * the current pieces on this {@link Board} at their respective squares.
+     */
+    private final Map<Square, Pair<Color, Piece>> piecesBySquaresMap;
 
     /**
      * Primary constructor (declared private to prevent direct instantiation).
@@ -176,6 +181,49 @@ public class Board {
         this.blackRooksBitmask = builder.blackRooks;
         this.blackQueensBitmask = builder.blackQueens;
         this.blackKingBitmask = builder.blackKing;
+
+        piecesBySquaresMap = new Object2ObjectOpenHashMap<>(Square.values().length, 1.0F);
+        long whiteOccupiedBitmask = whiteOccupiedBitmask();
+        long blackOccupiedBitmask = blackOccupiedBitmask();
+        long occupiedBitmask = whiteOccupiedBitmask | blackOccupiedBitmask;
+        for (Square square : Square.values()) {
+            if ((square.bitmask & occupiedBitmask) == EMPTY_BITMASK) {
+                // The current square is vacant.
+                continue;
+            }
+
+            if ((square.bitmask & whiteOccupiedBitmask) != EMPTY_BITMASK) {
+                // The piece in the current square is white.
+                if ((square.bitmask & whitePawnsBitmask) != EMPTY_BITMASK) {
+                    piecesBySquaresMap.put(square, Pair.of(WHITE, PAWN));
+                } else if ((square.bitmask & whiteKnightsBitmask) != EMPTY_BITMASK) {
+                    piecesBySquaresMap.put(square, Pair.of(WHITE, KNIGHT));
+                } else if ((square.bitmask & whiteBishopsBitmask) != EMPTY_BITMASK) {
+                    piecesBySquaresMap.put(square, Pair.of(WHITE, BISHOP));
+                } else if ((square.bitmask & whiteRooksBitmask) != EMPTY_BITMASK) {
+                    piecesBySquaresMap.put(square, Pair.of(WHITE, ROOK));
+                } else if ((square.bitmask & whiteQueensBitmask) != EMPTY_BITMASK) {
+                    piecesBySquaresMap.put(square, Pair.of(WHITE, QUEEN));
+                } else if ((square.bitmask & whiteKingBitmask) != EMPTY_BITMASK) {
+                    piecesBySquaresMap.put(square, Pair.of(WHITE, KING));
+                }
+            } else if ((square.bitmask & blackOccupiedBitmask) != EMPTY_BITMASK) {
+                // The piece in the current square is black.
+                if ((square.bitmask & blackPawnsBitmask) != EMPTY_BITMASK) {
+                    piecesBySquaresMap.put(square, Pair.of(BLACK, PAWN));
+                } else if ((square.bitmask & blackKnightsBitmask) != EMPTY_BITMASK) {
+                    piecesBySquaresMap.put(square, Pair.of(BLACK, KNIGHT));
+                } else if ((square.bitmask & blackBishopsBitmask) != EMPTY_BITMASK) {
+                    piecesBySquaresMap.put(square, Pair.of(BLACK, BISHOP));
+                } else if ((square.bitmask & blackRooksBitmask) != EMPTY_BITMASK) {
+                    piecesBySquaresMap.put(square, Pair.of(BLACK, ROOK));
+                } else if ((square.bitmask & blackQueensBitmask) != EMPTY_BITMASK) {
+                    piecesBySquaresMap.put(square, Pair.of(BLACK, QUEEN));
+                } else if ((square.bitmask & blackKingBitmask) != EMPTY_BITMASK) {
+                    piecesBySquaresMap.put(square, Pair.of(BLACK, KING));
+                }
+            }
+        }
     }
 
     /**
@@ -197,6 +245,7 @@ public class Board {
         this.blackRooksBitmask = board.blackRooksBitmask;
         this.blackQueensBitmask = board.blackQueensBitmask;
         this.blackKingBitmask = board.blackKingBitmask;
+        this.piecesBySquaresMap = board.piecesBySquaresMap;
     }
 
     /**
@@ -243,56 +292,22 @@ public class Board {
     }
 
     /**
-     * Creates a {@link Object2ObjectMap} representation of the state of the {@link Board}.
+     * Gets the {@link Piece} at the specified {@link Square} (or null if the {@link Square} is vacant).
      *
-     * @return A {@link Object2ObjectMap} representation of the state of the {@link Board}, using {@link Square} keys
-     * and {@link Pair} values (which consist of {@link Color} and {@link Piece}). Only occupied squares will be present
-     * in the map's key set, thus, if {@code null} is returned from {@link Object2ObjectMap#get(Object)}, it is
-     * implied that the specified {@link Square} is vacant.
+     * @return The {@link Piece} at the specified {@link Square}. May be null (if the {@link Square} is vacant).
      */
-    @Nonnull
-    public Object2ObjectMap<Square, Pair<Color, Piece>> toMap () {
-        Object2ObjectMap<Square, Pair<Color, Piece>> squareToPieceMap = new Object2ObjectOpenHashMap<>(32, 1.0F);
-        for (Square square : Square.values()) {
-            if ((square.bitmask & occupiedBitmask()) == EMPTY_BITMASK) {
-                // The current square is vacant.
-                continue;
-            }
+    @Nullable
+    public Pair<Color, Piece> getPieceAtSquare (@Nonnull Square square) {
+        return piecesBySquaresMap.get(square);
+    }
 
-            if ((square.bitmask & whiteOccupiedBitmask()) != EMPTY_BITMASK) {
-                // The piece in the current square is white.
-                if ((square.bitmask & whitePawnsBitmask) != EMPTY_BITMASK) {
-                    squareToPieceMap.put(square, Pair.of(WHITE, PAWN));
-                } else if ((square.bitmask & whiteKnightsBitmask) != EMPTY_BITMASK) {
-                    squareToPieceMap.put(square, Pair.of(WHITE, KNIGHT));
-                } else if ((square.bitmask & whiteBishopsBitmask) != EMPTY_BITMASK) {
-                    squareToPieceMap.put(square, Pair.of(WHITE, BISHOP));
-                } else if ((square.bitmask & whiteRooksBitmask) != EMPTY_BITMASK) {
-                    squareToPieceMap.put(square, Pair.of(WHITE, ROOK));
-                } else if ((square.bitmask & whiteQueensBitmask) != EMPTY_BITMASK) {
-                    squareToPieceMap.put(square, Pair.of(WHITE, QUEEN));
-                } else if ((square.bitmask & whiteKingBitmask) != EMPTY_BITMASK) {
-                    squareToPieceMap.put(square, Pair.of(WHITE, KING));
-                }
-            } else if ((square.bitmask & blackOccupiedBitmask()) != EMPTY_BITMASK) {
-                // The piece in the current square is black.
-                if ((square.bitmask & blackPawnsBitmask) != EMPTY_BITMASK) {
-                    squareToPieceMap.put(square, Pair.of(BLACK, PAWN));
-                } else if ((square.bitmask & blackKnightsBitmask) != EMPTY_BITMASK) {
-                    squareToPieceMap.put(square, Pair.of(BLACK, KNIGHT));
-                } else if ((square.bitmask & blackBishopsBitmask) != EMPTY_BITMASK) {
-                    squareToPieceMap.put(square, Pair.of(BLACK, BISHOP));
-                } else if ((square.bitmask & blackRooksBitmask) != EMPTY_BITMASK) {
-                    squareToPieceMap.put(square, Pair.of(BLACK, ROOK));
-                } else if ((square.bitmask & blackQueensBitmask) != EMPTY_BITMASK) {
-                    squareToPieceMap.put(square, Pair.of(BLACK, QUEEN));
-                } else if ((square.bitmask & blackKingBitmask) != EMPTY_BITMASK) {
-                    squareToPieceMap.put(square, Pair.of(BLACK, KING));
-                }
-            }
-        }
-
-        return squareToPieceMap;
+    /**
+     * Gets the total number of pieces remaining on this {@link Board}.
+     *
+     * @return The total number of pieces remaining on this {@link Board}. Will always be >= 0.
+     */
+    public int getNumberOfPiecesOnBoard () {
+        return piecesBySquaresMap.size();
     }
 
     /**
@@ -479,7 +494,11 @@ public class Board {
      * @return A bitmask representing all of the squares on the {@link Board} occupied by white pieces.
      */
     public long whiteOccupiedBitmask () {
-        return whitePawnsBitmask | whiteKnightsBitmask | whiteBishopsBitmask | whiteRooksBitmask | whiteQueensBitmask |
+        return whitePawnsBitmask |
+                whiteKnightsBitmask |
+                whiteBishopsBitmask |
+                whiteRooksBitmask |
+                whiteQueensBitmask |
                 whiteKingBitmask;
     }
 
@@ -499,7 +518,11 @@ public class Board {
      * @return A bitmask representing all of the squares on the {@link Board} occupied by white pieces.
      */
     public long blackOccupiedBitmask () {
-        return blackPawnsBitmask | blackKnightsBitmask | blackBishopsBitmask | blackRooksBitmask | blackQueensBitmask |
+        return blackPawnsBitmask |
+                blackKnightsBitmask |
+                blackBishopsBitmask |
+                blackRooksBitmask |
+                blackQueensBitmask |
                 blackKingBitmask;
     }
 
@@ -767,11 +790,12 @@ public class Board {
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted") // This method is intended to be consumed with the "!" operator.
     private boolean addPieceToSquare (@Nonnull Color color, @Nonnull Piece piece, @Nonnull Square square) {
-        if ((square.bitmask & vacantBitmask()) == EMPTY_BITMASK) {
+        if (piecesBySquaresMap.containsKey(square)) {
             // The square we are trying to add the piece to is occupied.
             return false;
         }
 
+        piecesBySquaresMap.put(square, Pair.of(color, piece));
         long addBitmask = square.bitmask;
         switch (color) {
             case WHITE:
@@ -833,50 +857,34 @@ public class Board {
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted") // This method is intended to be consumed with the "!" operator.
     private boolean removePieceFromSquare (@Nonnull Color color, @Nonnull Piece piece, @Nonnull Square square) {
+        if (!piecesBySquaresMap.remove(square, Pair.of(color, piece))) {
+            /*
+             * There piece we are trying to remove from the square isn't there (either the square is empty or the wrong
+             * piece is occupying the square).
+             */
+            return false;
+        }
+
         long removeBitmask = ~square.bitmask;
         switch (color) {
             case WHITE:
                 switch (piece) {
                     case PAWN:
-                        if ((square.bitmask & whitePawnsBitmask) == EMPTY_BITMASK) {
-                            // There is no white pawn at the square we are trying to remove it from.
-                            return false;
-                        }
                         whitePawnsBitmask &= removeBitmask;
                         break;
                     case KNIGHT:
-                        if ((square.bitmask & whiteKnightsBitmask) == EMPTY_BITMASK) {
-                            // There is no white knight at the square we are trying to remove it from.
-                            return false;
-                        }
                         whiteKnightsBitmask &= removeBitmask;
                         break;
                     case BISHOP:
-                        if ((square.bitmask & whiteBishopsBitmask) == EMPTY_BITMASK) {
-                            // There is no white bishop at the square we are trying to remove it from.
-                            return false;
-                        }
                         whiteBishopsBitmask &= removeBitmask;
                         break;
                     case ROOK:
-                        if ((square.bitmask & whiteRooksBitmask) == EMPTY_BITMASK) {
-                            // There is no white rook at the square we are trying to remove it from.
-                            return false;
-                        }
                         whiteRooksBitmask &= removeBitmask;
                         break;
                     case QUEEN:
-                        if ((square.bitmask & whiteQueensBitmask) == EMPTY_BITMASK) {
-                            // There is no white queen at the square we are trying to remove it from.
-                            return false;
-                        }
                         whiteQueensBitmask &= removeBitmask;
                         break;
                     case KING:
-                        if ((square.bitmask & whiteKingBitmask) == EMPTY_BITMASK) {
-                            // There is no white king at the square we are trying to remove it from.
-                            return false;
-                        }
                         whiteKingBitmask &= removeBitmask;
                         break;
                 }
@@ -884,45 +892,21 @@ public class Board {
             case BLACK:
                 switch (piece) {
                     case PAWN:
-                        if ((square.bitmask & blackPawnsBitmask) == EMPTY_BITMASK) {
-                            // There is no black pawn at the square we are trying to remove it from.
-                            return false;
-                        }
                         blackPawnsBitmask &= removeBitmask;
                         break;
                     case KNIGHT:
-                        if ((square.bitmask & blackKnightsBitmask) == EMPTY_BITMASK) {
-                            // There is no black knight at the square we are trying to remove it from.
-                            return false;
-                        }
                         blackKnightsBitmask &= removeBitmask;
                         break;
                     case BISHOP:
-                        if ((square.bitmask & blackBishopsBitmask) == EMPTY_BITMASK) {
-                            // There is no black bishop at the square we are trying to remove it from.
-                            return false;
-                        }
                         blackBishopsBitmask &= removeBitmask;
                         break;
                     case ROOK:
-                        if ((square.bitmask & blackRooksBitmask) == EMPTY_BITMASK) {
-                            // There is no black rook at the square we are trying to remove it from.
-                            return false;
-                        }
                         blackRooksBitmask &= removeBitmask;
                         break;
                     case QUEEN:
-                        if ((square.bitmask & blackQueensBitmask) == EMPTY_BITMASK) {
-                            // There is no black queen at the square we are trying to remove it from.
-                            return false;
-                        }
                         blackQueensBitmask &= removeBitmask;
                         break;
                     case KING:
-                        if ((square.bitmask & blackKingBitmask) == EMPTY_BITMASK) {
-                            // There is no black king at the square we are trying to remove it from.
-                            return false;
-                        }
                         blackKingBitmask &= removeBitmask;
                         break;
                 }
@@ -934,7 +918,6 @@ public class Board {
 
     @Override
     public String toString () {
-        Object2ObjectMap<Square, Pair<Color, Piece>> piecesBySquares = toMap();
         String fileMarkers = "  a b c d e f g h ";
         StringBuilder boardStringBuilder = new StringBuilder(fileMarkers + "\n");
         for (int rank = 8; rank >= 1; rank--) {
@@ -942,7 +925,7 @@ public class Board {
             StringBuilder rowStringBuilder = new StringBuilder();
             for (int i = 8; i > 0; i--) {
                 Square currentSquare = Square.fromIndex((8 * rank) - i);
-                Pair<Color, Piece> colorPiecePair = piecesBySquares.get(currentSquare);
+                Pair<Color, Piece> colorPiecePair = piecesBySquaresMap.get(currentSquare);
                 if (colorPiecePair != null) {
                     rowStringBuilder.append(ANConstants.SYMBOLS_BY_PIECES.get(colorPiecePair));
                 } else {

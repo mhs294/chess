@@ -1,8 +1,6 @@
 package com.maximilian.chess.objects;
 
 import com.google.common.collect.Sets;
-import com.maximilian.chess.enums.Color;
-import com.maximilian.chess.enums.Piece;
 import com.maximilian.chess.enums.Square;
 import com.maximilian.chess.exception.IllegalMoveException;
 import org.apache.commons.lang3.tuple.Pair;
@@ -13,7 +11,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import java.util.EnumSet;
-import java.util.Map;
 import java.util.Set;
 
 import static com.maximilian.chess.enums.Color.BLACK;
@@ -113,30 +110,33 @@ public class BoardTest {
     }
 
     @Test
-    public void testToMap () {
-        final Map<Square, Pair<Color, Piece>> startingBoardMap = STARTING_BOARD.toMap();
-
+    public void testGetPieceFromSquare () {
         // Assert white pieces
         EnumSet.of(A2, B2, C2, D2, E2, F2, G2, H2)
-                .forEach(sq -> assertEquals(Pair.of(WHITE, PAWN), startingBoardMap.get(sq)));
-        EnumSet.of(B1, G1).forEach(sq -> assertEquals(Pair.of(WHITE, KNIGHT), startingBoardMap.get(sq)));
-        EnumSet.of(C1, F1).forEach(sq -> assertEquals(Pair.of(WHITE, BISHOP), startingBoardMap.get(sq)));
-        EnumSet.of(A1, H1).forEach(sq -> assertEquals(Pair.of(WHITE, ROOK), startingBoardMap.get(sq)));
-        assertEquals(Pair.of(WHITE, QUEEN), startingBoardMap.get(D1));
-        assertEquals(Pair.of(WHITE, KING), startingBoardMap.get(E1));
+                .forEach(sq -> assertEquals(Pair.of(WHITE, PAWN), STARTING_BOARD.getPieceAtSquare(sq)));
+        EnumSet.of(B1, G1).forEach(sq -> assertEquals(Pair.of(WHITE, KNIGHT), STARTING_BOARD.getPieceAtSquare(sq)));
+        EnumSet.of(C1, F1).forEach(sq -> assertEquals(Pair.of(WHITE, BISHOP), STARTING_BOARD.getPieceAtSquare(sq)));
+        EnumSet.of(A1, H1).forEach(sq -> assertEquals(Pair.of(WHITE, ROOK), STARTING_BOARD.getPieceAtSquare(sq)));
+        assertEquals(Pair.of(WHITE, QUEEN), STARTING_BOARD.getPieceAtSquare(D1));
+        assertEquals(Pair.of(WHITE, KING), STARTING_BOARD.getPieceAtSquare(E1));
 
         // Assert black pieces
         EnumSet.of(A7, B7, C7, D7, E7, F7, G7, H7)
-                .forEach(sq -> assertEquals(Pair.of(BLACK, PAWN), startingBoardMap.get(sq)));
-        EnumSet.of(B8, G8).forEach(sq -> assertEquals(Pair.of(BLACK, KNIGHT), startingBoardMap.get(sq)));
-        EnumSet.of(C8, F8).forEach(sq -> assertEquals(Pair.of(BLACK, BISHOP), startingBoardMap.get(sq)));
-        EnumSet.of(A8, H8).forEach(sq -> assertEquals(Pair.of(BLACK, ROOK), startingBoardMap.get(sq)));
-        assertEquals(Pair.of(BLACK, QUEEN), startingBoardMap.get(D8));
-        assertEquals(Pair.of(BLACK, KING), startingBoardMap.get(E8));
+                .forEach(sq -> assertEquals(Pair.of(BLACK, PAWN), STARTING_BOARD.getPieceAtSquare(sq)));
+        EnumSet.of(B8, G8).forEach(sq -> assertEquals(Pair.of(BLACK, KNIGHT), STARTING_BOARD.getPieceAtSquare(sq)));
+        EnumSet.of(C8, F8).forEach(sq -> assertEquals(Pair.of(BLACK, BISHOP), STARTING_BOARD.getPieceAtSquare(sq)));
+        EnumSet.of(A8, H8).forEach(sq -> assertEquals(Pair.of(BLACK, ROOK), STARTING_BOARD.getPieceAtSquare(sq)));
+        assertEquals(Pair.of(BLACK, QUEEN), STARTING_BOARD.getPieceAtSquare(D8));
+        assertEquals(Pair.of(BLACK, KING), STARTING_BOARD.getPieceAtSquare(E8));
 
         // Assert vacant squares
         EnumSet.of(A3, A4, A5, A6, B3, B4, B5, B6, C3, C4, C5, C6, D3, D4, D5, D6, E3, E4, E5, E6, F3, F4, F5, F6, G3,
-                G4, G5, G6, H3, H4, H5, H6).forEach(sq -> assertNull(startingBoardMap.get(sq)));
+                G4, G5, G6, H3, H4, H5, H6).forEach(sq -> assertNull(STARTING_BOARD.getPieceAtSquare(sq)));
+    }
+
+    @Test
+    public void testGetNumberOfPiecesOnBoard () {
+        assertEquals(32, STARTING_BOARD.getNumberOfPiecesOnBoard());
     }
 
     @Test
@@ -491,10 +491,9 @@ public class BoardTest {
         Board board = Board.builder().setBlackKing(E8).build();
         Move move = Move.create(BLACK, KING, E8, F8);
         board.doMove(move);
-        Map<Square, Pair<Color, Piece>> boardMap = board.toMap();
 
-        assertEquals(1, boardMap.size());
-        assertEquals(Pair.of(BLACK, KING), boardMap.get(F8));
+        assertEquals(1, board.getNumberOfPiecesOnBoard());
+        assertEquals(Pair.of(BLACK, KING), board.getPieceAtSquare(F8));
     }
 
     @Test
@@ -502,10 +501,9 @@ public class BoardTest {
         Board board = Board.builder().addWhiteBishops(E4).addBlackPawns(C6).build();
         Move move = Move.createCapture(WHITE, BISHOP, PAWN, E4, C6);
         board.doMove(move);
-        Map<Square, Pair<Color, Piece>> boardMap = board.toMap();
 
-        assertEquals(1, boardMap.size());
-        assertEquals(Pair.of(WHITE, BISHOP), boardMap.get(C6));
+        assertEquals(1, board.getNumberOfPiecesOnBoard());
+        assertEquals(Pair.of(WHITE, BISHOP), board.getPieceAtSquare(C6));
     }
 
     @Test
@@ -513,10 +511,9 @@ public class BoardTest {
         Board board = Board.builder().addWhitePawns(E4).addBlackPawns(F4).build();
         Move move = Move.createEnPassant(BLACK, F4, E3, E4);
         board.doMove(move);
-        Map<Square, Pair<Color, Piece>> boardMap = board.toMap();
 
-        assertEquals(1, boardMap.size());
-        assertEquals(Pair.of(BLACK, PAWN), boardMap.get(E3));
+        assertEquals(1, board.getNumberOfPiecesOnBoard());
+        assertEquals(Pair.of(BLACK, PAWN), board.getPieceAtSquare(E3));
     }
 
     @Test
@@ -524,10 +521,9 @@ public class BoardTest {
         Board board = Board.builder().addWhitePawns(A7).build();
         Move move = Move.createPromotion(WHITE, A7, A8, QUEEN);
         board.doMove(move);
-        Map<Square, Pair<Color, Piece>> boardMap = board.toMap();
 
-        assertEquals(1, boardMap.size());
-        assertEquals(Pair.of(WHITE, QUEEN), boardMap.get(A8));
+        assertEquals(1, board.getNumberOfPiecesOnBoard());
+        assertEquals(Pair.of(WHITE, QUEEN), board.getPieceAtSquare(A8));
     }
 
     @Test
@@ -535,54 +531,49 @@ public class BoardTest {
         Board board = Board.builder().addBlackPawns(F2).addWhiteKnights(G1).build();
         Move move = Move.createCapturePromotion(BLACK, KNIGHT, F2, G1, QUEEN);
         board.doMove(move);
-        Map<Square, Pair<Color, Piece>> boardMap = board.toMap();
 
-        assertEquals(1, boardMap.size());
-        assertEquals(Pair.of(BLACK, QUEEN), boardMap.get(G1));
+        assertEquals(1, board.getNumberOfPiecesOnBoard());
+        assertEquals(Pair.of(BLACK, QUEEN), board.getPieceAtSquare(G1));
     }
 
     @Test
     public void testDoMoveWhiteKingsideCastle () {
         Board board = Board.builder().setWhiteKing(E1).addWhiteRooks(H1).build();
         board.doMove(Move.WHITE_KINGSIDE_CASTLE);
-        Map<Square, Pair<Color, Piece>> boardMap = board.toMap();
 
-        assertEquals(2, boardMap.size());
-        assertEquals(Pair.of(WHITE, KING), boardMap.get(G1));
-        assertEquals(Pair.of(WHITE, ROOK), boardMap.get(F1));
+        assertEquals(2, board.getNumberOfPiecesOnBoard());
+        assertEquals(Pair.of(WHITE, KING), board.getPieceAtSquare(G1));
+        assertEquals(Pair.of(WHITE, ROOK), board.getPieceAtSquare(F1));
     }
 
     @Test
     public void testDoMoveWhiteQueensideCastle () {
         Board board = Board.builder().setWhiteKing(E1).addWhiteRooks(A1).build();
         board.doMove(Move.WHITE_QUEENSIDE_CASTLE);
-        Map<Square, Pair<Color, Piece>> boardMap = board.toMap();
 
-        assertEquals(2, boardMap.size());
-        assertEquals(Pair.of(WHITE, KING), boardMap.get(C1));
-        assertEquals(Pair.of(WHITE, ROOK), boardMap.get(D1));
+        assertEquals(2, board.getNumberOfPiecesOnBoard());
+        assertEquals(Pair.of(WHITE, KING), board.getPieceAtSquare(C1));
+        assertEquals(Pair.of(WHITE, ROOK), board.getPieceAtSquare(D1));
     }
 
     @Test
     public void testDoMoveBlackKingsideCastle () {
         Board board = Board.builder().setBlackKing(E8).addBlackRooks(H8).build();
         board.doMove(Move.BLACK_KINGSIDE_CASTLE);
-        Map<Square, Pair<Color, Piece>> boardMap = board.toMap();
 
-        assertEquals(2, boardMap.size());
-        assertEquals(Pair.of(BLACK, KING), boardMap.get(G8));
-        assertEquals(Pair.of(BLACK, ROOK), boardMap.get(F8));
+        assertEquals(2, board.getNumberOfPiecesOnBoard());
+        assertEquals(Pair.of(BLACK, KING), board.getPieceAtSquare(G8));
+        assertEquals(Pair.of(BLACK, ROOK), board.getPieceAtSquare(F8));
     }
 
     @Test
     public void testDoMoveBlackQueensideCastle () {
         Board board = Board.builder().setBlackKing(E8).addBlackRooks(A8).build();
         board.doMove(Move.BLACK_QUEENSIDE_CASTLE);
-        Map<Square, Pair<Color, Piece>> boardMap = board.toMap();
 
-        assertEquals(2, boardMap.size());
-        assertEquals(Pair.of(BLACK, KING), boardMap.get(C8));
-        assertEquals(Pair.of(BLACK, ROOK), boardMap.get(D8));
+        assertEquals(2, board.getNumberOfPiecesOnBoard());
+        assertEquals(Pair.of(BLACK, KING), board.getPieceAtSquare(C8));
+        assertEquals(Pair.of(BLACK, ROOK), board.getPieceAtSquare(D8));
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -846,10 +837,9 @@ public class BoardTest {
         Board board = Board.builder().addWhitePawns(E4).build();
         Move move = Move.create(WHITE, PAWN, E2, E4);
         board.undoMove(move);
-        Map<Square, Pair<Color, Piece>> boardMap = board.toMap();
 
-        assertEquals(1, boardMap.size());
-        assertEquals(Pair.of(WHITE, PAWN), boardMap.get(E2));
+        assertEquals(1, board.getNumberOfPiecesOnBoard());
+        assertEquals(Pair.of(WHITE, PAWN), board.getPieceAtSquare(E2));
     }
 
     @Test
@@ -857,11 +847,10 @@ public class BoardTest {
         Board board = Board.builder().addBlackBishops(F3).build();
         Move move = Move.createCapture(BLACK, BISHOP, KNIGHT, B7, F3);
         board.undoMove(move);
-        Map<Square, Pair<Color, Piece>> boardMap = board.toMap();
 
-        assertEquals(2, boardMap.size());
-        assertEquals(Pair.of(BLACK, BISHOP), boardMap.get(B7));
-        assertEquals(Pair.of(WHITE, KNIGHT), boardMap.get(F3));
+        assertEquals(2, board.getNumberOfPiecesOnBoard());
+        assertEquals(Pair.of(BLACK, BISHOP), board.getPieceAtSquare(B7));
+        assertEquals(Pair.of(WHITE, KNIGHT), board.getPieceAtSquare(F3));
     }
 
     @Test
@@ -869,11 +858,10 @@ public class BoardTest {
         Board board = Board.builder().addBlackPawns(E3).build();
         Move move = Move.createEnPassant(BLACK, D4, E3, E4);
         board.undoMove(move);
-        Map<Square, Pair<Color, Piece>> boardMap = board.toMap();
 
-        assertEquals(2, boardMap.size());
-        assertEquals(Pair.of(BLACK, PAWN), boardMap.get(D4));
-        assertEquals(Pair.of(WHITE, PAWN), boardMap.get(E4));
+        assertEquals(2, board.getNumberOfPiecesOnBoard());
+        assertEquals(Pair.of(BLACK, PAWN), board.getPieceAtSquare(D4));
+        assertEquals(Pair.of(WHITE, PAWN), board.getPieceAtSquare(E4));
     }
 
     @Test
@@ -881,10 +869,9 @@ public class BoardTest {
         Board board = Board.builder().addWhiteQueens(B8).build();
         Move move = Move.createPromotion(WHITE, B7, B8, QUEEN);
         board.undoMove(move);
-        Map<Square, Pair<Color, Piece>> boardMap = board.toMap();
 
-        assertEquals(1, boardMap.size());
-        assertEquals(Pair.of(WHITE, PAWN), boardMap.get(B7));
+        assertEquals(1, board.getNumberOfPiecesOnBoard());
+        assertEquals(Pair.of(WHITE, PAWN), board.getPieceAtSquare(B7));
     }
 
     @Test
@@ -892,59 +879,65 @@ public class BoardTest {
         Board board = Board.builder().addWhiteQueens(B8).build();
         Move move = Move.createCapturePromotion(WHITE, KNIGHT, C7, B8, QUEEN);
         board.undoMove(move);
-        Map<Square, Pair<Color, Piece>> boardMap = board.toMap();
 
-        assertEquals(2, boardMap.size());
-        assertEquals(Pair.of(WHITE, PAWN), boardMap.get(C7));
-        assertEquals(Pair.of(BLACK, KNIGHT), boardMap.get(B8));
+        assertEquals(2, board.getNumberOfPiecesOnBoard());
+        assertEquals(Pair.of(WHITE, PAWN), board.getPieceAtSquare(C7));
+        assertEquals(Pair.of(BLACK, KNIGHT), board.getPieceAtSquare(B8));
     }
 
     @Test
     public void testUndoMoveWhiteKingsideCastle () {
         Board board = Board.builder().setWhiteKing(G1).addWhiteRooks(F1).build();
         board.undoMove(Move.WHITE_KINGSIDE_CASTLE);
-        Map<Square, Pair<Color, Piece>> boardMap = board.toMap();
 
-        assertEquals(2, boardMap.size());
-        assertEquals(Pair.of(WHITE, KING), boardMap.get(E1));
-        assertEquals(Pair.of(WHITE, ROOK), boardMap.get(H1));
+        assertEquals(2, board.getNumberOfPiecesOnBoard());
+        assertEquals(Pair.of(WHITE, KING), board.getPieceAtSquare(E1));
+        assertEquals(Pair.of(WHITE, ROOK), board.getPieceAtSquare(H1));
     }
 
     @Test
     public void testUndoMoveWhiteQueensideCastle () {
         Board board = Board.builder().setWhiteKing(C1).addWhiteRooks(D1).build();
         board.undoMove(Move.WHITE_QUEENSIDE_CASTLE);
-        Map<Square, Pair<Color, Piece>> boardMap = board.toMap();
 
-        assertEquals(2, boardMap.size());
-        assertEquals(Pair.of(WHITE, KING), boardMap.get(E1));
-        assertEquals(Pair.of(WHITE, ROOK), boardMap.get(A1));
+        assertEquals(2, board.getNumberOfPiecesOnBoard());
+        assertEquals(Pair.of(WHITE, KING), board.getPieceAtSquare(E1));
+        assertEquals(Pair.of(WHITE, ROOK), board.getPieceAtSquare(A1));
     }
 
     @Test
     public void testUndoMoveBlackKingsideCastle () {
         Board board = Board.builder().setBlackKing(G8).addBlackRooks(F8).build();
         board.undoMove(Move.BLACK_KINGSIDE_CASTLE);
-        Map<Square, Pair<Color, Piece>> boardMap = board.toMap();
 
-        assertEquals(2, boardMap.size());
-        assertEquals(Pair.of(BLACK, KING), boardMap.get(E8));
-        assertEquals(Pair.of(BLACK, ROOK), boardMap.get(H8));
+        assertEquals(2, board.getNumberOfPiecesOnBoard());
+        assertEquals(Pair.of(BLACK, KING), board.getPieceAtSquare(E8));
+        assertEquals(Pair.of(BLACK, ROOK), board.getPieceAtSquare(H8));
     }
 
     @Test
     public void testUndoMoveBlackQueensideCastle () {
         Board board = Board.builder().setBlackKing(C8).addBlackRooks(D8).build();
         board.undoMove(Move.BLACK_QUEENSIDE_CASTLE);
-        Map<Square, Pair<Color, Piece>> boardMap = board.toMap();
 
-        assertEquals(2, boardMap.size());
-        assertEquals(Pair.of(BLACK, KING), boardMap.get(E8));
-        assertEquals(Pair.of(BLACK, ROOK), boardMap.get(A8));
+        assertEquals(2, board.getNumberOfPiecesOnBoard());
+        assertEquals(Pair.of(BLACK, KING), board.getPieceAtSquare(E8));
+        assertEquals(Pair.of(BLACK, ROOK), board.getPieceAtSquare(A8));
     }
 
     @Test
     public void testToString () {
-        System.out.println(STARTING_BOARD.toString());
+        String expectedOutput = "  a b c d e f g h \n" +
+                "8 ♜ ♞ ♝ ♛ ♚ ♝ ♞ ♜ 8\n" +
+                "7 ♟ ♟ ♟ ♟ ♟ ♟ ♟ ♟ 7\n" +
+                "6 . . . . . . . . 6\n" +
+                "5 . . . . . . . . 5\n" +
+                "4 . . . . . . . . 4\n" +
+                "3 . . . . . . . . 3\n" +
+                "2 ♙ ♙ ♙ ♙ ♙ ♙ ♙ ♙ 2\n" +
+                "1 ♖ ♘ ♗ ♕ ♔ ♗ ♘ ♖ 1\n" +
+                "  a b c d e f g h ";
+        String actualOutput = STARTING_BOARD.toString();
+        assertEquals(expectedOutput, actualOutput);
     }
 }

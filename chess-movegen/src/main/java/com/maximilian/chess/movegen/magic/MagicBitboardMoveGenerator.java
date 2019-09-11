@@ -18,7 +18,6 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
@@ -26,6 +25,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static com.maximilian.chess.enums.CastlingRight.BLACK_KINGSIDE;
@@ -93,7 +93,6 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
     public List<Move> generateAllMoves (@Nonnull Board board, @Nonnull GameState gameState) {
         Color colorToMove = gameState.colorToMove();
         Color enemyColor = colorToMove.opposite();
-        Object2ObjectMap<Square, Pair<Color, Piece>> piecesBySquares = board.toMap();
 
         /*
          * These bitmasks represent the squares where the pieces to move are allowed to move to/capture on (can be
@@ -123,14 +122,14 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
         if (!kingAttackerSquares.isEmpty()) {
             if (kingAttackerSquares.size() > 1) {
                 // King is double check - only legal moves are for the king to move out of check.
-                return new ObjectArrayList<>(getMovesFromMovementBitmask(colorToMove, KING, kingSquare, kingMovementBitmask,
-                        piecesBySquares));
+                return new ObjectArrayList<>(
+                        getMovesFromMovementBitmask(colorToMove, KING, kingSquare, kingMovementBitmask, board));
             } else {
                 // King is in check, restrict legal moves to those which remove the king from check.
                 isInCheck = true;
                 Square attackerSquare = kingAttackerSquares.iterator().next();
                 allowedCapturesBitmask = attackerSquare.bitmask;
-                Pair<Color, Piece> attackerColorPiecePair = piecesBySquares.get(attackerSquare);
+                Pair<Color, Piece> attackerColorPiecePair = board.getPieceAtSquare(attackerSquare);
                 if (attackerColorPiecePair == null) {
                     throw new IllegalStateException(
                             "Piece attacking king did not exist at expected square. Square: " + attackerSquare +
@@ -149,13 +148,13 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
             }
         }
         List<Move> moves = new ObjectArrayList<>(
-                getMovesFromMovementBitmask(colorToMove, KING, kingSquare, kingMovementBitmask, piecesBySquares));
+                getMovesFromMovementBitmask(colorToMove, KING, kingSquare, kingMovementBitmask, board));
         long allowedBitmask = allowedMovesBitmask | allowedCapturesBitmask;
 
         // Generate moves for pinned pieces separately, since their movement will be restricted.
         Set<Square> pinnedPieceSquares = getPinnedPieceSquares(board, colorToMove, kingSquare, occupiedBitmask);
         for (Square pinnedPieceSquare : pinnedPieceSquares) {
-            Pair<Color, Piece> pinnedColorPiecePair = piecesBySquares.get(pinnedPieceSquare);
+            Pair<Color, Piece> pinnedColorPiecePair = board.getPieceAtSquare(pinnedPieceSquare);
             if (pinnedColorPiecePair == null) {
                 throw new IllegalStateException(
                         "Pinned piece did not exist at expected square. Square: " + pinnedPieceSquare + "\nBoard:\n" +
@@ -222,8 +221,8 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
                 }
             }
 
-            moves.addAll(getMovesFromMovementBitmask(colorToMove, pinnedPiece, pinnedPieceSquare, movementBitmask,
-                    piecesBySquares));
+            moves.addAll(
+                    getMovesFromMovementBitmask(colorToMove, pinnedPiece, pinnedPieceSquare, movementBitmask, board));
         }
 
         // Pawns
@@ -232,8 +231,7 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
         for (Square pawnSquare : pawnSquares) {
             long pawnMovementBitmask = generatePawnMovesBitmask(colorToMove, pawnSquare, allowedMovesBitmask,
                     allowedCapturesBitmask, occupiedBitmask);
-            moves.addAll(
-                    getMovesFromMovementBitmask(colorToMove, PAWN, pawnSquare, pawnMovementBitmask, piecesBySquares));
+            moves.addAll(getMovesFromMovementBitmask(colorToMove, PAWN, pawnSquare, pawnMovementBitmask, board));
         }
 
         // Knights
@@ -241,8 +239,7 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
         knightSquares.removeAll(pinnedPieceSquares);
         for (Square knightSquare : knightSquares) {
             long knightMovementBitmask = generateKnightMovesBitmask(knightSquare, allowedBitmask);
-            moves.addAll(getMovesFromMovementBitmask(colorToMove, KNIGHT, knightSquare, knightMovementBitmask,
-                    piecesBySquares));
+            moves.addAll(getMovesFromMovementBitmask(colorToMove, KNIGHT, knightSquare, knightMovementBitmask, board));
         }
 
         // Bishops
@@ -250,8 +247,7 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
         bishopSquares.removeAll(pinnedPieceSquares);
         for (Square bishopSquare : bishopSquares) {
             long bishopMovementBitmask = generateBishopMovesBitmask(bishopSquare, allowedBitmask, occupiedBitmask);
-            moves.addAll(getMovesFromMovementBitmask(colorToMove, BISHOP, bishopSquare, bishopMovementBitmask,
-                    piecesBySquares));
+            moves.addAll(getMovesFromMovementBitmask(colorToMove, BISHOP, bishopSquare, bishopMovementBitmask, board));
         }
 
         // Rooks
@@ -259,8 +255,7 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
         rookSquares.removeAll(pinnedPieceSquares);
         for (Square rookSquare : rookSquares) {
             long rookMovementBitmask = generateRookMovesBitmask(rookSquare, allowedBitmask, occupiedBitmask);
-            moves.addAll(
-                    getMovesFromMovementBitmask(colorToMove, ROOK, rookSquare, rookMovementBitmask, piecesBySquares));
+            moves.addAll(getMovesFromMovementBitmask(colorToMove, ROOK, rookSquare, rookMovementBitmask, board));
         }
 
         // Queens
@@ -269,8 +264,7 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
         for (Square queenSquare : queenSquares) {
             long queenMovementBitmask = generateBishopMovesBitmask(queenSquare, allowedBitmask, occupiedBitmask) |
                     generateRookMovesBitmask(queenSquare, allowedBitmask, occupiedBitmask);
-            moves.addAll(getMovesFromMovementBitmask(colorToMove, QUEEN, queenSquare, queenMovementBitmask,
-                    piecesBySquares));
+            moves.addAll(getMovesFromMovementBitmask(colorToMove, QUEEN, queenSquare, queenMovementBitmask, board));
         }
 
         // Castling
@@ -365,7 +359,7 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
                                                 "Bitmask:" + " " + slidingPieceFromKingBitmask + "\nBoard:\n" + board);
                             }
 
-                            Pair<Color, Piece> slidingColorPiecePair = piecesBySquares.get(slidingPieceSquare);
+                            Pair<Color, Piece> slidingColorPiecePair = board.getPieceAtSquare(slidingPieceSquare);
                             if (slidingColorPiecePair == null) {
                                 throw new IllegalStateException(
                                         "Sliding piece from king did not exist at expected square. Square: " +
@@ -934,15 +928,13 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
      * @param piece           The {@link Piece} being moved. Cannot be null.
      * @param startSquare     The {@link Square} containing the piece being moved. Cannot be null.
      * @param movementBitmask The movement bitmask representing the squares the piece can move to.
-     * @param piecesBySquares The {@link Object2ObjectMap} of {@link Square} keys and {@link Pair} of {@link Color}
-     *                        and {@link Piece} values, representing the contents of the board. Cannot be null.
+     * @param board           The {@link Board} representing the current state of the pieces. Cannot be null.
      * @return The {@link List} of {@link Move}s for the specified piece and movement bitmask. Will never be null,
      * may be empty.
      */
     @Nonnull
     private List<Move> getMovesFromMovementBitmask (@Nonnull Color colorToMove, @Nonnull Piece piece,
-            @Nonnull Square startSquare, long movementBitmask,
-            @Nonnull Object2ObjectMap<Square, Pair<Color, Piece>> piecesBySquares) {
+            @Nonnull Square startSquare, long movementBitmask, @Nonnull Board board) {
         List<Move> moves = new ObjectArrayList<>();
         if (movementBitmask == EMPTY_BITMASK) {
             return moves;
@@ -950,7 +942,7 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
 
         Set<Square> endSquares = BitboardUtils.getSquaresFromBitmask(movementBitmask);
         for (Square endSquare : endSquares) {
-            Pair<Color, Piece> capturedColorPiecePair = piecesBySquares.get(endSquare);
+            Pair<Color, Piece> capturedColorPiecePair = board.getPieceAtSquare(endSquare);
             Piece capturedPiece = (capturedColorPiecePair != null) ? capturedColorPiecePair.getValue() : null;
 
             // If the piece being moved is a promoting pawn, generate all possible promotion moves.
@@ -986,8 +978,8 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
      * all squares and any possible combination of blocking pieces.
      */
     static class MagicMovementBitmasks {
-        static final Object2ObjectMap<Square, Long2LongMap> BISHOP_MOVES = new Object2ObjectOpenHashMap<>(64, 1.0F);
-        static final Object2ObjectMap<Square, Long2LongMap> ROOK_MOVES = new Object2ObjectOpenHashMap<>(64, 1.0F);
+        static final Map<Square, Long2LongMap> BISHOP_MOVES = new Object2ObjectOpenHashMap<>(64, 1.0F);
+        static final Map<Square, Long2LongMap> ROOK_MOVES = new Object2ObjectOpenHashMap<>(64, 1.0F);
         static final Object2LongMap<Square> BISHOP_BLOCKERS = new Object2LongOpenHashMap<>(64, 1.0F);
         static final Object2LongMap<Square> ROOK_BLOCKERS = new Object2LongOpenHashMap<>(64, 1.0F);
 
