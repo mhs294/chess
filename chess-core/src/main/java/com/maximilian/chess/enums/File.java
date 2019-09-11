@@ -2,6 +2,8 @@ package com.maximilian.chess.enums;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import lombok.Getter;
+import lombok.experimental.Accessors;
 
 import javax.annotation.Nonnull;
 
@@ -10,6 +12,7 @@ import javax.annotation.Nonnull;
  *
  * @author Maximilian Schroeder
  */
+@Accessors(fluent = true)
 public enum File {
     A(0),
     B(1),
@@ -37,7 +40,7 @@ public enum File {
     /**
      * The 64-bit bitmask that represents this {@link File} on a bitboard.
      */
-    public final long bitmask;
+    @Getter private final long bitmask;
 
     /**
      * (Primary constructor)

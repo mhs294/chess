@@ -33,11 +33,11 @@ public class BitboardUtilsTest {
         assertEquals(EnumSet.noneOf(Square.class), BitboardUtils.getSquaresFromBitmask(Board.EMPTY_BITMASK));
         assertEquals(EnumSet.allOf(Square.class), BitboardUtils.getSquaresFromBitmask(Board.FULL_BITMASK));
         Set<Square> lightSquares = Arrays.stream(Square.values())
-                .filter(square -> square.type == Square.Type.LIGHT)
+                .filter(square -> square.type() == Square.Type.LIGHT)
                 .collect(Collectors.toSet());
         assertEquals(lightSquares, BitboardUtils.getSquaresFromBitmask(Board.LIGHT_SQUARES_BITMASK));
         Set<Square> darkSquares = Arrays.stream(Square.values())
-                .filter(square -> square.type == Square.Type.DARK)
+                .filter(square -> square.type() == Square.Type.DARK)
                 .collect(Collectors.toSet());
         assertEquals(darkSquares, BitboardUtils.getSquaresFromBitmask(Board.DARK_SQUARES_BITMASK));
     }
@@ -47,11 +47,11 @@ public class BitboardUtilsTest {
         assertEquals(Board.EMPTY_BITMASK, BitboardUtils.getBitmaskFromSquares(EnumSet.noneOf(Square.class)));
         assertEquals(Board.FULL_BITMASK, BitboardUtils.getBitmaskFromSquares(EnumSet.allOf(Square.class)));
         Set<Square> lightSquares = Arrays.stream(Square.values())
-                .filter(square -> square.type == Square.Type.LIGHT)
+                .filter(square -> square.type() == Square.Type.LIGHT)
                 .collect(Collectors.toSet());
         assertEquals(Board.LIGHT_SQUARES_BITMASK, BitboardUtils.getBitmaskFromSquares(lightSquares));
         Set<Square> darkSquares = Arrays.stream(Square.values())
-                .filter(square -> square.type == Square.Type.DARK)
+                .filter(square -> square.type() == Square.Type.DARK)
                 .collect(Collectors.toSet());
         assertEquals(Board.DARK_SQUARES_BITMASK, BitboardUtils.getBitmaskFromSquares(darkSquares));
     }
@@ -64,7 +64,7 @@ public class BitboardUtilsTest {
                 "Light Squares:\n" + BitboardUtils.bitboardToBoardString(Board.LIGHT_SQUARES_BITMASK) + "\n");
         System.out.println("Full:\n" + BitboardUtils.bitboardToBoardString(Board.FULL_BITMASK));
         for (Square square : Square.values()) {
-            System.out.println(square + ":\n" + BitboardUtils.bitboardToBoardString(square.bitmask));
+            System.out.println(square + ":\n" + BitboardUtils.bitboardToBoardString(square.bitmask()));
         }
     }
 }

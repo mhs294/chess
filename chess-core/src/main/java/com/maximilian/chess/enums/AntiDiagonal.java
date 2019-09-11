@@ -2,6 +2,8 @@ package com.maximilian.chess.enums;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import lombok.Getter;
+import lombok.experimental.Accessors;
 
 import javax.annotation.Nonnull;
 
@@ -10,6 +12,7 @@ import javax.annotation.Nonnull;
  *
  * @author Maximilian Schroeder
  */
+@Accessors(fluent = true)
 public enum AntiDiagonal {
     A8_H1(0),
     A7_G1(1),
@@ -45,7 +48,7 @@ public enum AntiDiagonal {
     /**
      * The 64-bit bitmask that represents this {@link AntiDiagonal} on a bitboard.
      */
-    public final long bitmask;
+    @Getter private final long bitmask;
 
     /**
      * (Primary constructor)

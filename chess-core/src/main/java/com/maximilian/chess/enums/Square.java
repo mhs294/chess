@@ -4,6 +4,8 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import lombok.Getter;
+import lombok.experimental.Accessors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -16,6 +18,7 @@ import static com.maximilian.chess.enums.Square.Type.LIGHT;
  *
  * @author Maximilian Schroeder
  */
+@Accessors(fluent = true)
 public enum Square {
     A1(0),
     B1(1),
@@ -94,7 +97,7 @@ public enum Square {
 
         BITMASK_TO_SQUARE_MAP = new Long2ObjectOpenHashMap<>(squares.length, 1.0F);
         for (Square square : squares) {
-            BITMASK_TO_SQUARE_MAP.put(square.bitmask, square);
+            BITMASK_TO_SQUARE_MAP.put(square.bitmask(), square);
         }
     }
 
@@ -105,27 +108,37 @@ public enum Square {
     /**
      * The 64-bit bitmask that represents this {@link Square} on a bitboard.
      */
-    public final long bitmask;
+    @Getter private final long bitmask;
     /**
      * The {@link File} containing this {@link Square}.
      */
-    @Nonnull public final File file;
+    @Nonnull
+    @Getter
+    private final File file;
     /**
      * The {@link Rank} containing this {@link Square}.
      */
-    @Nonnull public final Rank rank;
+    @Nonnull
+    @Getter
+    private final Rank rank;
     /**
      * The {@link Diagonal} containing this {@link Square}.
      */
-    @Nonnull public final Diagonal diagonal;
+    @Nonnull
+    @Getter
+    private final Diagonal diagonal;
     /**
      * The {@link AntiDiagonal} containing this {@link Square}.
      */
-    @Nonnull public final AntiDiagonal antiDiagonal;
+    @Nonnull
+    @Getter
+    private final AntiDiagonal antiDiagonal;
     /**
      * The {@link Type} of this {@link Square}.
      */
-    @Nonnull public final Type type;
+    @Nonnull
+    @Getter
+    private final Type type;
 
     /**
      * (Primary constructor)
@@ -157,7 +170,7 @@ public enum Square {
      */
     @Nonnull
     public static Square fromFileAndRank (@Nonnull File file, @Nonnull Rank rank) {
-        return BITMASK_TO_SQUARE_MAP.get(file.bitmask & rank.bitmask);
+        return BITMASK_TO_SQUARE_MAP.get(file.bitmask() & rank.bitmask());
     }
 
     /**

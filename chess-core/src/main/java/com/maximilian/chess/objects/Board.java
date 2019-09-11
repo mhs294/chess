@@ -89,10 +89,10 @@ public class Board {
         long lightSquaresBitmask = EMPTY_BITMASK;
         long darkSquaresBitmask = EMPTY_BITMASK;
         for (Square square : Square.values()) {
-            if (square.type == LIGHT) {
-                lightSquaresBitmask |= square.bitmask;
-            } else if (square.type == DARK) {
-                darkSquaresBitmask |= square.bitmask;
+            if (square.type() == LIGHT) {
+                lightSquaresBitmask |= square.bitmask();
+            } else if (square.type() == DARK) {
+                darkSquaresBitmask |= square.bitmask();
             }
         }
         LIGHT_SQUARES_BITMASK = lightSquaresBitmask;
@@ -187,39 +187,39 @@ public class Board {
         long blackOccupiedBitmask = blackOccupiedBitmask();
         long occupiedBitmask = whiteOccupiedBitmask | blackOccupiedBitmask;
         for (Square square : Square.values()) {
-            if ((square.bitmask & occupiedBitmask) == EMPTY_BITMASK) {
+            if ((square.bitmask() & occupiedBitmask) == EMPTY_BITMASK) {
                 // The current square is vacant.
                 continue;
             }
 
-            if ((square.bitmask & whiteOccupiedBitmask) != EMPTY_BITMASK) {
+            if ((square.bitmask() & whiteOccupiedBitmask) != EMPTY_BITMASK) {
                 // The piece in the current square is white.
-                if ((square.bitmask & whitePawnsBitmask) != EMPTY_BITMASK) {
+                if ((square.bitmask() & whitePawnsBitmask) != EMPTY_BITMASK) {
                     piecesBySquaresMap.put(square, Pair.of(WHITE, PAWN));
-                } else if ((square.bitmask & whiteKnightsBitmask) != EMPTY_BITMASK) {
+                } else if ((square.bitmask() & whiteKnightsBitmask) != EMPTY_BITMASK) {
                     piecesBySquaresMap.put(square, Pair.of(WHITE, KNIGHT));
-                } else if ((square.bitmask & whiteBishopsBitmask) != EMPTY_BITMASK) {
+                } else if ((square.bitmask() & whiteBishopsBitmask) != EMPTY_BITMASK) {
                     piecesBySquaresMap.put(square, Pair.of(WHITE, BISHOP));
-                } else if ((square.bitmask & whiteRooksBitmask) != EMPTY_BITMASK) {
+                } else if ((square.bitmask() & whiteRooksBitmask) != EMPTY_BITMASK) {
                     piecesBySquaresMap.put(square, Pair.of(WHITE, ROOK));
-                } else if ((square.bitmask & whiteQueensBitmask) != EMPTY_BITMASK) {
+                } else if ((square.bitmask() & whiteQueensBitmask) != EMPTY_BITMASK) {
                     piecesBySquaresMap.put(square, Pair.of(WHITE, QUEEN));
-                } else if ((square.bitmask & whiteKingBitmask) != EMPTY_BITMASK) {
+                } else if ((square.bitmask() & whiteKingBitmask) != EMPTY_BITMASK) {
                     piecesBySquaresMap.put(square, Pair.of(WHITE, KING));
                 }
-            } else if ((square.bitmask & blackOccupiedBitmask) != EMPTY_BITMASK) {
+            } else if ((square.bitmask() & blackOccupiedBitmask) != EMPTY_BITMASK) {
                 // The piece in the current square is black.
-                if ((square.bitmask & blackPawnsBitmask) != EMPTY_BITMASK) {
+                if ((square.bitmask() & blackPawnsBitmask) != EMPTY_BITMASK) {
                     piecesBySquaresMap.put(square, Pair.of(BLACK, PAWN));
-                } else if ((square.bitmask & blackKnightsBitmask) != EMPTY_BITMASK) {
+                } else if ((square.bitmask() & blackKnightsBitmask) != EMPTY_BITMASK) {
                     piecesBySquaresMap.put(square, Pair.of(BLACK, KNIGHT));
-                } else if ((square.bitmask & blackBishopsBitmask) != EMPTY_BITMASK) {
+                } else if ((square.bitmask() & blackBishopsBitmask) != EMPTY_BITMASK) {
                     piecesBySquaresMap.put(square, Pair.of(BLACK, BISHOP));
-                } else if ((square.bitmask & blackRooksBitmask) != EMPTY_BITMASK) {
+                } else if ((square.bitmask() & blackRooksBitmask) != EMPTY_BITMASK) {
                     piecesBySquaresMap.put(square, Pair.of(BLACK, ROOK));
-                } else if ((square.bitmask & blackQueensBitmask) != EMPTY_BITMASK) {
+                } else if ((square.bitmask() & blackQueensBitmask) != EMPTY_BITMASK) {
                     piecesBySquaresMap.put(square, Pair.of(BLACK, QUEEN));
-                } else if ((square.bitmask & blackKingBitmask) != EMPTY_BITMASK) {
+                } else if ((square.bitmask() & blackKingBitmask) != EMPTY_BITMASK) {
                     piecesBySquaresMap.put(square, Pair.of(BLACK, KING));
                 }
             }
@@ -796,7 +796,7 @@ public class Board {
         }
 
         piecesBySquaresMap.put(square, Pair.of(color, piece));
-        long addBitmask = square.bitmask;
+        long addBitmask = square.bitmask();
         switch (color) {
             case WHITE:
                 switch (piece) {
@@ -865,7 +865,7 @@ public class Board {
             return false;
         }
 
-        long removeBitmask = ~square.bitmask;
+        long removeBitmask = ~square.bitmask();
         switch (color) {
             case WHITE:
                 switch (piece) {
@@ -966,7 +966,7 @@ public class Board {
         @Nonnull
         public Builder addWhitePawns (@Nonnull Square... squares) {
             for (Square square : squares) {
-                this.whitePawns |= square.bitmask;
+                this.whitePawns |= square.bitmask();
             }
             return this;
         }
@@ -980,7 +980,7 @@ public class Board {
         @Nonnull
         public Builder addWhiteKnights (@Nonnull Square... squares) {
             for (Square square : squares) {
-                this.whiteKnights |= square.bitmask;
+                this.whiteKnights |= square.bitmask();
             }
             return this;
         }
@@ -994,7 +994,7 @@ public class Board {
         @Nonnull
         public Builder addWhiteBishops (@Nonnull Square... squares) {
             for (Square square : squares) {
-                this.whiteBishops |= square.bitmask;
+                this.whiteBishops |= square.bitmask();
             }
             return this;
         }
@@ -1008,7 +1008,7 @@ public class Board {
         @Nonnull
         public Builder addWhiteRooks (@Nonnull Square... squares) {
             for (Square square : squares) {
-                this.whiteRooks |= square.bitmask;
+                this.whiteRooks |= square.bitmask();
             }
             return this;
         }
@@ -1022,7 +1022,7 @@ public class Board {
         @Nonnull
         public Builder addWhiteQueens (@Nonnull Square... squares) {
             for (Square square : squares) {
-                this.whiteQueens |= square.bitmask;
+                this.whiteQueens |= square.bitmask();
             }
             return this;
         }
@@ -1035,7 +1035,7 @@ public class Board {
          */
         @Nonnull
         public Builder setWhiteKing (@Nonnull Square square) {
-            this.whiteKing = square.bitmask;
+            this.whiteKing = square.bitmask();
             return this;
         }
 
@@ -1048,7 +1048,7 @@ public class Board {
         @Nonnull
         public Builder addBlackPawns (@Nonnull Square... squares) {
             for (Square square : squares) {
-                this.blackPawns |= square.bitmask;
+                this.blackPawns |= square.bitmask();
             }
             return this;
         }
@@ -1062,7 +1062,7 @@ public class Board {
         @Nonnull
         public Builder addBlackKnights (@Nonnull Square... squares) {
             for (Square square : squares) {
-                this.blackKnights |= square.bitmask;
+                this.blackKnights |= square.bitmask();
             }
             return this;
         }
@@ -1076,7 +1076,7 @@ public class Board {
         @Nonnull
         public Builder addBlackBishops (@Nonnull Square... squares) {
             for (Square square : squares) {
-                this.blackBishops |= square.bitmask;
+                this.blackBishops |= square.bitmask();
             }
             return this;
         }
@@ -1090,7 +1090,7 @@ public class Board {
         @Nonnull
         public Builder addBlackRooks (@Nonnull Square... squares) {
             for (Square square : squares) {
-                this.blackRooks |= square.bitmask;
+                this.blackRooks |= square.bitmask();
             }
             return this;
         }
@@ -1104,7 +1104,7 @@ public class Board {
         @Nonnull
         public Builder addBlackQueens (@Nonnull Square... squares) {
             for (Square square : squares) {
-                this.blackQueens |= square.bitmask;
+                this.blackQueens |= square.bitmask();
             }
             return this;
         }
@@ -1117,7 +1117,7 @@ public class Board {
          */
         @Nonnull
         public Builder setBlackKing (@Nonnull Square square) {
-            this.blackKing = square.bitmask;
+            this.blackKing = square.bitmask();
             return this;
         }
 

@@ -42,7 +42,7 @@ public final class BitboardUtils {
     public static Set<Square> getSquaresFromBitmask (long bitmask) {
         Set<Square> targetSquares = new ObjectOpenHashSet<>();
         for (Square square : Square.values()) {
-            if ((square.bitmask & bitmask) == EMPTY_BITMASK) {
+            if ((square.bitmask() & bitmask) == EMPTY_BITMASK) {
                 continue;
             }
 
@@ -62,7 +62,7 @@ public final class BitboardUtils {
     public static long getBitmaskFromSquares (@Nonnull Set<Square> squares) {
         long bitmask = EMPTY_BITMASK;
         for (Square square : squares) {
-            bitmask |= square.bitmask;
+            bitmask |= square.bitmask();
         }
 
         return bitmask;
