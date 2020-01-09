@@ -15,12 +15,12 @@ import java.util.Set;
 
 import static com.maximilian.chess.enums.Color.BLACK;
 import static com.maximilian.chess.enums.Color.WHITE;
-import static com.maximilian.chess.enums.Piece.BISHOP;
-import static com.maximilian.chess.enums.Piece.KING;
-import static com.maximilian.chess.enums.Piece.KNIGHT;
-import static com.maximilian.chess.enums.Piece.PAWN;
-import static com.maximilian.chess.enums.Piece.QUEEN;
-import static com.maximilian.chess.enums.Piece.ROOK;
+import static com.maximilian.chess.enums.Type.BISHOP;
+import static com.maximilian.chess.enums.Type.KING;
+import static com.maximilian.chess.enums.Type.KNIGHT;
+import static com.maximilian.chess.enums.Type.PAWN;
+import static com.maximilian.chess.enums.Type.QUEEN;
+import static com.maximilian.chess.enums.Type.ROOK;
 import static com.maximilian.chess.enums.Square.A1;
 import static com.maximilian.chess.enums.Square.A2;
 import static com.maximilian.chess.enums.Square.A3;

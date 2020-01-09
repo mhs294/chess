@@ -1,16 +1,14 @@
 package com.maximilian.chess.objects;
 
 import com.maximilian.chess.constants.ANConstants;
-import com.maximilian.chess.enums.Color;
-import com.maximilian.chess.enums.Piece;
 import com.maximilian.chess.enums.Square;
 import com.maximilian.chess.exception.IllegalMoveException;
 import com.maximilian.chess.util.BitboardUtils;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.experimental.Accessors;
-import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -19,12 +17,6 @@ import java.util.Set;
 
 import static com.maximilian.chess.enums.Color.BLACK;
 import static com.maximilian.chess.enums.Color.WHITE;
-import static com.maximilian.chess.enums.Piece.BISHOP;
-import static com.maximilian.chess.enums.Piece.KING;
-import static com.maximilian.chess.enums.Piece.KNIGHT;
-import static com.maximilian.chess.enums.Piece.PAWN;
-import static com.maximilian.chess.enums.Piece.QUEEN;
-import static com.maximilian.chess.enums.Piece.ROOK;
 import static com.maximilian.chess.enums.Square.A1;
 import static com.maximilian.chess.enums.Square.A2;
 import static com.maximilian.chess.enums.Square.A7;
@@ -66,6 +58,12 @@ import static com.maximilian.chess.objects.Move.WHITE_KINGSIDE_CASTLE;
 import static com.maximilian.chess.objects.Move.WHITE_KINGSIDE_CASTLE_ROOK;
 import static com.maximilian.chess.objects.Move.WHITE_QUEENSIDE_CASTLE;
 import static com.maximilian.chess.objects.Move.WHITE_QUEENSIDE_CASTLE_ROOK;
+import static com.maximilian.chess.objects.Piece.Type.BISHOP;
+import static com.maximilian.chess.objects.Piece.Type.KING;
+import static com.maximilian.chess.objects.Piece.Type.KNIGHT;
+import static com.maximilian.chess.objects.Piece.Type.PAWN;
+import static com.maximilian.chess.objects.Piece.Type.QUEEN;
+import static com.maximilian.chess.objects.Piece.Type.ROOK;
 
 /**
  * Represents a single state of a chessboard using bitboards. The state of this class is designed to be mutable to
@@ -158,10 +156,18 @@ public class Board {
      */
     @Getter private long blackKingBitmask;
     /**
-     * The {@link Map} of {@link Square} keys and {@link Pair} of {@link Color} and {@link Piece} values representing
-     * the current pieces on this {@link Board} at their respective squares.
+     * The {@link Map} of {@link Square} keys and {@link Piece} values representing the current pieces on this
+     * {@link Board} at their respective squares.
      */
-    private final Map<Square, Pair<Color, Piece>> piecesBySquaresMap;
+    private final Map<Square, Piece> piecesBySquaresMap;
+    /**
+     * The {@link Set} of white {@link Piece}s on the board. Will never be null or empty.
+     */
+    @Getter private final Set<Piece> whitePieces;
+    /**
+     * The {@link Set} of black {@link Piece}s on the board. Will never be null or empty.
+     */
+    @Getter private final Set<Piece> blackPieces;
 
     /**
      * Primary constructor (declared private to prevent direct instantiation).
@@ -183,6 +189,8 @@ public class Board {
         this.blackKingBitmask = builder.blackKing;
 
         piecesBySquaresMap = new Object2ObjectOpenHashMap<>(Square.values().length, 1.0F);
+        whitePieces = new ObjectOpenHashSet<>();
+        blackPieces = new ObjectOpenHashSet<>();
         long whiteOccupiedBitmask = whiteOccupiedBitmask();
         long blackOccupiedBitmask = blackOccupiedBitmask();
         long occupiedBitmask = whiteOccupiedBitmask | blackOccupiedBitmask;
@@ -192,37 +200,41 @@ public class Board {
                 continue;
             }
 
+            Piece piece = null;
             if ((square.bitmask() & whiteOccupiedBitmask) != EMPTY_BITMASK) {
                 // The piece in the current square is white.
                 if ((square.bitmask() & whitePawnsBitmask) != EMPTY_BITMASK) {
-                    piecesBySquaresMap.put(square, Pair.of(WHITE, PAWN));
+                    piece = new Piece(WHITE, PAWN, square);
                 } else if ((square.bitmask() & whiteKnightsBitmask) != EMPTY_BITMASK) {
-                    piecesBySquaresMap.put(square, Pair.of(WHITE, KNIGHT));
+                    piece = new Piece(WHITE, KNIGHT, square);
                 } else if ((square.bitmask() & whiteBishopsBitmask) != EMPTY_BITMASK) {
-                    piecesBySquaresMap.put(square, Pair.of(WHITE, BISHOP));
+                    piece = new Piece(WHITE, BISHOP, square);
                 } else if ((square.bitmask() & whiteRooksBitmask) != EMPTY_BITMASK) {
-                    piecesBySquaresMap.put(square, Pair.of(WHITE, ROOK));
+                    piece = new Piece(WHITE, ROOK, square);
                 } else if ((square.bitmask() & whiteQueensBitmask) != EMPTY_BITMASK) {
-                    piecesBySquaresMap.put(square, Pair.of(WHITE, QUEEN));
+                    piece = new Piece(WHITE, QUEEN, square);
                 } else if ((square.bitmask() & whiteKingBitmask) != EMPTY_BITMASK) {
-                    piecesBySquaresMap.put(square, Pair.of(WHITE, KING));
+                    piece = new Piece(WHITE, KING, square);
                 }
+                whitePieces.add(piece);
             } else if ((square.bitmask() & blackOccupiedBitmask) != EMPTY_BITMASK) {
                 // The piece in the current square is black.
                 if ((square.bitmask() & blackPawnsBitmask) != EMPTY_BITMASK) {
-                    piecesBySquaresMap.put(square, Pair.of(BLACK, PAWN));
+                    piece = new Piece(BLACK, PAWN, square);
                 } else if ((square.bitmask() & blackKnightsBitmask) != EMPTY_BITMASK) {
-                    piecesBySquaresMap.put(square, Pair.of(BLACK, KNIGHT));
+                    piece = new Piece(BLACK, KNIGHT, square);
                 } else if ((square.bitmask() & blackBishopsBitmask) != EMPTY_BITMASK) {
-                    piecesBySquaresMap.put(square, Pair.of(BLACK, BISHOP));
+                    piece = new Piece(BLACK, BISHOP, square);
                 } else if ((square.bitmask() & blackRooksBitmask) != EMPTY_BITMASK) {
-                    piecesBySquaresMap.put(square, Pair.of(BLACK, ROOK));
+                    piece = new Piece(BLACK, ROOK, square);
                 } else if ((square.bitmask() & blackQueensBitmask) != EMPTY_BITMASK) {
-                    piecesBySquaresMap.put(square, Pair.of(BLACK, QUEEN));
+                    piece = new Piece(BLACK, QUEEN, square);
                 } else if ((square.bitmask() & blackKingBitmask) != EMPTY_BITMASK) {
-                    piecesBySquaresMap.put(square, Pair.of(BLACK, KING));
+                    piece = new Piece(BLACK, KING, square);
                 }
+                blackPieces.add(piece);
             }
+            piecesBySquaresMap.put(square, piece);
         }
     }
 
@@ -246,6 +258,8 @@ public class Board {
         this.blackQueensBitmask = board.blackQueensBitmask;
         this.blackKingBitmask = board.blackKingBitmask;
         this.piecesBySquaresMap = board.piecesBySquaresMap;
+        this.whitePieces = board.whitePieces;
+        this.blackPieces = board.blackPieces;
     }
 
     /**
@@ -297,7 +311,7 @@ public class Board {
      * @return The {@link Piece} at the specified {@link Square}. May be null (if the {@link Square} is vacant).
      */
     @Nullable
-    public Pair<Color, Piece> getPieceAtSquare (@Nonnull Square square) {
+    public Piece getPieceAtSquare (@Nonnull Square square) {
         return piecesBySquaresMap.get(square);
     }
 
@@ -656,28 +670,38 @@ public class Board {
         validateMove(move);
 
         // Remove the moved piece from its starting position.
-        if (!removePieceFromSquare(move.color(), move.piece(), move.start())) {
+        Piece movingPiece = piecesBySquaresMap.get(move.start());
+        if (!removePieceFromSquare(move.piece(), move.start())) {
             throw new IllegalMoveException(move, this, "The move's piece was not at the specified starting square.");
         }
 
         // If a capture needs to be performed, remove the piece being captured.
-        Piece capturedPiece = move.capturedPiece();
-        if (capturedPiece != null) {
+        Piece capturedPiece = null;
+        Piece.Type capturedType = move.capturedPiece();
+        if (capturedType != null) {
             Square enPassantCaptureSquare = move.enPassantCaptureSquare();
             Square captureSquare = (enPassantCaptureSquare != null) ? enPassantCaptureSquare : move.end();
-            if (!removePieceFromSquare(move.color().opposite(), capturedPiece, captureSquare)) {
+            if (!removePieceFromSquare(capturedType, captureSquare)) {
                 throw new IllegalMoveException(move, this,
                         "The move's captured piece was not at the specified square.");
             }
+            capturedPiece = piecesBySquaresMap.get(captureSquare);
+        }
+        if (capturedPiece != null) {
+            removePiece(capturedPiece);
         }
 
         // Add the moved piece to its ending position.
-        Piece promoteTo = move.promoteTo();
-        Piece endingPiece = (promoteTo != null) ? promoteTo : move.piece();
-        if (!addPieceToSquare(move.color(), endingPiece, move.end())) {
+        Piece.Type promoteType = move.promoteTo();
+        Piece.Type endingType = (promoteType != null) ? promoteType : move.piece();
+        if (!addPieceToSquare(endingType, move.end())) {
             throw new IllegalMoveException(move, this,
                     "Could not add the move's piece to the specified ending square.");
         }
+        if (promoteType != null) {
+            movingPiece.promoteTo(promoteType);
+        }
+        movePiece(movingPiece, move.end());
 
         // If the move was a castling move, perform the rook movement in addition to the king movement.
         if (move.isCastling()) {
@@ -692,14 +716,16 @@ public class Board {
                 rookMove = BLACK_QUEENSIDE_CASTLE_ROOK;
             }
 
-            if (!removePieceFromSquare(rookMove.color(), rookMove.piece(), rookMove.start())) {
+            if (!removePieceFromSquare(rookMove.piece(), rookMove.start())) {
                 throw new IllegalMoveException(rookMove,
                         "The rook could not be removed from its starting square for castling.");
             }
-            if (!addPieceToSquare(rookMove.color(), rookMove.piece(), rookMove.end())) {
+            if (!addPieceToSquare(rookMove.piece(), rookMove.end())) {
                 throw new IllegalMoveException(rookMove,
                         "The rook could not be added to its ending square for castling.");
             }
+            Piece castlingRook = piecesBySquaresMap.get(rookMove.start());
+            movePiece(castlingRook, rookMove.end());
         }
     }
 
@@ -715,28 +741,38 @@ public class Board {
         validateMove(move);
 
         // Remove the moved piece from its ending position.
-        Piece promoteTo = move.promoteTo();
-        Piece endingPiece = (promoteTo != null) ? promoteTo : move.piece();
-        if (!removePieceFromSquare(move.color(), endingPiece, move.end())) {
+        Piece movedPiece = piecesBySquaresMap.get(move.end());
+        Piece.Type promoteTo = move.promoteTo();
+        Piece.Type endingType = (promoteTo != null) ? promoteTo : move.piece();
+        if (!removePieceFromSquare(endingType, move.end())) {
             throw new IllegalMoveException(move, this,
                     "The move's ending piece was not at the specified ending square.");
         }
+        if (promoteTo != null) {
+            movedPiece.undoPromote();
+        }
 
         // If a piece was captured, add it back to the ending position.
-        Piece capturedPiece = move.capturedPiece();
-        if (capturedPiece != null) {
+        Piece capturedPiece = null;
+        Piece.Type capturedType = move.capturedPiece();
+        if (capturedType != null) {
             Square captureSquare = (move.enPassantCaptureSquare() != null) ? move.enPassantCaptureSquare() : move.end();
-            if (captureSquare == null || !addPieceToSquare(move.color().opposite(), capturedPiece, captureSquare)) {
+            if (captureSquare == null || !addPieceToSquare(capturedType, captureSquare)) {
                 throw new IllegalMoveException(move,
                         "The move's captured piece could not be added to its original square.");
             }
+            capturedPiece = new Piece(movedPiece.color().opposite(), capturedType, captureSquare);
+        }
+        if (capturedPiece != null) {
+            addPiece(capturedPiece);
         }
 
         // Add the moved piece to its starting position.
-        if (!addPieceToSquare(move.color(), move.piece(), move.start())) {
+        if (!addPieceToSquare(move.piece(), move.start())) {
             throw new IllegalMoveException(move, this,
                     "Could not add the move's piece to the specified starting square.");
         }
+        movePiece(movedPiece, move.start());
 
         // If the move was a castling move, undo the rook movement in addition to the king movement.
         if (move.isCastling()) {
@@ -751,14 +787,16 @@ public class Board {
                 rookMove = BLACK_QUEENSIDE_CASTLE_ROOK;
             }
 
-            if (!removePieceFromSquare(rookMove.color(), rookMove.piece(), rookMove.end())) {
+            if (!removePieceFromSquare(rookMove.piece(), rookMove.end())) {
                 throw new IllegalMoveException(rookMove,
                         "The rook could not be removed from its ending square for castling.");
             }
-            if (!addPieceToSquare(rookMove.color(), rookMove.piece(), rookMove.start())) {
+            if (!addPieceToSquare(rookMove.piece(), rookMove.start())) {
                 throw new IllegalMoveException(rookMove,
                         "The rook could not be added to its starting square for castling.");
             }
+            Piece castlingRook = piecesBySquaresMap.get(rookMove.end());
+            movePiece(castlingRook, rookMove.start());
         }
     }
 
@@ -781,25 +819,25 @@ public class Board {
     }
 
     /**
-     * Adds the specified {@link Piece} of the specified {@link Color} to the specified {@link Square}.
+     * Adds the specified {@link Piece} to the specified {@link Square}.
      *
-     * @param color  The {@link Color} of the piece to add. Cannot be null.
      * @param piece  The {@link Piece} to add. Cannot be null.
      * @param square The {@link Square} where the piece will be added to. Cannot be null.
      * @return True if the {@link Piece} was successfully added to the {@link Square}, false otherwise.
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted") // This method is intended to be consumed with the "!" operator.
-    private boolean addPieceToSquare (@Nonnull Color color, @Nonnull Piece piece, @Nonnull Square square) {
+    private boolean addPieceToSquare (@Nonnull Piece piece, @Nonnull Square square) {
         if (piecesBySquaresMap.containsKey(square)) {
             // The square we are trying to add the piece to is occupied.
             return false;
         }
 
-        piecesBySquaresMap.put(square, Pair.of(color, piece));
+        piecesBySquaresMap.put(square, piece);
+        piece.square(square);
         long addBitmask = square.bitmask();
-        switch (color) {
+        switch (piece.color()) {
             case WHITE:
-                switch (piece) {
+                switch (piece.type()) {
                     case PAWN:
                         whitePawnsBitmask |= addBitmask;
                         break;
@@ -821,7 +859,7 @@ public class Board {
                 }
                 break;
             case BLACK:
-                switch (piece) {
+                switch (piece.type()) {
                     case PAWN:
                         blackPawnsBitmask |= addBitmask;
                         break;
@@ -848,16 +886,15 @@ public class Board {
     }
 
     /**
-     * Removes the specified {@link Piece} of the specified {@link Color} from the specified {@link Square}.
+     * Removes the specified {@link Piece} from the specified {@link Square}.
      *
-     * @param color  The {@link Color} of the piece to remove. Cannot be null.
      * @param piece  The {@link Piece} to remove. Cannot be null.
      * @param square The {@link Square} where the piece will be removed from. Cannot be null.
      * @return True if the {@link Piece} was successfully removed from the {@link Square}, false otherwise.
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted") // This method is intended to be consumed with the "!" operator.
-    private boolean removePieceFromSquare (@Nonnull Color color, @Nonnull Piece piece, @Nonnull Square square) {
-        if (!piecesBySquaresMap.remove(square, Pair.of(color, piece))) {
+    private boolean removePieceFromSquare (@Nonnull Piece piece, @Nonnull Square square) {
+        if (!piecesBySquaresMap.remove(square, piece)) {
             /*
              * There piece we are trying to remove from the square isn't there (either the square is empty or the wrong
              * piece is occupying the square).
@@ -866,9 +903,9 @@ public class Board {
         }
 
         long removeBitmask = ~square.bitmask();
-        switch (color) {
+        switch (piece.color()) {
             case WHITE:
-                switch (piece) {
+                switch (piece.type()) {
                     case PAWN:
                         whitePawnsBitmask &= removeBitmask;
                         break;
@@ -890,7 +927,7 @@ public class Board {
                 }
                 break;
             case BLACK:
-                switch (piece) {
+                switch (piece.type()) {
                     case PAWN:
                         blackPawnsBitmask &= removeBitmask;
                         break;
@@ -925,9 +962,9 @@ public class Board {
             StringBuilder rowStringBuilder = new StringBuilder();
             for (int i = 8; i > 0; i--) {
                 Square currentSquare = Square.fromIndex((8 * rank) - i);
-                Pair<Color, Piece> colorPiecePair = piecesBySquaresMap.get(currentSquare);
-                if (colorPiecePair != null) {
-                    rowStringBuilder.append(ANConstants.SYMBOLS_BY_PIECES.get(colorPiecePair));
+                Piece piece = piecesBySquaresMap.get(currentSquare);
+                if (piece != null) {
+                    rowStringBuilder.append(ANConstants.SYMBOLS_BY_PIECES.get(piece.getColorTypePair()));
                 } else {
                     rowStringBuilder.append(".");
                 }
@@ -938,6 +975,47 @@ public class Board {
             boardStringBuilder.append(rowStringBuilder.toString()).append(" ").append(rank).append("\n");
         }
         return boardStringBuilder.append(fileMarkers).toString();
+    }
+
+    /**
+     * Adds the specified {@link Piece} to the board.
+     *
+     * @param piece The {@link Piece} to add to the board. Cannot be null.
+     */
+    private void addPiece (@Nonnull Piece piece) {
+        if (piece.color() == WHITE) {
+            whitePieces.add(piece);
+        } else if (piece.color() == BLACK) {
+            blackPieces.add(piece);
+        }
+        piecesBySquaresMap.put(piece.square(), piece);
+    }
+
+    /**
+     * Removes the specified {@link Piece} from the board.
+     *
+     * @param piece The {@link Piece} to remove from the board. Cannot be null.
+     */
+    private void removePiece (@Nonnull Piece piece) {
+        if (piece.color() == WHITE) {
+            whitePieces.remove(piece);
+        } else if (piece.color() == BLACK) {
+            blackPieces.remove(piece);
+        }
+        piecesBySquaresMap.remove(piece.square());
+        piece.square(null);
+    }
+
+    /**
+     * Moves the specified {@link Piece} to the specified {@link Square}.
+     *
+     * @param piece     The {@link Piece} to move. Cannot be null.
+     * @param newSquare The {@link Square} to move the specified {@link Piece} to. Cannot be null.
+     */
+    private void movePiece (@Nonnull Piece piece, @Nonnull Square newSquare) {
+        piecesBySquaresMap.remove(piece.square());
+        piece.square(newSquare);
+        piecesBySquaresMap.put(newSquare, piece);
     }
 
     /**

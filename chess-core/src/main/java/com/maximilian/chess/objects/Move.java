@@ -1,19 +1,16 @@
 package com.maximilian.chess.objects;
 
 import com.maximilian.chess.enums.Color;
-import com.maximilian.chess.enums.Piece;
 import com.maximilian.chess.enums.Square;
 import lombok.EqualsAndHashCode;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import static com.google.common.base.Verify.verify;
 import static com.google.common.base.Verify.verifyNotNull;
 import static com.maximilian.chess.enums.Color.BLACK;
 import static com.maximilian.chess.enums.Color.WHITE;
-import static com.maximilian.chess.enums.Piece.KING;
-import static com.maximilian.chess.enums.Piece.PAWN;
-import static com.maximilian.chess.enums.Piece.ROOK;
 import static com.maximilian.chess.enums.Square.A1;
 import static com.maximilian.chess.enums.Square.A8;
 import static com.maximilian.chess.enums.Square.C1;
@@ -28,7 +25,7 @@ import static com.maximilian.chess.enums.Square.G1;
 import static com.maximilian.chess.enums.Square.G8;
 import static com.maximilian.chess.enums.Square.H1;
 import static com.maximilian.chess.enums.Square.H8;
-import static com.maximilian.chess.objects.Move.Bitmask.CAPTURED_PIECE_START;
+import static com.maximilian.chess.objects.Move.Bitmask.CAPTURED_PIECE_TYPE_START;
 import static com.maximilian.chess.objects.Move.Bitmask.COLOR_MASK;
 import static com.maximilian.chess.objects.Move.Bitmask.COLOR_START;
 import static com.maximilian.chess.objects.Move.Bitmask.END_START;
@@ -36,12 +33,15 @@ import static com.maximilian.chess.objects.Move.Bitmask.IS_EN_PASSANT_MASK;
 import static com.maximilian.chess.objects.Move.Bitmask.IS_EN_PASSANT_SIZE;
 import static com.maximilian.chess.objects.Move.Bitmask.IS_EN_PASSANT_START;
 import static com.maximilian.chess.objects.Move.Bitmask.PIECE_MASK;
-import static com.maximilian.chess.objects.Move.Bitmask.PIECE_SIZE;
-import static com.maximilian.chess.objects.Move.Bitmask.PIECE_START;
+import static com.maximilian.chess.objects.Move.Bitmask.PIECE_TYPE_SIZE;
+import static com.maximilian.chess.objects.Move.Bitmask.PIECE_TYPE_START;
 import static com.maximilian.chess.objects.Move.Bitmask.PROMOTE_TO_START;
 import static com.maximilian.chess.objects.Move.Bitmask.SQUARE_MASK;
 import static com.maximilian.chess.objects.Move.Bitmask.SQUARE_SIZE;
 import static com.maximilian.chess.objects.Move.Bitmask.START_START;
+import static com.maximilian.chess.objects.Piece.Type.KING;
+import static com.maximilian.chess.objects.Piece.Type.PAWN;
+import static com.maximilian.chess.objects.Piece.Type.ROOK;
 
 /**
  * Represents a single chess move. The move information is stored as a 32-bit bitmask in memory, but convenience
@@ -87,18 +87,18 @@ public class Move {
      * Internal class containing constants used for serializing/deserializing information to/from the bitmask.
      */
     static final class Bitmask {
-        static final int COLOR_MASK = 0x00000001;
-        static final int SQUARE_MASK = 0x0000003F;
-        static final int PIECE_MASK = 0x00000007;
-        static final int IS_EN_PASSANT_MASK = 0x00000001;
+        static final int COLOR_MASK = 0x01;
+        static final int SQUARE_MASK = 0x3F;
+        static final int PIECE_MASK = 0x07;
+        static final int IS_EN_PASSANT_MASK = 0x01;
         static final int SQUARE_SIZE = 6;
-        static final int PIECE_SIZE = 3;
+        static final int PIECE_TYPE_SIZE = 3;
         static final int IS_EN_PASSANT_SIZE = 1;
         static final int COLOR_START = 28;
         static final int START_START = 22;
         static final int END_START = 16;
-        static final int PIECE_START = 13;
-        static final int CAPTURED_PIECE_START = 10;
+        static final int PIECE_TYPE_START = 13;
+        static final int CAPTURED_PIECE_TYPE_START = 10;
         static final int PROMOTE_TO_START = 7;
         static final int IS_EN_PASSANT_START = 6;
     }
@@ -106,18 +106,20 @@ public class Move {
     /**
      * Constructs a new {@link Move} (declared private to prevent direct instantiation).
      *
-     * @param color                  The {@link Color} of the player making the move. Cannot be null.
-     * @param piece                  The {@link Piece} that is being moved. Cannot be null.
-     * @param capturedPiece          The {@link Piece} being captured as a result of the move (optional). May be null.
+     * @param color                  The {@link Color} of the piece being moved. Cannot be null.
+     * @param pieceType              The {@link Piece.Type} of the piece that is being moved. Cannot be null.
+     * @param capturedType           The {@link Piece.Type} of the piece being captured as a result of the move
+     *                               (optional). May be null.
      * @param start                  The starting {@link Square} of the move. Cannot be null.
      * @param end                    The ending {@link Square} of the move. Cannot be null.
-     * @param promoteTo              The {@link Piece} being promoted to as a result of the move (optional). May be
+     * @param promoteTo              The {@link Piece.Type} being promoted to as a result of the move (optional). May be
      *                               null.
      * @param enPassantCaptureSquare The {@link Square} from which an opposing pawn was captured via en passant
      *                               (optional). May be null.
      */
-    private Move (@Nonnull Color color, @Nonnull Piece piece, @Nullable Piece capturedPiece, @Nonnull Square start,
-            @Nonnull Square end, @Nullable Piece promoteTo, @Nullable Square enPassantCaptureSquare) {
+    private Move (@Nonnull Color color, @Nonnull Piece.Type pieceType, @Nullable Piece.Type capturedType,
+            @Nonnull Square start, @Nonnull Square end, @Nullable Piece.Type promoteTo,
+            @Nullable Square enPassantCaptureSquare) {
         int bitmask = 0;
 
         bitmask += (color == BLACK) ? 1 : 0;
@@ -125,13 +127,13 @@ public class Move {
         bitmask += start.ordinal();
         bitmask <<= SQUARE_SIZE;
         bitmask += end.ordinal();
-        bitmask <<= PIECE_SIZE;
-        bitmask += piece.id();
-        bitmask <<= PIECE_SIZE;
-        if (capturedPiece != null) {
-            bitmask += capturedPiece.id();
+        bitmask <<= PIECE_TYPE_SIZE;
+        bitmask += pieceType.id();
+        bitmask <<= PIECE_TYPE_SIZE;
+        if (capturedType != null) {
+            bitmask += capturedType.id();
         }
-        bitmask <<= PIECE_SIZE;
+        bitmask <<= PIECE_TYPE_SIZE;
         if (promoteTo != null) {
             bitmask += promoteTo.id();
         }
@@ -151,104 +153,121 @@ public class Move {
      * Constructs a new {@link Move} that doesn't involve either any capture or a promotion.
      *
      * @param color The {@link Color} of the player making the move. Cannot be null.
-     * @param piece The {@link Piece} that is being moved. Cannot be null.
+     * @param type  The {@link Piece.Type} of the piece that is being moved. Cannot be null.
      * @param start The starting {@link Square} of the move. Cannot be null.
      * @param end   The ending {@link Square} of the move. Cannot be null.
      * @return A new {@link Move} containing the specified information. Will never be null.
      */
     @Nonnull
-    public static Move create (@Nonnull Color color, @Nonnull Piece piece, @Nonnull Square start, @Nonnull Square end) {
+    private static Move create (@Nonnull Color color, @Nonnull Piece.Type type, @Nonnull Square start,
+            @Nonnull Square end) {
         verifyNotNull(color, "color cannot be null.");
-        verifyNotNull(piece, "piece cannot be null.");
+        verifyNotNull(type, "piece cannot be null.");
         verifyNotNull(start, "start cannot be null.");
         verifyNotNull(end, "end cannot be null.");
 
-        return new Move(color, piece, null, start, end, null, null);
+        return new Move(color, type, null, start, end, null, null);
+    }
+
+    /**
+     * Constructs a new {@link Move} that doesn't involve either any capture or a promotion.
+     *
+     * @param piece The {@link Piece} that is being moved. Cannot be null.
+     * @param end   The ending {@link Square} of the move. Cannot be null.
+     * @return A new {@link Move} containing the specified information. Will never be null.
+     */
+    @Nonnull
+    public static Move create (@Nonnull Piece piece, @Nonnull Square end) {
+        Square start = piece.square();
+        verifyNotNull(piece, "piece cannot be null.");
+        verifyNotNull(start, "piece must be on the board.");
+        verifyNotNull(end, "end cannot be null.");
+
+        return new Move(piece.color(), piece.type(), null, start, end, null, null);
     }
 
     /**
      * Constructs a new {@link Move} that involves an en passant capture.
      *
-     * @param color                  The {@link Color} of the player making the move. Cannot be null.
-     * @param start                  The starting {@link Square} of the move. Cannot be null.
+     * @param piece                  The {@link Piece} that is being moved. Cannot be null.
      * @param end                    The ending {@link Square} of the move. Cannot be null.
      * @param enPassantCaptureSquare The {@link Square} from which an opposing pawn was captured via en passant.
      *                               Cannot be null.
      * @return A new {@link Move} containing the specified information. Will never be null.
      */
     @Nonnull
-    public static Move createEnPassant (@Nonnull Color color, @Nonnull Square start, @Nonnull Square end,
+    public static Move createEnPassant (@Nonnull Piece piece, @Nonnull Square end,
             @Nonnull Square enPassantCaptureSquare) {
-        verifyNotNull(color, "color cannot be null.");
-        verifyNotNull(start, "start cannot be null.");
+        Square start = piece.square();
+        verifyNotNull(piece, "piece cannot be null.");
+        verifyNotNull(piece.square(), "piece must be on the board.");
+        verify(piece.type() == PAWN, "piece must be a PAWN for en passant capture.");
         verifyNotNull(end, "end cannot be null.");
         verifyNotNull(enPassantCaptureSquare, "enPassantCaptureSquare cannot be null.");
 
-        return new Move(color, PAWN, PAWN, start, end, null, enPassantCaptureSquare);
+        return new Move(piece.color(), PAWN, PAWN, start, end, null, enPassantCaptureSquare);
     }
 
     /**
      * Constructs a new {@link Move} that involves a standard capture, but not a promotion.
      *
-     * @param color         The {@link Color} of the player making the move. Cannot be null.
-     * @param piece         The {@link Piece} that is being moved. Cannot be null.
-     * @param capturedPiece The {@link Piece} being captured as a result of the move. Cannot be null.
-     * @param start         The starting {@link Square} of the move. Cannot be null.
-     * @param end           The ending {@link Square} of the move. Cannot be null.
+     * @param piece        The {@link Piece} that is being moved. Cannot be null.
+     * @param capturedType The {@link Piece.Type} of the piece being captured as a result of the move. Cannot be null.
+     * @param end          The ending {@link Square} of the move. Cannot be null.
      * @return A new {@link Move} containing the specified information. Will never be null.
      */
     @Nonnull
-    public static Move createCapture (@Nonnull Color color, @Nonnull Piece piece, @Nonnull Piece capturedPiece,
-            @Nonnull Square start, @Nonnull Square end) {
-        verifyNotNull(color, "color cannot be null.");
+    public static Move createCapture (@Nonnull Piece piece, @Nonnull Piece.Type capturedType, @Nonnull Square end) {
+        Square start = piece.square();
         verifyNotNull(piece, "piece cannot be null.");
-        verifyNotNull(capturedPiece, "capturedPiece cannot be null.");
-        verifyNotNull(start, "start cannot be null.");
+        verifyNotNull(start, "piece must be on the board.");
+        verifyNotNull(capturedType, "capturedPiece cannot be null.");
         verifyNotNull(end, "end cannot be null.");
 
-        return new Move(color, piece, capturedPiece, start, end, null, null);
+        return new Move(piece.color(), piece.type(), capturedType, start, end, null, null);
     }
 
     /**
      * Constructs a new {@link Move} that involves a promotion, but not a standard capture.
      *
-     * @param color     The {@link Color} of the player making the move. Cannot be null.
-     * @param start     The starting {@link Square} of the move. Cannot be null.
+     * @param piece     The {@link Piece} that is being moved. Cannot be null.
      * @param end       The ending {@link Square} of the move. Cannot be null.
-     * @param promoteTo The {@link Piece} being promoted to as a result of the move. Cannot be null.
+     * @param promoteTo The {@link Piece.Type} being promoted to as a result of the move. Cannot be null.
      * @return A new {@link Move} containing the specified information. Will never be null.
      */
     @Nonnull
-    public static Move createPromotion (@Nonnull Color color, @Nonnull Square start, @Nonnull Square end,
-            @Nonnull Piece promoteTo) {
-        verifyNotNull(color, "color cannot be null.");
-        verifyNotNull(start, "start cannot be null.");
+    public static Move createPromotion (@Nonnull Piece piece, @Nonnull Square end, @Nonnull Piece.Type promoteTo) {
+        Square start = piece.square();
+        verifyNotNull(piece, "piece cannot be null.");
+        verifyNotNull(start, "piece must be on the board.");
+        verify(piece.type() == PAWN, "piece must be a PAWN for promotion.");
         verifyNotNull(end, "end cannot be null.");
         verifyNotNull(promoteTo, "promoteTo cannot be null.");
 
-        return new Move(color, PAWN, null, start, end, promoteTo, null);
+        return new Move(piece.color(), PAWN, null, start, end, promoteTo, null);
     }
 
     /**
      * Constructs a new {@link Move} that involves a promotion, but not a standard capture.
      *
-     * @param color         The {@link Color} of the player making the move. Cannot be null.
-     * @param capturedPiece The {@link Piece} being captured as a result of the move. Cannot be null.
-     * @param start         The starting {@link Square} of the move. Cannot be null.
-     * @param end           The ending {@link Square} of the move. Cannot be null.
-     * @param promoteTo     The {@link Piece} being promoted to as a result of the move. Cannot be null.
+     * @param piece        The {@link Piece} that is being moved. Cannot be null.
+     * @param capturedType The {@link Piece.Type} of the piece being captured as a result of the move. Cannot be null.
+     * @param end          The ending {@link Square} of the move. Cannot be null.
+     * @param promoteTo    The {@link Piece.Type} being promoted to as a result of the move. Cannot be null.
      * @return A new {@link Move} containing the specified information. Will never be null.
      */
     @Nonnull
-    public static Move createCapturePromotion (@Nonnull Color color, @Nonnull Piece capturedPiece,
-            @Nonnull Square start, @Nonnull Square end, @Nonnull Piece promoteTo) {
-        verifyNotNull(color, "color cannot be null.");
-        verifyNotNull(capturedPiece, "capturedPiece cannot be null.");
-        verifyNotNull(start, "start cannot be null.");
+    public static Move createCapturePromotion (@Nonnull Piece piece, @Nonnull Piece.Type capturedType,
+            @Nonnull Square end, @Nonnull Piece.Type promoteTo) {
+        Square start = piece.square();
+        verifyNotNull(piece, "piece cannot be null.");
+        verifyNotNull(start, "piece must be on the board.");
+        verifyNotNull(piece.type() == PAWN, "piece must be a PAWN for capture promotion.");
+        verifyNotNull(capturedType, "capturedPiece cannot be null.");
         verifyNotNull(end, "end cannot be null.");
         verifyNotNull(promoteTo, "promoteTo cannot be null.");
 
-        return new Move(color, PAWN, capturedPiece, start, end, promoteTo, null);
+        return new Move(piece.color(), PAWN, capturedType, start, end, promoteTo, null);
     }
 
     /**
@@ -294,37 +313,37 @@ public class Move {
     }
 
     /**
-     * Gets the {@link Piece} being moved. Will never be null.
+     * Gets the {@link Piece.Type} being moved. Will never be null.
      *
-     * @return The {@link Piece} being moved. Will never be null.
+     * @return The {@link Piece.Type} being moved. Will never be null.
      */
     @Nonnull
-    public Piece piece () {
-        Piece piece = Piece.fromId((bitmask >>> PIECE_START) & PIECE_MASK);
-        if (piece == null) {
+    public Piece.Type piece () {
+        Piece.Type type = Piece.Type.fromId((bitmask >>> PIECE_TYPE_START) & PIECE_MASK);
+        if (type == null) {
             throw new IllegalStateException("move contained an invalid piece bitmask: " + Long.toHexString(bitmask));
         }
-        return piece;
+        return type;
     }
 
     /**
-     * Gets the {@link Piece} being captured. May be null (if no piece is being captured).
+     * Gets the {@link Piece.Type} being captured. May be null (if no piece is being captured).
      *
-     * @return The {@link Piece} being captured. May be null (if no piece is being captured).
+     * @return The {@link Piece.Type} being captured. May be null (if no piece is being captured).
      */
     @Nullable
-    public Piece capturedPiece () {
-        return Piece.fromId((bitmask >>> CAPTURED_PIECE_START) & PIECE_MASK);
+    public Piece.Type capturedPiece () {
+        return Piece.Type.fromId((bitmask >>> CAPTURED_PIECE_TYPE_START) & PIECE_MASK);
     }
 
     /**
-     * Gets the {@link Piece} being promoted to. May be null (if no promotion is occurring).
+     * Gets the {@link Piece.Type} being promoted to. May be null (if no promotion is occurring).
      *
-     * @return The {@link Piece} being promoted to. May be null (if no promotion is occurring).
+     * @return The {@link Piece.Type} being promoted to. May be null (if no promotion is occurring).
      */
     @Nullable
-    public Piece promoteTo () {
-        return Piece.fromId((bitmask >>> PROMOTE_TO_START) & PIECE_MASK);
+    public Piece.Type promoteTo () {
+        return Piece.Type.fromId((bitmask >>> PROMOTE_TO_START) & PIECE_MASK);
     }
 
     /**
@@ -346,8 +365,10 @@ public class Move {
      * @return True if this {@link Move} is castling, false otherwise.
      */
     public boolean isCastling () {
-        return this.equals(WHITE_KINGSIDE_CASTLE) || this.equals(WHITE_QUEENSIDE_CASTLE) ||
-                this.equals(BLACK_KINGSIDE_CASTLE) || this.equals(BLACK_QUEENSIDE_CASTLE);
+        return this.equals(WHITE_KINGSIDE_CASTLE) ||
+                this.equals(WHITE_QUEENSIDE_CASTLE) ||
+                this.equals(BLACK_KINGSIDE_CASTLE) ||
+                this.equals(BLACK_QUEENSIDE_CASTLE);
     }
 
     @Override
@@ -362,17 +383,22 @@ public class Move {
             return "BLACK QUEENSIDE CASTLE";
         }
 
-        String moveString =
-                color().toString() + " " + piece().toString() + " " + start().toString() + "-" + end().toString();
-        Piece capturedPiece = capturedPiece();
-        if (capturedPiece != null) {
-            moveString += ", Capture: " + color().opposite().toString() + " " + capturedPiece.toString();
+        String moveString = color().toString() +
+                " " +
+                piece().toString() +
+                " " +
+                start().toString() +
+                "-" +
+                end().toString();
+        Piece.Type capturedType = capturedPiece();
+        if (capturedType != null) {
+            moveString += ", Capture: " + color().opposite().toString() + " " + capturedType.toString();
             Square enPassantCaptureSquare = enPassantCaptureSquare();
             if (enPassantCaptureSquare != null) {
                 moveString += " (en-passant on " + enPassantCaptureSquare.toString() + ")";
             }
         }
-        Piece promoteTo = promoteTo();
+        Piece.Type promoteTo = promoteTo();
         if (promoteTo != null) {
             moveString += ", Promotion to " + promoteTo.toString();
         }

@@ -18,9 +18,9 @@ import java.util.Set;
 
 import static com.maximilian.chess.enums.Color.BLACK;
 import static com.maximilian.chess.enums.Color.WHITE;
-import static com.maximilian.chess.enums.Piece.KING;
-import static com.maximilian.chess.enums.Piece.PAWN;
-import static com.maximilian.chess.enums.Piece.ROOK;
+import static com.maximilian.chess.enums.Type.KING;
+import static com.maximilian.chess.enums.Type.PAWN;
+import static com.maximilian.chess.enums.Type.ROOK;
 import static com.maximilian.chess.enums.Rank.FIVE;
 import static com.maximilian.chess.enums.Rank.FOUR;
 import static com.maximilian.chess.enums.Rank.SEVEN;

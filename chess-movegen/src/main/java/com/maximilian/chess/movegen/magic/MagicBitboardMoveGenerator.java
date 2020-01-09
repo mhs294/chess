@@ -2,7 +2,7 @@ package com.maximilian.chess.movegen.magic;
 
 import com.maximilian.chess.enums.CastlingRight;
 import com.maximilian.chess.enums.Color;
-import com.maximilian.chess.enums.Piece;
+import com.maximilian.chess.enums.Type;
 import com.maximilian.chess.enums.Square;
 import com.maximilian.chess.movegen.MoveGenerator;
 import com.maximilian.chess.movegen.constants.MovementBitmasks;
@@ -36,12 +36,12 @@ import static com.maximilian.chess.enums.Color.BLACK;
 import static com.maximilian.chess.enums.Color.WHITE;
 import static com.maximilian.chess.enums.File.A;
 import static com.maximilian.chess.enums.File.H;
-import static com.maximilian.chess.enums.Piece.BISHOP;
-import static com.maximilian.chess.enums.Piece.KING;
-import static com.maximilian.chess.enums.Piece.KNIGHT;
-import static com.maximilian.chess.enums.Piece.PAWN;
-import static com.maximilian.chess.enums.Piece.QUEEN;
-import static com.maximilian.chess.enums.Piece.ROOK;
+import static com.maximilian.chess.enums.Type.BISHOP;
+import static com.maximilian.chess.enums.Type.KING;
+import static com.maximilian.chess.enums.Type.KNIGHT;
+import static com.maximilian.chess.enums.Type.PAWN;
+import static com.maximilian.chess.enums.Type.QUEEN;
+import static com.maximilian.chess.enums.Type.ROOK;
 import static com.maximilian.chess.enums.Rank.EIGHT;
 import static com.maximilian.chess.enums.Rank.FIVE;
 import static com.maximilian.chess.enums.Rank.FOUR;
@@ -129,20 +129,20 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
                 isInCheck = true;
                 Square attackerSquare = kingAttackerSquares.iterator().next();
                 allowedCapturesBitmask = attackerSquare.bitmask();
-                Pair<Color, Piece> attackerColorPiecePair = board.getPieceAtSquare(attackerSquare);
+                Pair<Color, Type> attackerColorPiecePair = board.getPieceAtSquare(attackerSquare);
                 if (attackerColorPiecePair == null) {
                     throw new IllegalStateException(
                             "Piece attacking king did not exist at expected square. Square: " + attackerSquare +
                                     "\nBoard:\n" + board);
                 }
 
-                Piece attackerPiece = attackerColorPiecePair.getValue();
-                if (attackerPiece == PAWN || attackerPiece == KNIGHT) {
+                Type attackerType = attackerColorPiecePair.getValue();
+                if (attackerType == PAWN || attackerType == KNIGHT) {
                     // Since the attacking piece isn't a sliding piece, check can't be escaped by blocking.
                     allowedMovesBitmask = EMPTY_BITMASK;
                 } else {
                     // The attacking piece is a sliding piece, so allowed squares only include squares that block check.
-                    allowedMovesBitmask = getAllowedCheckBlocksBitmask(attackerPiece, attackerSquare, kingSquare,
+                    allowedMovesBitmask = getAllowedCheckBlocksBitmask(attackerType, attackerSquare, kingSquare,
                             occupiedBitmask);
                 }
             }
@@ -154,15 +154,15 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
         // Generate moves for pinned pieces separately, since their movement will be restricted.
         Set<Square> pinnedPieceSquares = getPinnedPieceSquares(board, colorToMove, kingSquare, occupiedBitmask);
         for (Square pinnedPieceSquare : pinnedPieceSquares) {
-            Pair<Color, Piece> pinnedColorPiecePair = board.getPieceAtSquare(pinnedPieceSquare);
+            Pair<Color, Type> pinnedColorPiecePair = board.getPieceAtSquare(pinnedPieceSquare);
             if (pinnedColorPiecePair == null) {
                 throw new IllegalStateException(
                         "Pinned piece did not exist at expected square. Square: " + pinnedPieceSquare + "\nBoard:\n" +
                                 board);
             }
 
-            Piece pinnedPiece = pinnedColorPiecePair.getValue();
-            if (pinnedPiece == KNIGHT) {
+            Type pinnedType = pinnedColorPiecePair.getValue();
+            if (pinnedType == KNIGHT) {
                 // Pinned knights cannot make any legal moves.
                 continue;
             }
@@ -172,7 +172,7 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
             long fileBitmask = pinnedPieceSquare.file().bitmask();
             if ((rankBitmask & kingSquare.bitmask()) != EMPTY_BITMASK) {
                 // The piece is pinned horizontally, so only consider horizontal moves.
-                if (pinnedPiece == BISHOP || pinnedPiece == PAWN) {
+                if (pinnedType == BISHOP || pinnedType == PAWN) {
                     // Bishops and Pawns pinned horizontally cannot make any legal moves.
                     continue;
                 }
@@ -182,10 +182,10 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
                                 rankBitmask;
             } else if ((fileBitmask & kingSquare.bitmask()) != EMPTY_BITMASK) {
                 // The piece is pinned vertically, so only consider vertical moves.
-                if (pinnedPiece == BISHOP) {
+                if (pinnedType == BISHOP) {
                     // Bishops pinned vertically cannot make any legal moves.
                     continue;
-                } else if (pinnedPiece == PAWN) {
+                } else if (pinnedType == PAWN) {
                     // Pawns pinned vertically can only make advancing moves.
                     movementBitmask = generatePawnMovesBitmask(colorToMove, pinnedPieceSquare, allowedMovesBitmask,
                             EMPTY_BITMASK, occupiedBitmask);
@@ -196,7 +196,7 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
                 }
             } else {
                 // The piece is pinned diagonally, so only consider diagonal moves.
-                if (pinnedPiece == ROOK) {
+                if (pinnedType == ROOK) {
                     // Rooks pinned diagonally cannot make any legal moves.
                     continue;
                 } else {
@@ -207,7 +207,7 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
                         diagonalBitmask = pinnedPieceSquare.antiDiagonal().bitmask();
                     }
 
-                    if (pinnedPiece == PAWN) {
+                    if (pinnedType == PAWN) {
                         // Pawns pinned diagonally can only make capturing moves.
                         movementBitmask = ((colorToMove == WHITE) ?
                                 WHITE_PAWN_CAPTURES.getLong(pinnedPieceSquare) :
@@ -222,7 +222,7 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
             }
 
             moves.addAll(
-                    getMovesFromMovementBitmask(colorToMove, pinnedPiece, pinnedPieceSquare, movementBitmask, board));
+                    getMovesFromMovementBitmask(colorToMove, pinnedType, pinnedPieceSquare, movementBitmask, board));
         }
 
         // Pawns
@@ -359,15 +359,15 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
                                                 "Bitmask:" + " " + slidingPieceFromKingBitmask + "\nBoard:\n" + board);
                             }
 
-                            Pair<Color, Piece> slidingColorPiecePair = board.getPieceAtSquare(slidingPieceSquare);
+                            Pair<Color, Type> slidingColorPiecePair = board.getPieceAtSquare(slidingPieceSquare);
                             if (slidingColorPiecePair == null) {
                                 throw new IllegalStateException(
                                         "Sliding piece from king did not exist at expected square. Square: " +
                                                 slidingPieceSquare + "\nBoard:\n" + board);
                             }
 
-                            Piece slidingPieceFromKing = slidingColorPiecePair.getValue();
-                            if (slidingPieceFromKing == ROOK || slidingPieceFromKing == QUEEN) {
+                            Type slidingTypeFromKing = slidingColorPiecePair.getValue();
+                            if (slidingTypeFromKing == ROOK || slidingTypeFromKing == QUEEN) {
                                 // Capturing via en passant would put the king of the player to move in check.
                                 isEnPassantLegal = false;
                             }
@@ -633,28 +633,28 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
      * Gets the bitmask representing the squares that can be occupied by pieces of the color to move in order to
      * block the king from check.
      *
-     * @param attackerPiece   The {@link Piece} attacking the king of the player to move. Cannot be null.
+     * @param attackerType   The {@link Type} attacking the king of the player to move. Cannot be null.
      * @param attackerSquare  The {@link Square} containing the piece attacking the king. Cannot be null.
      * @param kingSquare      The {@link Square} where the king of the player to move is located. Cannot be null.
      * @param occupiedBitmask The bitmask representing all the occupied squares on the board.
      * @return The bitmask representing the squares that can be occupied by pieces of the color to move in order to
      * block the king from check.
      */
-    private long getAllowedCheckBlocksBitmask (@Nonnull Piece attackerPiece, @Nonnull Square attackerSquare,
+    private long getAllowedCheckBlocksBitmask (@Nonnull Type attackerType, @Nonnull Square attackerSquare,
             @Nonnull Square kingSquare, long occupiedBitmask) {
         long kingSquareBitmask = kingSquare.bitmask();
         long allowedBitmask = ~occupiedBitmask | kingSquareBitmask;
         long attackerSlidesBitmask = EMPTY_BITMASK;
-        if (attackerPiece == ROOK || attackerPiece == QUEEN) {
+        if (attackerType == ROOK || attackerType == QUEEN) {
             attackerSlidesBitmask |= generateRookMovesBitmask(attackerSquare, allowedBitmask, occupiedBitmask);
         }
-        if (attackerPiece == BISHOP || attackerPiece == QUEEN) {
+        if (attackerType == BISHOP || attackerType == QUEEN) {
             attackerSlidesBitmask |= generateBishopMovesBitmask(attackerSquare, allowedBitmask, occupiedBitmask);
         }
         for (MovementBitmasks.CardinalDirection cardinalDirection : MovementBitmasks.CardinalDirection.values()) {
             switch (cardinalDirection) {
                 case NORTH:
-                    if (attackerPiece == BISHOP) {
+                    if (attackerType == BISHOP) {
                         // Bishops can't check the king orthogonally.
                         continue;
                     }
@@ -664,7 +664,7 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
                     }
                     break;
                 case EAST:
-                    if (attackerPiece == BISHOP) {
+                    if (attackerType == BISHOP) {
                         // Bishops can't check the king orthogonally.
                         continue;
                     }
@@ -674,7 +674,7 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
                     }
                     break;
                 case SOUTH:
-                    if (attackerPiece == BISHOP) {
+                    if (attackerType == BISHOP) {
                         // Bishops can't check the king orthogonally.
                         continue;
                     }
@@ -684,7 +684,7 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
                     }
                     break;
                 case WEST:
-                    if (attackerPiece == BISHOP) {
+                    if (attackerType == BISHOP) {
                         // Bishops can't check the king orthogonally.
                         continue;
                     }
@@ -694,7 +694,7 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
                     }
                     break;
                 case NORTHWEST:
-                    if (attackerPiece == ROOK) {
+                    if (attackerType == ROOK) {
                         // Rooks can't check the king diagonally.
                         continue;
                     }
@@ -705,7 +705,7 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
                     }
                     break;
                 case NORTHEAST:
-                    if (attackerPiece == ROOK) {
+                    if (attackerType == ROOK) {
                         // Rooks can't check the king diagonally.
                         continue;
                     }
@@ -716,7 +716,7 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
                     }
                     break;
                 case SOUTHWEST:
-                    if (attackerPiece == ROOK) {
+                    if (attackerType == ROOK) {
                         // Rooks can't check the king diagonally.
                         continue;
                     }
@@ -727,7 +727,7 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
                     }
                     break;
                 case SOUTHEAST:
-                    if (attackerPiece == ROOK) {
+                    if (attackerType == ROOK) {
                         // Rooks can't check the king diagonally.
                         continue;
                     }
@@ -925,7 +925,7 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
      * Gets a {@link List} of {@link Move}s for a specified piece and movement bitmask.
      *
      * @param colorToMove     The {@link Color} of the piece being moved. Cannot be null.
-     * @param piece           The {@link Piece} being moved. Cannot be null.
+     * @param type           The {@link Type} being moved. Cannot be null.
      * @param startSquare     The {@link Square} containing the piece being moved. Cannot be null.
      * @param movementBitmask The movement bitmask representing the squares the piece can move to.
      * @param board           The {@link Board} representing the current state of the pieces. Cannot be null.
@@ -933,7 +933,7 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
      * may be empty.
      */
     @Nonnull
-    private List<Move> getMovesFromMovementBitmask (@Nonnull Color colorToMove, @Nonnull Piece piece,
+    private List<Move> getMovesFromMovementBitmask (@Nonnull Color colorToMove, @Nonnull Type type,
             @Nonnull Square startSquare, long movementBitmask, @Nonnull Board board) {
         List<Move> moves = new ObjectArrayList<>();
         if (movementBitmask == EMPTY_BITMASK) {
@@ -942,32 +942,32 @@ public class MagicBitboardMoveGenerator implements MoveGenerator {
 
         Set<Square> endSquares = BitboardUtils.getSquaresFromBitmask(movementBitmask);
         for (Square endSquare : endSquares) {
-            Pair<Color, Piece> capturedColorPiecePair = board.getPieceAtSquare(endSquare);
-            Piece capturedPiece = (capturedColorPiecePair != null) ? capturedColorPiecePair.getValue() : null;
+            Pair<Color, Type> capturedColorPiecePair = board.getPieceAtSquare(endSquare);
+            Type capturedType = (capturedColorPiecePair != null) ? capturedColorPiecePair.getValue() : null;
 
             // If the piece being moved is a promoting pawn, generate all possible promotion moves.
-            if (piece == PAWN) {
+            if (type == PAWN) {
                 if ((colorToMove == WHITE && endSquare.rank() == EIGHT) ||
                         (colorToMove == BLACK && endSquare.rank() == ONE)) {
-                    moves.add((capturedPiece != null) ?
-                            Move.createCapturePromotion(colorToMove, capturedPiece, startSquare, endSquare, QUEEN) :
+                    moves.add((capturedType != null) ?
+                            Move.createCapturePromotion(colorToMove, capturedType, startSquare, endSquare, QUEEN) :
                             Move.createPromotion(colorToMove, startSquare, endSquare, QUEEN));
-                    moves.add((capturedPiece != null) ?
-                            Move.createCapturePromotion(colorToMove, capturedPiece, startSquare, endSquare, KNIGHT) :
+                    moves.add((capturedType != null) ?
+                            Move.createCapturePromotion(colorToMove, capturedType, startSquare, endSquare, KNIGHT) :
                             Move.createPromotion(colorToMove, startSquare, endSquare, KNIGHT));
-                    moves.add((capturedPiece != null) ?
-                            Move.createCapturePromotion(colorToMove, capturedPiece, startSquare, endSquare, ROOK) :
+                    moves.add((capturedType != null) ?
+                            Move.createCapturePromotion(colorToMove, capturedType, startSquare, endSquare, ROOK) :
                             Move.createPromotion(colorToMove, startSquare, endSquare, ROOK));
-                    moves.add((capturedPiece != null) ?
-                            Move.createCapturePromotion(colorToMove, capturedPiece, startSquare, endSquare, BISHOP) :
+                    moves.add((capturedType != null) ?
+                            Move.createCapturePromotion(colorToMove, capturedType, startSquare, endSquare, BISHOP) :
                             Move.createPromotion(colorToMove, startSquare, endSquare, BISHOP));
                     continue;
                 }
             }
 
-            moves.add((capturedPiece != null) ?
-                    Move.createCapture(colorToMove, piece, capturedPiece, startSquare, endSquare) :
-                    Move.create(colorToMove, piece, startSquare, endSquare));
+            moves.add((capturedType != null) ?
+                    Move.createCapture(colorToMove, type, capturedType, startSquare, endSquare) :
+                    Move.create(colorToMove, type, startSquare, endSquare));
         }
 
         return moves;

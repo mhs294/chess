@@ -1,7 +1,7 @@
 package com.maximilian.chess.objects;
 
 import com.maximilian.chess.enums.Color;
-import com.maximilian.chess.enums.Piece;
+import com.maximilian.chess.enums.Type;
 import com.maximilian.chess.enums.Square;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,12 +9,12 @@ import org.junit.runners.JUnit4;
 
 import static com.maximilian.chess.enums.Color.BLACK;
 import static com.maximilian.chess.enums.Color.WHITE;
-import static com.maximilian.chess.enums.Piece.BISHOP;
-import static com.maximilian.chess.enums.Piece.KING;
-import static com.maximilian.chess.enums.Piece.KNIGHT;
-import static com.maximilian.chess.enums.Piece.PAWN;
-import static com.maximilian.chess.enums.Piece.QUEEN;
-import static com.maximilian.chess.enums.Piece.ROOK;
+import static com.maximilian.chess.enums.Type.BISHOP;
+import static com.maximilian.chess.enums.Type.KING;
+import static com.maximilian.chess.enums.Type.KNIGHT;
+import static com.maximilian.chess.enums.Type.PAWN;
+import static com.maximilian.chess.enums.Type.QUEEN;
+import static com.maximilian.chess.enums.Type.ROOK;
 import static com.maximilian.chess.enums.Square.A1;
 import static com.maximilian.chess.enums.Square.A4;
 import static com.maximilian.chess.enums.Square.B2;
@@ -51,13 +51,13 @@ public class MoveTest {
     @Test
     public void testStandardMove () {
         Color color = WHITE;
-        Piece piece = BISHOP;
+        Type type = BISHOP;
         Square start = F1;
         Square end = C4;
-        Move move = Move.create(color, piece, start, end);
+        Move move = Move.create(color, type, start, end);
 
         assertEquals(color, move.color());
-        assertEquals(piece, move.piece());
+        assertEquals(type, move.piece());
         assertEquals(start, move.start());
         assertEquals(end, move.end());
 
@@ -87,15 +87,15 @@ public class MoveTest {
     @Test
     public void testMoveWithNormalCapture () {
         Color color = WHITE;
-        Piece piece = KNIGHT;
-        Piece capturedPiece = ROOK;
+        Type type = KNIGHT;
+        Type capturedType = ROOK;
         Square start = F7;
         Square end = H8;
-        Move move = Move.createCapture(color, piece, capturedPiece, start, end);
+        Move move = Move.createCapture(color, type, capturedType, start, end);
 
         assertEquals(color, move.color());
-        assertEquals(piece, move.piece());
-        assertEquals(capturedPiece, move.capturedPiece());
+        assertEquals(type, move.piece());
+        assertEquals(capturedType, move.capturedPiece());
         assertEquals(start, move.start());
         assertEquals(end, move.end());
 
@@ -108,7 +108,7 @@ public class MoveTest {
         Color color = BLACK;
         Square start = B2;
         Square end = A1;
-        Piece promoteTo = QUEEN;
+        Type promoteTo = QUEEN;
         Move move = Move.createPromotion(color, start, end, promoteTo);
 
         assertEquals(color, move.color());
@@ -124,15 +124,15 @@ public class MoveTest {
     @Test
     public void testMoveWithPromotionAndCapture () {
         Color color = WHITE;
-        Piece capturedPiece = BISHOP;
+        Type capturedType = BISHOP;
         Square start = D7;
         Square end = C8;
-        Piece promoteTo = QUEEN;
-        Move move = Move.createCapturePromotion(color, capturedPiece, start, end, promoteTo);
+        Type promoteTo = QUEEN;
+        Move move = Move.createCapturePromotion(color, capturedType, start, end, promoteTo);
 
         assertEquals(color, move.color());
         assertEquals(PAWN, move.piece());
-        assertEquals(capturedPiece, move.capturedPiece());
+        assertEquals(capturedType, move.capturedPiece());
         assertEquals(start, move.start());
         assertEquals(end, move.end());
         assertEquals(promoteTo, move.promoteTo());
