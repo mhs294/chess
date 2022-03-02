@@ -165,7 +165,7 @@ public enum Square {
      * Gets the {@link Square} corresponding to the specified {@link File} and {@link Rank}.
      *
      * @param file The {@link File} of the {@link Square}. Cannot be null.
-     * @param rank The {@link File} of the {@link Square}. Cannot be null.
+     * @param rank The {@link Rank} of the {@link Square}. Cannot be null.
      * @return The {@link Square} corresponding to the specified {@link File} and {@link Rank}.
      */
     @Nonnull
